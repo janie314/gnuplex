@@ -1,0 +1,3 @@
+#!/usr/bin/sh
+rm /tmp/mpvsocket 
+mpv --idle=yes --input-ipc-server=/tmp/mpvsocket --fs
