@@ -2,8 +2,7 @@ require "json"
 require "sqlite3"
 require "socket"
 require "thor"
-require_relative "gnuplex-client/db"
-require_relative "gnuplex-client/mpv_cmds"
+require_relative "mpv_cmds"
 
 class MyCLI < Thor
   desc "play", "play current media file"
