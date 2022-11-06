@@ -1,5 +1,6 @@
 class GNUPlexServer
   def self.run
-    sleep 5
+    pid = spawn("mpv --idle=yes --input-ipc-server=/tmp/mpvsocket --fs")
+    Process.wait pid
   end
 end
