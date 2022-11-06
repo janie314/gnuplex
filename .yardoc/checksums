@@ -1,0 +1,3 @@
+lib/gnuplex-client.rb 337dfe18770a20cf63f882c7a5dd29110ad826ef
+lib/gnuplex-client/db.rb a5ccffd55d5c3fb36ddb68e18051dd95ec7f65fb
+lib/gnuplex-client/mpv_cmds.rb a2ebdb4b47c5e3bcd0be09f0b7ee203750deb1eb
