@@ -1,4 +1,4 @@
-# GNUPLEX
+# GNUPLEX: DEV RULES
 
 # RULES
 
@@ -19,9 +19,3 @@ part.
 	- Linus Torvalds
 ```
 
-
-# DEV ENVIRONMENT
-
-- Run `./server/gnuplex-server` in a terminal window. 
-  - Actually we're messing with the server now. Current dev environment instructions are: `just figure it out`.
-- Then use one of the gnuplex clients.
