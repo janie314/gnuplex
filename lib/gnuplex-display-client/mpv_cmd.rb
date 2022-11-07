@@ -4,8 +4,10 @@ class MPVCmd
   end
 
   def mpvcmd(obj)
+    puts obj
     mpvsocket.write(JSON.generate(obj) + "\n")
     jsonstr = mpvsocket.readline
+    puts jsonstr
     res = JSON.parse(jsonstr)
     res["data"]
   rescue => err
