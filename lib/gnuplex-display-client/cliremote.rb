@@ -52,7 +52,7 @@ class MyCLI < Thor
     cmd = MPVCmd.new
     LiteDB.new.savepos(cmd.getmedia, cmd.getpos || 0)
   end
-  
+
   desc "loadpos", "[EXPERIMENTAL] load current mediafile's saved position"
   def loadpos
     a = MPVCmd.new.getmedia

@@ -1,4 +1,3 @@
 #!/usr/bin/env ruby
-
+require "sinatra"
 require_relative "../lib/gnuplex-display-server"
-GNUPlexDisplayServer.run
