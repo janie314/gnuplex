@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require_relative "../lib/gnuplex-display-client/cliremote"
+require_relative "../lib/cliremote"
 
 MyCLI.start(ARGV)

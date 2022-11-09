@@ -1,4 +1,5 @@
 require "sinatra"
+require_relative "gnuplex-display-server/mpv_cmd"
 
 class GNUPlexDisplayServer
   def self.run
@@ -10,6 +11,10 @@ GNUPlexDisplayServer.run
 
 set :port, 50000
 
-get "/test" do
-  "OKAY"
+get "/play" do
+  MPVCmd.new.play
+end
+
+get "/pause" do
+  MPVCmd.new.pause
 end

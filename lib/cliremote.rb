@@ -2,8 +2,8 @@ require "json"
 require "sqlite3"
 require "socket"
 require "thor"
-require_relative "litedb"
-require_relative "mpv_cmd"
+require_relative "gnuplex-display-server/litedb"
+require_relative "gnuplex-display-server/mpv_cmd"
 
 class MyCLI < Thor
   desc "play", "play current media file"
