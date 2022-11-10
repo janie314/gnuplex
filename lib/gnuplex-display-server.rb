@@ -1,5 +1,6 @@
 require "sinatra"
 require_relative "gnuplex-display-server/mpv_cmd"
+require "erb"
 
 class GNUPlexDisplayServer
   def self.run
@@ -17,4 +18,8 @@ end
 
 get "/pause" do
   MPVCmd.new.pause
+end
+
+get "/index" do
+  erb "OKGREAT"
 end

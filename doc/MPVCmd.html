@@ -94,7 +94,7 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/gnuplex-display-client/mpv_cmd.rb</dd>
+    <dd>lib/gnuplex-display-server/mpv_cmd.rb</dd>
   </dl>
   
 </div>
@@ -358,12 +358,12 @@
       <pre class="lines">
 
 
-29
-30
-31</pre>
+26
+27
+28</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 29</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getmedia'>getmedia</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>get_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>path</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -388,12 +388,12 @@
       <pre class="lines">
 
 
-41
-42
-43</pre>
+38
+39
+40</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 41</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 38</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getpos'>getpos</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>get_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>time-pos</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -418,12 +418,12 @@
       <pre class="lines">
 
 
-33
-34
-35</pre>
+30
+31
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getvol'>getvol</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>get_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>volume</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -454,21 +454,15 @@
 9
 10
 11
-12
-13
-14
-15</pre>
+12</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 6</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 6</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='id identifier rubyid_obj'>obj</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_obj'>obj</span>
   <span class='id identifier rubyid_mpvsocket'>mpvsocket</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_generate'>generate</span><span class='lparen'>(</span><span class='id identifier rubyid_obj'>obj</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_jsonstr'>jsonstr</span> <span class='op'>=</span> <span class='id identifier rubyid_mpvsocket'>mpvsocket</span><span class='period'>.</span><span class='id identifier rubyid_readline'>readline</span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_jsonstr'>jsonstr</span>
-  <span class='id identifier rubyid_res'>res</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_jsonstr'>jsonstr</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_res'>res</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>data</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_mpvsocket'>mpvsocket</span><span class='period'>.</span><span class='id identifier rubyid_readline'>readline</span>
 <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_err'>err</span>
   <span class='id identifier rubyid_warn'>warn</span> <span class='id identifier rubyid_err'>err</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span>
 <span class='kw'>end</span></pre>
@@ -497,7 +491,7 @@
 4</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 2</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 2</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mpvsocket'>mpvsocket</span>
   <span class='ivar'>@mpvsocket</span> <span class='op'>||=</span> <span class='const'>UNIXSocket</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/tmp/mpvsocket</span><span class='tstring_end'>&quot;</span></span>
@@ -522,12 +516,12 @@
       <pre class="lines">
 
 
-21
-22
-23</pre>
+18
+19
+20</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 18</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pause'>pause</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>set_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>pause</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -552,12 +546,12 @@
       <pre class="lines">
 
 
-17
-18
-19</pre>
+14
+15
+16</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 17</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 14</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_play'>play</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>set_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>pause</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>false</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -582,12 +576,12 @@
       <pre class="lines">
 
 
-25
-26
-27</pre>
+22
+23
+24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 22</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_queue'>queue</span><span class='lparen'>(</span><span class='id identifier rubyid_mediafile'>mediafile</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>loadfile</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_mediafile'>mediafile</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -612,12 +606,12 @@
       <pre class="lines">
 
 
-45
-46
-47</pre>
+42
+43
+44</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 45</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_setpos'>setpos</span><span class='lparen'>(</span><span class='id identifier rubyid_pos'>pos</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>set_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>time-pos</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_pos'>pos</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -642,12 +636,12 @@
       <pre class="lines">
 
 
-37
-38
-39</pre>
+34
+35
+36</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/mpv_cmd.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/mpv_cmd.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_setvol'>setvol</span><span class='lparen'>(</span><span class='id identifier rubyid_vol'>vol</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_mpvcmd'>mpvcmd</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='label'>command:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>set_property</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>volume</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_vol'>vol</span><span class='rbracket'>]</span><span class='rbrace'>}</span><span class='rparen'>)</span>
@@ -662,7 +656,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Nov  8 06:47:23 2022 by
+  Generated on Tue Nov  8 20:12:32 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.1.2).
 </div>

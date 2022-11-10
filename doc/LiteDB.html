@@ -94,7 +94,7 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/gnuplex-display-client/litedb.rb</dd>
+    <dd>lib/gnuplex-display-server/litedb.rb</dd>
   </dl>
   
 </div>
@@ -248,7 +248,7 @@
 12</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/litedb.rb', line 5</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/litedb.rb', line 5</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span> <span class='heredoc_beg'>&lt;&lt;-SQL</span>
@@ -291,7 +291,7 @@
 17</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/litedb.rb', line 14</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/litedb.rb', line 14</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_db'>db</span>
   <span class='const'>FileUtils</span><span class='period'>.</span><span class='id identifier rubyid_mkdir_p'>mkdir_p</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tmp/</span><span class='tstring_end'>&quot;</span></span>
@@ -325,7 +325,7 @@
 24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/litedb.rb', line 19</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/litedb.rb', line 19</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_loadpos'>loadpos</span><span class='lparen'>(</span><span class='id identifier rubyid_filepath'>filepath</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_res'>res</span> <span class='op'>=</span> <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span> <span class='heredoc_beg'>&lt;&lt;-SQL</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_filepath'>filepath</span><span class='rbracket'>]</span>
@@ -360,7 +360,7 @@
 30</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-client/litedb.rb', line 26</span>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server/litedb.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_savepos'>savepos</span><span class='lparen'>(</span><span class='id identifier rubyid_filepath'>filepath</span><span class='comma'>,</span> <span class='id identifier rubyid_pos'>pos</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_db'>db</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span> <span class='heredoc_beg'>&lt;&lt;-SQL</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_filepath'>filepath</span><span class='comma'>,</span> <span class='id identifier rubyid_pos'>pos</span><span class='rbracket'>]</span>
@@ -377,7 +377,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Nov  8 06:47:23 2022 by
+  Generated on Tue Nov  8 20:12:32 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.1.2).
 </div>

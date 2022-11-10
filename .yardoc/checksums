@@ -1,5 +1,4 @@
-lib/servertest.rb 4de8b88df680348050590bf3c00b2df2d925836e
-lib/gnuplex-display-server.rb d720bc7439dd95546e6d062159aa0e531f69c54c
-lib/gnuplex-display-client/litedb.rb 3fe8d557dda40b931126b8ecce96644a053feac9
-lib/gnuplex-display-client/mpv_cmd.rb 5ecd25d2cde9d9a41503cb862cb936d485caa534
-lib/gnuplex-display-client/cliremote.rb b8f3e990d5df7d325467e10ca8a50ecd7687a912
+lib/cliremote.rb 35bc6e0e91720ef153cf399182dc04c3a3994d30
+lib/gnuplex-display-server.rb 2a68240087900a28f0b4e55d6db8e23e0a30aeb6
+lib/gnuplex-display-server/litedb.rb 3fe8d557dda40b931126b8ecce96644a053feac9
+lib/gnuplex-display-server/mpv_cmd.rb a9f2add5cbcb133cb3621584012fbc0976d2951b
