@@ -11,6 +11,7 @@ end
 GNUPlexDisplayServer.run
 
 set :port, 50000
+set :root, File.join(File.dirname(__FILE__), "..")
 
 get "/play" do
   MPVCmd.new.play
@@ -21,5 +22,5 @@ get "/pause" do
 end
 
 get "/index" do
-  erb "OKGREAT"
+  erb :index, locals: {x: 4444}
 end
