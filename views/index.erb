@@ -1,12 +1,26 @@
 <html>
     <head>
         <title>GNUPlex</title>
+        <style>
+        * {
+            font: 12px monospace;
+        }
+        a {
+            color: black;
+        }
+        #medialist {
+            display: flex;
+            flex-direction: column; 
+        }
+        </style
     </head>
     <body>
-        <pre>
-<% mediafiles.each do |mediafile| %>
-    <%= mediafile %>
-<% end %>
-        </pre>
+        <div id="medialist">
+            <% mediafiles.each do |mediafile| %>
+                <a href="#">
+                <%= mediafile %>
+                </a>
+            <% end %>
+        </div>
     </body>
 </html>
