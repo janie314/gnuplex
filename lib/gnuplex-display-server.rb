@@ -1,5 +1,6 @@
 require "sinatra"
 require_relative "gnuplex-display-server/mpv_cmd"
+require_relative "mediafiles"
 require "erb"
 
 class GNUPlexDisplayServer
@@ -22,5 +23,5 @@ get "/pause" do
 end
 
 get "/index" do
-  erb :index, locals: {x: 4444}
+  erb :index, locals: { mediafiles: Mediafiles.mediafiles }
 end
