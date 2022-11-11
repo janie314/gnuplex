@@ -23,5 +23,5 @@ get "/pause" do
 end
 
 get "/index" do
-  erb :index, locals: { mediafiles: Mediafiles.mediafiles }
+  erb :index, locals: {mediafiles: Mediafiles.mediafiles}
 end
