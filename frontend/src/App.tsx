@@ -1,12 +1,13 @@
 import { useState } from "react";
 import "./App.css";
 import { mediafiles } from "./mediafiles";
+import serverconfig from "../serverconfig.json";
 
 function App() {
   
   function queue(mediafile: string) {
     return fetch(
-      `http://localhost:40000/api/queue?mediafile=${encodeURIComponent(mediafile)}`,
+      `http://${serverconfig.hostname}/api/queue?mediafile=${encodeURIComponent(mediafile)}`,
       { method: "POST" },
     );
   }
