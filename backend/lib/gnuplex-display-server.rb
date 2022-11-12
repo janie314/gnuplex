@@ -14,40 +14,40 @@ def mpvcmd
   @mpvcmd ||= MPVCmd.new
 end
 
-set :port, 50001
+set :port, 40000
 set :root, File.join(File.dirname(__FILE__), "..")
 
-post "/play" do
+post "/api/play" do
   content_type :json
   mpvcmd.play
 end
 
-post "/pause" do
+post "/api/pause" do
   content_type :json
   mpvcmd.pause
 end
 
-post "/queue" do
+post "/api/queue" do
   content_type :json
   mpvcmd.queue params["mediafile"]
 end
 
-get "/vol" do
+get "/api/vol" do
   content_type :json
   mpvcmd.getvol
 end
 
-post "/vol" do
+post "/api/vol" do
   content_type :json
   mpvcmd.setvol params["vol"]
 end
 
-get "/pos" do
+get "/api/pos" do
   content_type :json
   mpvcmd.getpos
 end
 
-post "/pos" do
+post "/api/pos" do
   content_type :json
-  mpvcmd.setvol params["pos"]
+  mpvcmd.setpos params["pos"]
 end

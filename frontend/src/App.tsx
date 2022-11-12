@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { mediafiles } from "./mediafiles";
 import serverconfig from "../serverconfig.json";
+
+interface IMPVRes {
+  data?: number;
+  request_id: number;
+  error: string;
+}
 
 function App() {
   function play() {
@@ -26,20 +32,46 @@ function App() {
       { method: "POST" },
     );
   }
-  
-  async function getPos() {
-    fetch(
-      `http://${serverconfig.hostname}/api/getpos`
-    ).then( res => res.json()).then( (res: Object) => {
 
+  /*
+   * pos state
+   */
+  const [pos, setPos] = useState(0);
+  async function getOriginPos() {
+    fetch(
+      `http://${serverconfig.hostname}/api/pos`,
+    ).then((res) => res.json()).then((res: IMPVRes) => {
+      if (res.data !== undefined) {
+        setPos(res.data);
+      }
     });
   }
+  async function setOriginPos(pos: number) {
+    return await fetch(
+      `http://${serverconfig.hostname}/api/pos?pos=${pos}`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
 
-
-
-  const [pos,setPos] = useState(0);
-
-  fetch(``)
+  /*
+   * vol state
+   */
+  const [vol, setVol] = useState(0);
+  async function getOriginVol() {
+    fetch(
+      `http://${serverconfig.hostname}/api/vol`,
+    ).then((res) => res.json()).then((res: IMPVRes) => {
+      if (res.data !== undefined) {
+        setVol(res.data);
+      }
+    });
+  }
+  async function setOriginVol(vol: number) {
+    return await fetch(
+      `http://${serverconfig.hostname}/api/vol?vol=${vol}`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
 
   return (
     <div className="App">
@@ -50,7 +82,25 @@ function App() {
       </div>
       <div className="controls">
         <span>Pos</span>
-        <input type="number" value="Play" onClick={play} />
+        <input
+          type="number"
+          value={pos}
+          onChange={(e) => {
+            setPos(Number(e.target.value));
+          }}
+        />
+        <input type="button" value="Set" onClick={(e) => { setOriginPos(pos); }}/>
+      </div>
+      <div className="controls">
+        <span>Vol</span>
+        <input
+          type="number"
+          value={vol}
+          onChange={(e) => {
+            setVol(Number(e.target.value));
+          }}
+        />
+        <input type="button" value="Set" onClick={(e) => { setOriginVol(vol); }}/>
       </div>
       {mediafiles.map((mediafile: string, i: number) => (
         <a
