@@ -75,6 +75,7 @@ GEM
       rack (~> 2.2, >= 2.2.4)
       rack-protection (= 3.0.2)
       tilt (~> 2.0)
+    sinatra-cors (1.2.0)
     solargraph (0.47.2)
       backport (~> 1.2)
       benchmark
@@ -109,6 +110,7 @@ DEPENDENCIES
   puma
   rspec
   sinatra
+  sinatra-cors
   solargraph
   sqlite3
   standard

@@ -11,7 +11,7 @@ end
 
 GNUPlexDisplayServer.run
 
-set :port, 50000
+set :port, 50001
 set :root, File.join(File.dirname(__FILE__), "..")
 
 get "/play" do
@@ -26,7 +26,7 @@ end
 
 post "/queue" do
   content_type :json
-  MPVCmd.new.queue params['mediafile']
+  MPVCmd.new.queue params["mediafile"]
 end
 
 get "/index" do
