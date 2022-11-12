@@ -10,20 +10,44 @@ end
 
 GNUPlexDisplayServer.run
 
+def mpvcmd
+  @mpvcmd ||= MPVCmd.new
+end
+
 set :port, 50001
 set :root, File.join(File.dirname(__FILE__), "..")
 
 post "/play" do
   content_type :json
-  MPVCmd.new.play
+  mpvcmd.play
 end
 
 post "/pause" do
   content_type :json
-  MPVCmd.new.pause
+  mpvcmd.pause
 end
 
 post "/queue" do
   content_type :json
-  MPVCmd.new.queue params["mediafile"]
+  mpvcmd.queue params["mediafile"]
+end
+
+get "/vol" do
+  content_type :json
+  mpvcmd.getvol
+end
+
+post "/vol" do
+  content_type :json
+  mpvcmd.setvol params["vol"]
+end
+
+get "/pos" do
+  content_type :json
+  mpvcmd.getpos
+end
+
+post "/pos" do
+  content_type :json
+  mpvcmd.setvol params["pos"]
 end
