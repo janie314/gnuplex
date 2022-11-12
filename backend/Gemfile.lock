@@ -33,7 +33,7 @@ GEM
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.4)
-    rack-protection (3.0.2)
+    rack-protection (3.0.3)
       rack
     rainbow (3.1.1)
     regexp_parser (2.6.0)
@@ -53,29 +53,28 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.0)
-    rubocop (1.35.1)
+    rubocop (1.38.0)
       json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.1.2.1)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.20.1, < 2.0)
+      rubocop-ast (>= 1.23.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.23.0)
       parser (>= 3.1.1.0)
-    rubocop-performance (1.14.3)
+    rubocop-performance (1.15.0)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
-    sinatra (3.0.2)
+    sinatra (3.0.3)
       mustermann (~> 3.0)
       rack (~> 2.2, >= 2.2.4)
-      rack-protection (= 3.0.2)
+      rack-protection (= 3.0.3)
       tilt (~> 2.0)
-    sinatra-cors (1.2.0)
     solargraph (0.47.2)
       backport (~> 1.2)
       benchmark
@@ -92,9 +91,9 @@ GEM
       tilt (~> 2.0)
       yard (~> 0.9, >= 0.9.24)
     sqlite3 (1.5.3-x86_64-linux)
-    standard (1.16.1)
-      rubocop (= 1.35.1)
-      rubocop-performance (= 1.14.3)
+    standard (1.17.0)
+      rubocop (= 1.38.0)
+      rubocop-performance (= 1.15.0)
     thor (1.2.1)
     tilt (2.0.11)
     unicode-display_width (2.3.0)
@@ -110,7 +109,6 @@ DEPENDENCIES
   puma
   rspec
   sinatra
-  sinatra-cors
   solargraph
   sqlite3
   standard
