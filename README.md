@@ -11,7 +11,5 @@ git clone git@192.168.1.82:/shared/gitserver/gnuplex
 cd gnuplex
 bundle
 # Then run:
-# ./bin/gnuplex-dislay-server
-# OR
-# ./bin/cliremote
+# .//gnuplex-dislay-server
 ```
