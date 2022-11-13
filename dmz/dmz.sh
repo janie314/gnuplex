@@ -1,2 +1,3 @@
 #!/usr/bin/sh
-tinyproxy -d -c dmz.conf
+basedir=$(realpath $(dirname "$0"))
+tinyproxy -d -c "$basedir/dmz.conf"

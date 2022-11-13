@@ -12,23 +12,21 @@ interface IMPVRes {
 function App() {
   function play() {
     return fetch(
-      `http://${serverconfig.hostname}/api/play`,
+      `/api/play`,
       { method: "POST" },
     );
   }
 
   function pause() {
     return fetch(
-      `http://${serverconfig.hostname}/api/pause`,
+      `/api/pause`,
       { method: "POST" },
     );
   }
 
   function queue(mediafile: string) {
     return fetch(
-      `http://${serverconfig.hostname}/api/queue?mediafile=${
-        encodeURIComponent(mediafile)
-      }`,
+      `/api/queue?mediafile=${encodeURIComponent(mediafile)}`,
       { method: "POST" },
     );
   }
@@ -39,7 +37,7 @@ function App() {
   const [pos, setPos] = useState(0);
   async function getOriginPos() {
     fetch(
-      `http://${serverconfig.hostname}/api/pos`,
+      `/api/pos`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
         setPos(res.data);
@@ -59,7 +57,7 @@ function App() {
   const [vol, setVol] = useState(0);
   async function getOriginVol() {
     fetch(
-      `http://${serverconfig.hostname}/api/vol`,
+      `/api/vol`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
         setVol(res.data);
@@ -68,7 +66,7 @@ function App() {
   }
   async function setOriginVol(vol: number) {
     return await fetch(
-      `http://${serverconfig.hostname}/api/vol?vol=${vol}`,
+      `/api/vol?vol=${vol}`,
       { method: "POST" },
     ).then((res) => res.json());
   }
@@ -89,7 +87,13 @@ function App() {
             setPos(Number(e.target.value));
           }}
         />
-        <input type="button" value="Set" onClick={(e) => { setOriginPos(pos); }}/>
+        <input
+          type="button"
+          value="Set"
+          onClick={(e) => {
+            setOriginPos(pos);
+          }}
+        />
       </div>
       <div className="controls">
         <span>Vol</span>
@@ -100,7 +104,13 @@ function App() {
             setVol(Number(e.target.value));
           }}
         />
-        <input type="button" value="Set" onClick={(e) => { setOriginVol(vol); }}/>
+        <input
+          type="button"
+          value="Set"
+          onClick={(e) => {
+            setOriginVol(vol);
+          }}
+        />
       </div>
       {mediafiles.map((mediafile: string, i: number) => (
         <a
