@@ -20,7 +20,7 @@ set :bind, "0.0.0.0"
 set :port, 40000
 set :root, File.join(File.dirname(__FILE__), "..")
 
-get "/" do 
+get "/" do
   redirect "/index.html"
 end
 

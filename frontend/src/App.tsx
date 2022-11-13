@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { mediafiles } from "./mediafiles";
-import serverconfig from "../serverconfig.json";
 
 interface IMPVRes {
   data?: number;
@@ -46,7 +45,7 @@ function App() {
   }
   async function setOriginPos(pos: number) {
     return await fetch(
-      `http://${serverconfig.hostname}/api/pos?pos=${pos}`,
+      `/api/pos?pos=${pos}`,
       { method: "POST" },
     ).then((res) => res.json());
   }
