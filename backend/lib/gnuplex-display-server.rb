@@ -19,6 +19,10 @@ end
 set :port, 40000
 set :root, File.join(File.dirname(__FILE__), "..")
 
+get "/" do 
+  redirect "/index.html"
+end
+
 post "/api/play" do
   content_type :json
   mpvcmd.play
