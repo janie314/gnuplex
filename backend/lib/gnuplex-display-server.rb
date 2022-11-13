@@ -16,6 +16,7 @@ def mpvcmd
   @mpvcmd ||= MPVCmd.new
 end
 
+set :bind, "0.0.0.0"
 set :port, 40000
 set :root, File.join(File.dirname(__FILE__), "..")
 
