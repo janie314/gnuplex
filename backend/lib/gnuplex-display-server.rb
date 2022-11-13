@@ -4,13 +4,13 @@ require "erb"
 
 class GNUPlexDisplayServer
   def self.run
-    pid = spawn("mpv --idle=yes --input-ipc-server=/tmp/mpvsocket --fs --save-position-on-quit")
-    Process.wait pid
-    sleep 5
+    loop do
+      pid = spawn("mpv --idle=yes --input-ipc-server=/tmp/mpvsocket --fs --save-position-on-quit", pgroup: nil)
+      Process.wait pid
+      sleep 3
+    end
   end
 end
-
-GNUPlexDisplayServer.run
 
 def mpvcmd
   @mpvcmd ||= MPVCmd.new
@@ -53,3 +53,7 @@ post "/api/pos" do
   content_type :json
   mpvcmd.setpos params["pos"]
 end
+
+Thread.new {
+  GNUPlexDisplayServer.run
+}
