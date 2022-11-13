@@ -39,7 +39,7 @@ function App() {
       `/api/pos`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
-        setPos(res.data);
+        setPos(Math.floor(res.data));
       }
     });
   }
@@ -59,7 +59,7 @@ function App() {
       `/api/vol`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
-        setVol(res.data);
+        setVol(Math.floor(res.data));
       }
     });
   }
@@ -69,6 +69,11 @@ function App() {
       { method: "POST" },
     ).then((res) => res.json());
   }
+
+  useEffect(() => {
+    getOriginPos();
+    getOriginVol();
+  }, []);
 
   return (
     <div className="App">
