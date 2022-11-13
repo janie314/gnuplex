@@ -4,7 +4,9 @@ require "erb"
 
 class GNUPlexDisplayServer
   def self.run
-    spawn("mpv --idle=yes --input-ipc-server=/tmp/mpvsocket --fs")
+    pid = spawn("mpv --idle=yes --input-ipc-server=/tmp/mpvsocket --fs --save-position-on-quit")
+    Process.wait pid
+    sleep 5
   end
 end
 
