@@ -19,7 +19,7 @@ class MPVCmd
     mpvcmd({command: ["set_property", "pause", true]})
   end
 
-  def queue(mediafile)
+  def setmedia(mediafile)
     mpvcmd({command: ["loadfile", mediafile]})
   end
 

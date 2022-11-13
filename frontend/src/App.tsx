@@ -3,7 +3,7 @@ import "./App.css";
 import { mediafiles } from "./mediafiles";
 
 interface IMPVRes {
-  data?: number;
+  data?: number | string;
   request_id: number;
   error: string;
 }
@@ -23,13 +23,6 @@ function App() {
     );
   }
 
-  function queue(mediafile: string) {
-    return fetch(
-      `/api/queue?mediafile=${encodeURIComponent(mediafile)}`,
-      { method: "POST" },
-    );
-  }
-
   /*
    * pos state
    */
@@ -39,6 +32,7 @@ function App() {
       `/api/pos`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
+        // @ts-ignore
         setPos(Math.floor(res.data));
       }
     });
@@ -59,6 +53,7 @@ function App() {
       `/api/vol`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
+        // @ts-ignore
         setVol(Math.floor(res.data));
       }
     });
@@ -70,14 +65,38 @@ function App() {
     ).then((res) => res.json());
   }
 
+  /*
+   * media state
+   */
+  const [media, setMedia] = useState('');
+  async function getOriginMedia() {
+    fetch(
+      `/api/media`,
+    ).then((res) => res.json()).then((res: IMPVRes) => {
+      if (res.data !== undefined) {
+        // @ts-ignore
+        setMedia(res.data);
+      }
+    });
+  }
+  async function setOriginMedia(mediafile: string) {
+    return await fetch(
+      `/api/media?mediafile=${mediafile}`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
   useEffect(() => {
     getOriginPos();
     getOriginVol();
+    getOriginMedia();
   }, []);
 
   return (
     <div className="App">
       <span className="title">GNUPlex</span>
+      <div className="controls">
+        <span>Now playing: {media}</span>
+      </div>
       <div className="controls">
         <input type="button" value="Play" onClick={play} />
         <input type="button" value="Pause" onClick={pause} />
@@ -121,7 +140,7 @@ function App() {
           className="mediafile"
           key={i}
           href="#"
-          onClick={() => queue(mediafile)}
+          onClick={() => setOriginMedia(mediafile)}
         >
           {mediafile}
         </a>

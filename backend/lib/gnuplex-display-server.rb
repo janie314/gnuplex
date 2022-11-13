@@ -34,9 +34,14 @@ post "/api/pause" do
   mpvcmd.pause
 end
 
-post "/api/queue" do
+get "/api/media" do
   content_type :json
-  mpvcmd.queue params["mediafile"]
+  mpvcmd.getmedia
+end
+
+post "/api/media" do
+  content_type :json
+  mpvcmd.setmedia params["mediafile"]
 end
 
 get "/api/vol" do
