@@ -1,5 +1,6 @@
 require "sinatra"
 require_relative "gnuplex-display-server/mpv_cmd"
+require_relative "gnuplex-display-server/litedb"
 require "erb"
 
 class GNUPlexDisplayServer
@@ -14,6 +15,10 @@ end
 
 def mpvcmd
   @mpvcmd ||= MPVCmd.new
+end
+
+def db
+  @db ||= LiteDB.new
 end
 
 set :bind, "0.0.0.0"
@@ -41,6 +46,7 @@ end
 
 post "/api/media" do
   content_type :json
+  db.addhist params["mediafile"]
   mpvcmd.setmedia params["mediafile"]
 end
 
@@ -62,6 +68,11 @@ end
 post "/api/pos" do
   content_type :json
   mpvcmd.setpos params["pos"]
+end
+
+get "/api/last25" do
+  content_type :json
+  db.last25
 end
 
 Thread.new {
