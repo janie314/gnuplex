@@ -68,7 +68,7 @@ function App() {
   /*
    * media state
    */
-  const [media, setMedia] = useState('');
+  const [media, setMedia] = useState("");
   async function getOriginMedia() {
     fetch(
       `/api/media`,
