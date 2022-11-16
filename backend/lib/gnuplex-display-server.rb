@@ -52,7 +52,9 @@ end
 
 get "/api/vol" do
   content_type :json
-  mpvcmd.getvol
+  vol = mpvcmd.getvol
+  puts JSON.parse(vol).data
+  vol
 end
 
 post "/api/vol" do
