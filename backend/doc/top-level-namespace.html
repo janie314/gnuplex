@@ -95,12 +95,133 @@
 
 
 
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
 
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="top-level-namespace.html#db-instance_method" title="#db (instance method)">#<strong>db</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="top-level-namespace.html#mpvcmd-instance_method" title="#mpvcmd (instance method)">#<strong>mpvcmd</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="db-instance_method">
+  
+    #<strong>db</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+20
+21
+22</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server.rb', line 20</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_db'>db</span>
+  <span class='ivar'>@db</span> <span class='op'>||=</span> <span class='const'><span class='object_link'><a href="LiteDB.html" title="LiteDB (class)">LiteDB</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="LiteDB.html#initialize-instance_method" title="LiteDB#initialize (method)">new</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mpvcmd-instance_method">
+  
+    #<strong>mpvcmd</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+16
+17
+18</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/gnuplex-display-server.rb', line 16</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_mpvcmd'>mpvcmd</span>
+  <span class='ivar'>@mpvcmd</span> <span class='op'>||=</span> <span class='const'><span class='object_link'><a href="MPVCmd.html" title="MPVCmd (class)">MPVCmd</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
 
 </div>
 
       <div id="footer">
-  Generated on Fri Nov 11 23:18:35 2022 by
+  Generated on Tue Nov 15 21:36:28 2022 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.28 (ruby-3.1.2).
 </div>

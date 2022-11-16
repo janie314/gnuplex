@@ -72,12 +72,12 @@ end
 
 get "/api/last25" do
   content_type :json
-  db.last25
+  JSON.generate db.last25
 end
 
 get "/api/medialist" do
   content_type :json
-  db.medialist
+  JSON.generate db.medialist
 end
 
 post "/api/medialist" do

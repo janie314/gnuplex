@@ -29,11 +29,23 @@ class LiteDB
     @db ||= SQLite3::Database.new "tmp/gnuplex.sqlite3"
   end
 
+  def first_or_default(query, args, default)
+    res = db.execute query, args
+    res.flatten[0] || default
+  end
+
+  def read_query(query, args)
+    res = []
+    db.execute(query) do |row|
+      res.append row
+    end
+    res.flatten
+  end
+
   def loadpos(filepath)
-    res = db.execute <<-SQL, [filepath]
+    first_or_default <<-SQL, [filepath]
       select pos from pos_cache where filepath = ?;
     SQL
-    res.flatten[0] || 0
   end
 
   def savepos(filepath, pos)
@@ -43,14 +55,9 @@ class LiteDB
   end
 
   def medialist
-    query = <<-SQL
+    read_query <<-SQL, []
       select distinct filepath from medialist order by filepath;
     SQL
-    res = []
-    db.execute(query) do |row|
-      res.append row
-    end
-    JSON.generate(res.flatten)
   end
 
   def refresh_medialist(medialist)
@@ -71,13 +78,8 @@ class LiteDB
   end
 
   def last25
-    res = []
-    query = <<-SQL
-      select mediafile from history order by id desc limit 25;
+    read_query <<-SQL, []
+      select distinct mediafile from history order by id desc limit 25;
     SQL
-    db.execute(query) do |row|
-      res.append row
-    end
-    JSON.generate(res.flatten)
   end
 end
