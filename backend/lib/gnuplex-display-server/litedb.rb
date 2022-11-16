@@ -17,6 +17,11 @@ class LiteDB
 	      primary key("id" AUTOINCREMENT)
       );
     SQL
+    db.execute <<-SQL
+      create table if not exists medialist (
+      	filepath text
+      );
+    SQL
   end
 
   def db
@@ -35,6 +40,28 @@ class LiteDB
     db.execute <<-SQL, [filepath, pos]
       insert or replace into pos_cache (filepath, pos) values (?, ?);
     SQL
+  end
+
+  def medialist
+    query = <<-SQL
+      select distinct filepath from medialist order by filepath;
+    SQL
+    res = []
+    db.execute(query) do |row|
+      res.append row
+    end
+    JSON.generate(res.flatten)
+  end
+
+  def refresh_medialist(medialist)
+    db.execute <<-SQL
+      delete from medialist;
+    SQL
+    medialist.each do |filepath|
+      db.execute <<-SQL, [filepath]
+        insert into medialist (filepath) values (?);
+      SQL
+    end
   end
 
   def addhist(filepath)

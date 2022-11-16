@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { mediafiles } from "./mediafiles";
 
 interface IMPVRes {
   data?: number | string;
@@ -85,10 +84,19 @@ function App() {
       { method: "POST" },
     ).then((res) => res.json());
   }
+
+  const [mediafiles, setMediafiles] = useState([]);
+  async function getOriginMediafiles() {
+    fetch(`/api/medialist`).then((res) => res.json()).then((data) =>
+      setMediafiles(data)
+    );
+  }
+
   useEffect(() => {
     getOriginPos();
     getOriginVol();
     getOriginMedia();
+    getOriginMediafiles();
   }, []);
 
   return (

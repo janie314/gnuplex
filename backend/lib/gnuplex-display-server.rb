@@ -75,6 +75,19 @@ get "/api/last25" do
   db.last25
 end
 
+get "/api/medialist" do
+  content_type :json
+  db.medialist
+end
+
+post "/api/medialist" do
+  content_type :json
+  file = File.open(File.join(File.dirname(__FILE__), "medialist"))
+  medialist = file.readlines.map(&:chomp)
+  db.refresh_medialist medialist
+  200
+end
+
 Thread.new {
   GNUPlexDisplayServer.run
 }

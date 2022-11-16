@@ -6,6 +6,11 @@ require_relative "gnuplex-display-server/litedb"
 require_relative "gnuplex-display-server/mpv_cmd"
 
 class MyCLI < Thor
+  desc "testy", "testy"
+  def testy
+    puts Dir["/mnt/externalssd/**/*"].select { File.file?(_1) }
+  end
+
   desc "play", "play current media file"
   def play
     puts MPVCmd.new.play
