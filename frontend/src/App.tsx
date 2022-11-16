@@ -104,6 +104,7 @@ function App() {
     getOriginVol();
     getOriginMedia();
     getOriginMediafiles();
+    getOriginLast25();
   }, []);
 
   return (
