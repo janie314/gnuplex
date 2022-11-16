@@ -92,6 +92,13 @@ function App() {
     );
   }
 
+  const [last25, setLast25] = useState([]);
+  async function getOriginLast25() {
+    fetch(`/api/last25`).then((res) => res.json()).then((data) =>
+      setLast25(data)
+    );
+  }
+
   useEffect(() => {
     getOriginPos();
     getOriginVol();
@@ -143,6 +150,18 @@ function App() {
           }}
         />
       </div>
+      <br />
+      {last25.map((mediafile: string, i: number) => (
+        <a
+          className="mediafile"
+          key={i}
+          href="#"
+          onClick={() => setOriginMedia(mediafile)}
+        >
+          {mediafile}
+        </a>
+      ))}
+      <br />
       {mediafiles.map((mediafile: string, i: number) => (
         <a
           className="mediafile"
