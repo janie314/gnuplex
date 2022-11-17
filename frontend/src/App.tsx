@@ -109,19 +109,22 @@ function App() {
 
   return (
     <div className="App">
-      <span className="title">GNUPlex</span>
-      <div className="controls">
+      <span className="logo">GNUPlex</span>
+      <div className="nowplaying">
         <span>Now playing: {media}</span>
       </div>
       <div className="controls">
+      <div className="controls">
         <input type="button" value="Play" onClick={play} />
         <input type="button" value="Pause" onClick={pause} />
-      </div>
+        </div>
       <div className="controls">
         <span>Pos</span>
         <input
+          className="num-input"
           type="number"
           value={pos}
+          min={0}
           onChange={(e) => {
             setPos(Number(e.target.value));
           }}
@@ -129,14 +132,17 @@ function App() {
         <input
           type="button"
           value="Set"
+          min={0}
+          max={250}
           onClick={(e) => {
             setOriginPos(pos);
           }}
         />
-      </div>
+        </div>
       <div className="controls">
         <span>Vol</span>
         <input
+          className="num-input"
           type="number"
           value={vol}
           onChange={(e) => {
@@ -151,6 +157,7 @@ function App() {
           }}
         />
       </div>
+        </div>
       <br />
       {last25.map((mediafile: string, i: number) => (
         <a

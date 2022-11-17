@@ -5,9 +5,19 @@
   font: 14px monospace;
 }
 
+.nowplaying {
+  margin-top: 2%;
+}
+
 .controls {
-  margin-top: 3%;
-  margin-bottom: 3%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.controls>* {
+  margin-right: 7%;
 }
 
 input[type=button] {
@@ -20,8 +30,16 @@ input[type=button]:hover {
   background-color: lightgrey;
 }
 
-.title {
+input.num-input {
+  width: 5ch;
+}
+
+.logo {
   font: 20px monospace;
+  color: white;
+  background-color: black;
+  width: 8ch;
+  padding: 2px;
 }
 
 .mediafile {
