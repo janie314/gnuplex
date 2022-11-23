@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { play, pause, getOriginPos, setOriginPos } from "./lib/API"
 import "./App.css";
 
 interface IMPVRes {
@@ -8,44 +9,10 @@ interface IMPVRes {
 }
 
 function App() {
-  function play() {
-    return fetch(
-      `/api/play`,
-      { method: "POST" },
-    );
-  }
 
-  function pause() {
-    return fetch(
-      `/api/pause`,
-      { method: "POST" },
-    );
-  }
-
-  /*
-   * pos state
-   */
   const [pos, setPos] = useState(0);
-  async function getOriginPos() {
-    fetch(
-      `/api/pos`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        // @ts-ignore
-        setPos(Math.floor(res.data));
-      }
-    });
-  }
-  async function setOriginPos(pos: number) {
-    return await fetch(
-      `/api/pos?pos=${pos}`,
-      { method: "POST" },
-    ).then((res) => res.json());
-  }
 
-  /*
-   * vol state
-   */
+
   const [vol, setVol] = useState(0);
   async function getOriginVol() {
     fetch(
@@ -100,7 +67,7 @@ function App() {
   }
 
   useEffect(() => {
-    getOriginPos();
+    getOriginPos().then((res: number) => setPos(res));
     getOriginVol();
     getOriginMedia();
     getOriginMediafiles();
