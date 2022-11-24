@@ -4,21 +4,22 @@ interface IMPVRes {
   error: string;
 }
 
-async function play() {
+class APICall {
+  public static async play() {
     return await fetch(
       `/api/play`,
       { method: "POST" },
     );
-  }  
-  
-async function pause() {
+  }
+
+  public static async pause() {
     return await fetch(
       `/api/pause`,
       { method: "POST" },
     );
   }
 
-async function getOriginPos() {
+  public static async getOriginPos() {
     return await fetch(
       `/api/pos`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
@@ -29,13 +30,61 @@ async function getOriginPos() {
         return 0;
       }
     });
-}
+  }
 
-async function setOriginPos(pos: number) {
+  public static async setOriginPos(pos: number) {
     return await fetch(
       `/api/pos?pos=${pos}`,
       { method: "POST" },
     ).then((res) => res.json());
   }
 
-export {play, pause, getOriginPos, setOriginPos};
+  public static async getOriginVol() {
+    return await fetch(
+      `/api/vol`,
+    ).then((res) => res.json()).then((res: IMPVRes) => {
+      if (res.data !== undefined) {
+        // @ts-ignore
+        return Math.floor(res.data);
+      } else {
+        return 0;
+      }
+    });
+  }
+  public static async setOriginVol(vol: number) {
+    return await fetch(
+      `/api/vol?vol=${vol}`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
+
+  public static async getOriginMedia() {
+    return await fetch(
+      `/api/media`,
+    ).then((res) => res.json()).then((res: IMPVRes) => {
+      if (res.data !== undefined) {
+        // @ts-ignore
+        return res.data.toString();
+      } else {
+        return "";
+      }
+    });
+  }
+
+  public static async setOriginMedia(mediafile: string) {
+    return await fetch(
+      `/api/media?mediafile=${mediafile}`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
+
+  public static async getOriginMediafiles() {
+    return await fetch(`/api/medialist`).then((res) => res.json());
+  }
+
+  public static async getOriginLast25() {
+    return await fetch(`/api/last25`).then((res) => res.json());
+  }
+}
+
+export { APICall };
