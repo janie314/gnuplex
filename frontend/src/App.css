@@ -13,6 +13,7 @@
 
 .leftpanel {
   flex: 1;
+  margin-bottom: 2%;
 }
 
 .rightpanel {
@@ -43,7 +44,7 @@ input[type=button]:hover {
 .moviegroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 5%;
+  margin-bottom: 1%;
   white-space: pre-wrap;
 }
 
@@ -52,7 +53,7 @@ input[type=button]:hover {
 }
 
 .moviegroup>a {
-  margin-top: 3px;
+  margin-top: 1ch;
 }
 
 .logo {

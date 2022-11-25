@@ -64,7 +64,7 @@ class APICall {
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
         // @ts-ignore
-        return res.data.toString();
+        return res.data as string;
       } else {
         return "";
       }
