@@ -25,19 +25,16 @@ function App() {
 
   return (
     <div className="App">
-      <span className="logo">GNUPlex</span>
-      <div className="nowplaying">
-        <span>Now playing: {media}</span>
-      </div>
-      <div className="controls">
-        <div className="controls">
+      <div className="panel leftpanel">
+        <span className="logo">GNUPlex</span>
+        <div className="controlgroup">
           <input type="button" value="Play" onClick={APICall.play} />
           <input type="button" value="Pause" onClick={APICall.pause} />
         </div>
-        <div className="controls">
+        <div className="controlgroup">
           <span>Pos</span>
           <input
-            className="num-input"
+            className="timeinput"
             type="number"
             value={pos}
             min={0}
@@ -55,10 +52,10 @@ function App() {
             }}
           />
         </div>
-        <div className="controls">
+        <div className="controlgroup">
           <span>Vol</span>
           <input
-            className="num-input"
+            className="volinput"
             type="number"
             value={vol}
             onChange={(e) => {
@@ -74,28 +71,39 @@ function App() {
           />
         </div>
       </div>
-      <br />
-      {last25.map((mediafile: string, i: number) => (
-        <a
-          className="mediafile"
-          key={i}
-          href="#"
-          onClick={() => APICall.setOriginMedia(mediafile)}
-        >
-          {mediafile}
-        </a>
-      ))}
-      <br />
-      {mediafiles.map((mediafile: string, i: number) => (
-        <a
-          className="mediafile"
-          key={i}
-          href="#"
-          onClick={() => APICall.setOriginMedia(mediafile)}
-        >
-          {mediafile}
-        </a>
-      ))}
+
+      <div className="panel rightpanel">
+        <div className="moviegroup">
+          <span className="subtitle">Now Playing</span>
+          <a className="mediafile" href="#">{media}</a>
+        </div>
+        <div className="moviegroup">
+          <span className="subtitle">Recent</span>
+          {last25.map((mediafile: string, i: number) => (
+            <a
+              className="mediafile"
+              key={i}
+              href="#"
+              onClick={() => APICall.setOriginMedia(mediafile)}
+            >
+              {mediafile}
+            </a>
+          ))}
+        </div>
+        <div className="moviegroup">
+          <span className="subtitle">Library</span>
+          {mediafiles.map((mediafile: string, i: number) => (
+            <a
+              className="mediafile"
+              key={i}
+              href="#"
+              onClick={() => APICall.setOriginMedia(mediafile)}
+            >
+              {mediafile}
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

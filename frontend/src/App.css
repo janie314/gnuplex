@@ -1,49 +1,70 @@
 .App {
   display: flex;
-  flex-direction: column;
-  padding: 2%;
-  font: 14px monospace;
-}
-
-.nowplaying {
-  margin-top: 2%;
-}
-
-.controls {
-  display: flex;
   flex-direction: row;
-  margin-top: 1%;
-  margin-bottom: 1%;
+  flex-wrap: wrap;
+  font: 16px sans-serif;
 }
 
-.controls>* {
-  margin-right: 7%;
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 1%;
+}
+
+.leftpanel {
+  flex: 1;
+}
+
+.rightpanel {
+  flex: 4;
+}
+
+a {
+  color: black;
+}
+
+input[type=number] {
+  width: 6ch;
 }
 
 input[type=button] {
   background-color: white;
   border: 1px solid black;
-  font: 14px monospace;
 }
 
 input[type=button]:hover {
-  background-color: lightgrey;
+  background-color: cyan;
 }
 
-input.num-input {
-  width: 5ch;
+.controlgroup {
+  margin-top: 5%;
+}
+
+.moviegroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5%;
+  white-space: pre-wrap;
+}
+
+.moviegroup>.subtitle {
+  font-weight: bold;
+}
+
+.moviegroup>a {
+  margin-top: 3px;
 }
 
 .logo {
-  font: 20px monospace;
-  color: white;
   background-color: black;
-  width: 8ch;
-  padding: 2px;
+  color: white;
+  font: 25px monospace;
 }
 
 .mediafile {
   color: black;
+  font: 16px monospace;
+  word-wrap: break-word;
 }
 
 .mediafile:hover {
