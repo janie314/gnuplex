@@ -82,7 +82,7 @@ end
 
 post "/api/medialist" do
   content_type :json
-  file = File.open(File.join(File.dirname(__FILE__), "medialist"))
+  file = File.open(File.join(File.dirname(__FILE__), "medialist.txt"))
   medialist = file.readlines.map(&:chomp)
   db.refresh_medialist medialist
   200
