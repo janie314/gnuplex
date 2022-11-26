@@ -32,6 +32,13 @@ function App() {
           <input type="button" value="Pause" onClick={APICall.pause} />
         </div>
         <div className="controlgroup">
+          <input
+            type="button"
+            value="Refresh Library"
+            onClick={APICall.refreshOriginMediafiles}
+          />
+        </div>
+        <div className="controlgroup">
           <span>Pos</span>
           <input
             className="timeinput"

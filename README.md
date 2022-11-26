@@ -7,9 +7,13 @@
 # Installation
 
 ```bash
-git clone git@192.168.1.82:/shared/gitserver/gnuplex
+git clone https://git.sr.ht/~janie-luv/gnuplex
 cd gnuplex
-bundle
-# Then run:
-# .//gnuplex-dislay-server
+./build
+```
+
+# Running
+
+```bash
+./gnuplex
 ```

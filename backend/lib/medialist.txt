@@ -1,3 +1,4 @@
+delta
 /home/janie/Downloads/sopranos/S1_E01_Pilot.mp4
 /home/janie/Downloads/sopranos/S1_E06_PaxSoprana.mp4
 /home/janie/Downloads/sopranos/S1_E07_DownNeck.mp4
