@@ -26,8 +26,9 @@ class LiteDB
   end
 
   def db
-    FileUtils.mkdir_p "tmp/"
-    @db ||= SQLite3::Database.new "tmp/gnuplex.sqlite3"
+    FileUtils.mkdir_p File.join(File.dirname(__FILE__), "..", "..", "..", "tmp")
+    filepath = File.join(File.dirname(__FILE__), "..", "..", "..", "tmp", "gnuplex.sqlite3")
+    @db ||= SQLite3::Database.new filepath
   end
 
   def first_or_default(query, args, default)
