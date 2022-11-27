@@ -88,6 +88,10 @@ post "/api/medialist" do
   200
 end
 
+not_found do
+  "404, sorry"
+end
+
 Thread.new {
   GNUPlexDisplayServer.run
 }
