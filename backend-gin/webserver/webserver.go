@@ -16,13 +16,11 @@ func Run(wg *sync.WaitGroup, mpvConn *net.UnixConn) {
 	/*
 	 * API endpoints
 	 */
-	router.POST("/play", func(c *gin.Context) {
-		mpvcmd.Play(mpvConn)
-		c.JSON(http.StatusOK, "OK")
+	router.POST("/api/play", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", []byte(mpvcmd.Play(mpvConn)))
 	})
-	router.POST("/pause", func(c *gin.Context) {
-		mpvcmd.Pause(mpvConn)
-		c.JSON(http.StatusOK, "OK")
+	router.POST("/api/pause", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", []byte(mpvcmd.Pause(mpvConn)))
 	})
 	/*
 	 * Serve static files
