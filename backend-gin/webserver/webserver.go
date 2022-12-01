@@ -21,7 +21,7 @@ func Run(wg *sync.WaitGroup) {
 	 */
 	router.Static("/", "./public")
 	/*
-	 * Main execution
+	 * Execution
 	 */
 	router.Run(":50000")
 }
