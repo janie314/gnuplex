@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gnuplex-backend/db"
 	"gnuplex-backend/webserver"
 	"log"
 	"net"
@@ -20,7 +21,8 @@ func main() {
 	 * Main execution
 	 */
 	var wg sync.WaitGroup
-	wg.Add(1)
+	wg.Add(2)
 	go webserver.Run(&wg, mpvConn)
+	go db.Run(&wg)
 	wg.Wait()
 }
