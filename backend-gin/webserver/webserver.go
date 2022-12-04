@@ -1,18 +1,40 @@
 package webserver
 
 import (
+	"fmt"
+	"log"
 	"net"
 	"net/http"
+	"os"
 	"sync"
+	"time"
 
 	"gnuplex-backend/mpvdaemon/mpvcmd"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Run(wg *sync.WaitGroup, mpvConn *net.UnixConn) {
+func initUnixConn() *net.UnixConn {
+	var mpvUnixAddr *net.UnixAddr
+	var mpvConn *net.UnixConn
+	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for mpvConn == nil {
+		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			time.Sleep(3 * time.Second)
+		}
+	}
+	return mpvConn
+}
+
+func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 	router := gin.Default()
+	mpvConn := initUnixConn()
 	/*
 	 * API endpoints
 	 */

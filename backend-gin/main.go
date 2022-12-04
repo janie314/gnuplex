@@ -2,27 +2,16 @@ package main
 
 import (
 	"gnuplex-backend/db"
+	"gnuplex-backend/mpvdaemon"
 	"gnuplex-backend/webserver"
-	"log"
-	"net"
 	"sync"
 )
 
 func main() {
-	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
-	if err != nil {
-		log.Fatal(err)
-	}
-	mpvConn, err := net.DialUnix("unix", nil, mpvUnixAddr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	/*
-	 * Main execution
-	 */
 	var wg sync.WaitGroup
-	wg.Add(2)
-	go webserver.Run(&wg, mpvConn)
+	wg.Add(3)
+	go webserver.Run(&wg)
 	go db.Run(&wg)
+	go mpvdaemon.Run(&wg)
 	wg.Wait()
 }
