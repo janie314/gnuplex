@@ -39,15 +39,23 @@ func Run(wg *sync.WaitGroup) {
 	 * API endpoints
 	 */
 	router.POST("/api/play", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", []byte(mpvcmd.Play(mpvConn)))
+		c.Data(http.StatusOK, "application/json", mpvcmd.Play(mpvConn))
 	})
 	router.POST("/api/pause", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", []byte(mpvcmd.Pause(mpvConn)))
+		c.Data(http.StatusOK, "application/json", mpvcmd.Pause(mpvConn))
 	})
+	router.GET("/api/paused", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused(mpvConn))
+	})
+	/*
+		router.GET("/api/medialibrary", func(c *gin.Context) {
+			c.Data(http.StatusOK, "application/json", db.GetMedialib())
+		})
+	*/
 	/*
 	 * Serve static files
 	 */
-	router.Static("/", "./public")
+	router.Static("/gnuplex", "./public")
 	/*
 	 * Execution
 	 */

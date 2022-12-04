@@ -10,9 +10,26 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+func GetMedialib(db *sql.DB) []string {
+	rows, err := db.Query(`select filepath from medialist`)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "getmedialib query problem", err)
+		return []string{}
+	}
+	res := make([]string, 16384)
+	var line string
+	for rows.Next() {
+		err = rows.Scan(&line)
+		if err != nil {
+			res = append(res, line)
+		}
+	}
+	return res
+}
+
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
-	db, err := sql.Open("sqlite", "test.sqlite3")
+	db, err := sql.Open("sqlite", "../tmp/test.sqlite3")
 	if err != nil {
 		log.Fatal(err)
 	}
