@@ -7,53 +7,80 @@ import (
 	"os"
 )
 
+/*
+ * Types
+ */
+type IMPVQueryString struct {
+	Command []interface{} `json:"command"`
+}
+
 type IMPVResponseBool struct {
 	Data bool `json:"data"`
 }
 
-func mpvAuxFxn(mpvConn *net.UnixConn, cmd string) []byte {
+type IMPVResponseString struct {
+	Data string `json:"data"`
+}
+
+type IMPVResponseInt struct {
+	Data int `json:"data"`
+}
+
+/*
+ * Aux fxns
+ */
+func mpvGet(mpvConn *net.UnixConn, cmd string) []byte {
 	mpvConn.Write([]byte(cmd + "\n"))
 	readline := make([]byte, 1024)
 	n, err := mpvConn.Read(readline)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "mpv cmd err", err)
+		fmt.Fprintln(os.Stderr, "mpv cmd err 1", err)
 	}
 	return readline[:len(readline[:n])]
 }
 
-func Play(mpvConn *net.UnixConn) []byte {
-	return mpvAuxFxn(mpvConn, `{"command":["set_property","pause",false]}`)
-}
-
-func Pause(mpvConn *net.UnixConn) []byte {
-	return mpvAuxFxn(mpvConn, `{"command":["set_property","pause",true]}`)
-}
-
-func IsPaused(mpvConn *net.UnixConn) []byte {
-	return mpvAuxFxn(mpvConn, `{"command":["get_property","pause"]}`)
-}
-
-func GetMedia(mpvConn *net.UnixConn) []byte {
-	return mpvAuxFxn(mpvConn, `{"command":["get_property","path"]}`)
-}
-
-func GetVolume(mpvConn *net.UnixConn) []byte {
-	return mpvAuxFxn(mpvConn, `{"command":["get_property","volume"]}`)
-}
-
-func GetPos(mpvConn *net.UnixConn) []byte {
-	return mpvAuxFxn(mpvConn, `{"command":["get_property","time-pos"]}`)
-}
-
-func LoadMedia(mpvConn *net.UnixConn, filepath string) []byte {
-	data := map[string](interface{}){"command": []string{"loadmedia", filepath}}
-	jsonData, err := json.Marshal(data)
+func mpvSetString(mpvConn *net.UnixConn, cmd, val string) []byte {
+	query := IMPVQueryString{Command: []interface{}{cmd, val}}
+	jsonData, err := json.Marshal(query)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "loadmedia problem", err)
 		return []byte{}
 	}
 	mpvConn.Write(append(jsonData, '\n'))
 	readline := make([]byte, 1024)
-	mpvConn.Read(readline)
-	return readline
+	n, err := mpvConn.Read(readline)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "mpv cmd err 2", err)
+	}
+	return readline[:len(readline[:n])]
+}
+
+/*
+ * MPV command public fxns
+ */
+func Play(mpvConn *net.UnixConn) []byte {
+	return mpvGet(mpvConn, `{"command":["set_property","pause",false]}`)
+}
+
+func Pause(mpvConn *net.UnixConn) []byte {
+	return mpvGet(mpvConn, `{"command":["set_property","pause",true]}`)
+}
+
+func IsPaused(mpvConn *net.UnixConn) []byte {
+	return mpvGet(mpvConn, `{"command":["get_property","pause"]}`)
+}
+
+func GetMedia(mpvConn *net.UnixConn) []byte {
+	return mpvGet(mpvConn, `{"command":["get_property","path"]}`)
+}
+
+func SetMedia(mpvConn *net.UnixConn, filepath string) []byte {
+	return mpvSetString(mpvConn, "loadmedia", filepath)
+}
+
+func GetVolume(mpvConn *net.UnixConn) []byte {
+	return mpvGet(mpvConn, `{"command":["get_property","volume"]}`)
+}
+
+func GetPos(mpvConn *net.UnixConn) []byte {
+	return mpvGet(mpvConn, `{"command":["get_property","time-pos"]}`)
 }
