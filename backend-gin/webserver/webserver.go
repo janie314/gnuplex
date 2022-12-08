@@ -1,15 +1,18 @@
 package webserver
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
 	"gnuplex-backend/mpvdaemon/mpvcmd"
+	"gnuplex-backend/sqliteconn"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,10 +34,14 @@ func initUnixConn() *net.UnixConn {
 	return mpvConn
 }
 
-func Run(wg *sync.WaitGroup) {
+func Run(wg *sync.WaitGroup, db *sql.DB) {
 	defer wg.Done()
 	router := gin.Default()
 	mpvConn := initUnixConn()
+	/*
+	 * Serve static files
+	 */
+	router.Static("/gnuplex", "./public")
 	/*
 	 * API endpoints
 	 */
@@ -47,15 +54,45 @@ func Run(wg *sync.WaitGroup) {
 	router.GET("/api/paused", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused(mpvConn))
 	})
+	router.GET("/api/vol", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume(mpvConn))
+	})
+	router.POST("/api/vol", func(c *gin.Context) {
+		param := c.Query("vol")
+		if param == "" {
+			c.String(http.StatusBadRequest, "empty vol string")
+		} else {
+			vol, err := strconv.Atoi(param)
+			if err != nil {
+				c.String(http.StatusBadRequest, "bad vol string")
+			}
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(mpvConn, vol))
+		}
+	})
+	router.GET("/api/pos", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos(mpvConn))
+	})
+	router.POST("/api/pos", func(c *gin.Context) {
+		param := c.Query("pos")
+		if param == "" {
+			c.String(http.StatusBadRequest, "empty pos string")
+		} else {
+			pos, err := strconv.Atoi(param)
+			if err != nil {
+				c.String(http.StatusBadRequest, "bad pos string")
+			}
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(mpvConn, pos))
+		}
+	})
+	router.GET("/api/last25", func(c *gin.Context) {
+		c.JSON(http.StatusOK, sqliteconn.Last25(db))
+	})
 	/*
 		router.GET("/api/medialibrary", func(c *gin.Context) {
 			c.Data(http.StatusOK, "application/json", db.GetMedialib())
 		})
 	*/
-	/*
-	 * Serve static files
-	 */
-	router.Static("/gnuplex", "./public")
+
 	/*
 	 * Execution
 	 */

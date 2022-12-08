@@ -10,8 +10,12 @@ import (
 /*
  * Types
  */
-type IMPVQueryString struct {
+type IMPVQuery struct {
 	Command []interface{} `json:"command"`
+}
+
+type IMPVQueryString struct {
+	Command []string `json:"command"`
 }
 
 type IMPVResponseBool struct {
@@ -29,18 +33,24 @@ type IMPVResponseInt struct {
 /*
  * Aux fxns
  */
-func mpvGet(mpvConn *net.UnixConn, cmd string) []byte {
-	mpvConn.Write([]byte(cmd + "\n"))
+
+func mpvGetCmd(mpvConn *net.UnixConn, cmd []string) []byte {
+	query := IMPVQueryString{Command: cmd}
+	jsonData, err := json.Marshal(query)
+	if err != nil {
+		return []byte{}
+	}
+	mpvConn.Write(append(jsonData, '\n'))
 	readline := make([]byte, 1024)
 	n, err := mpvConn.Read(readline)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "mpv cmd err 1", err)
+		fmt.Fprintln(os.Stderr, "mpv cmd err 2", err)
 	}
 	return readline[:len(readline[:n])]
 }
 
-func mpvSetString(mpvConn *net.UnixConn, cmd, val string) []byte {
-	query := IMPVQueryString{Command: []interface{}{cmd, val}}
+func mpvSetCmd(mpvConn *net.UnixConn, cmd []interface{}) []byte {
+	query := IMPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
@@ -58,29 +68,37 @@ func mpvSetString(mpvConn *net.UnixConn, cmd, val string) []byte {
  * MPV command public fxns
  */
 func Play(mpvConn *net.UnixConn) []byte {
-	return mpvGet(mpvConn, `{"command":["set_property","pause",false]}`)
+	return mpvSetCmd(mpvConn, []interface{}{"set_property", "pause", false})
 }
 
 func Pause(mpvConn *net.UnixConn) []byte {
-	return mpvGet(mpvConn, `{"command":["set_property","pause",true]}`)
+	return mpvSetCmd(mpvConn, []interface{}{"set_property", "pause", true})
 }
 
 func IsPaused(mpvConn *net.UnixConn) []byte {
-	return mpvGet(mpvConn, `{"command":["get_property","pause"]}`)
+	return mpvGetCmd(mpvConn, []string{"get_property", "pause"})
 }
 
 func GetMedia(mpvConn *net.UnixConn) []byte {
-	return mpvGet(mpvConn, `{"command":["get_property","path"]}`)
+	return mpvGetCmd(mpvConn, []string{"get_property", "path"})
 }
 
 func SetMedia(mpvConn *net.UnixConn, filepath string) []byte {
-	return mpvSetString(mpvConn, "loadmedia", filepath)
+	return mpvSetCmd(mpvConn, []interface{}{"loadfile", filepath})
 }
 
 func GetVolume(mpvConn *net.UnixConn) []byte {
-	return mpvGet(mpvConn, `{"command":["get_property","volume"]}`)
+	return mpvGetCmd(mpvConn, []string{"get_property", "volume"})
+}
+
+func SetVolume(mpvConn *net.UnixConn, vol int) []byte {
+	return mpvSetCmd(mpvConn, []interface{}{"set_property", "volume", vol})
 }
 
 func GetPos(mpvConn *net.UnixConn) []byte {
-	return mpvGet(mpvConn, `{"command":["get_property","time-pos"]}`)
+	return mpvGetCmd(mpvConn, []string{"get_property", "time-pos"})
+}
+
+func SetPos(mpvConn *net.UnixConn, pos int) []byte {
+	return mpvSetCmd(mpvConn, []interface{}{"set_property", "time-pos", pos})
 }
