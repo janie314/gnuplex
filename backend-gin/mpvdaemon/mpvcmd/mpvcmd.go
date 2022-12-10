@@ -34,19 +34,23 @@ type IMPVResponseInt struct {
  * Aux fxns
  */
 
+func unixMsg(mpvConn *net.UnixConn, msg []byte) []byte {
+	mpvConn.Write(append(msg, '\n'))
+	readline := make([]byte, 2048)
+	n, err := mpvConn.Read(readline)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "mpv cmd err", err)
+	}
+	return readline[:len(readline[:n])]
+}
+
 func mpvGetCmd(mpvConn *net.UnixConn, cmd []string) []byte {
 	query := IMPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
 	}
-	mpvConn.Write(append(jsonData, '\n'))
-	readline := make([]byte, 1024)
-	n, err := mpvConn.Read(readline)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "mpv cmd err 2", err)
-	}
-	return readline[:len(readline[:n])]
+	return unixMsg(mpvConn, jsonData)
 }
 
 func mpvSetCmd(mpvConn *net.UnixConn, cmd []interface{}) []byte {
@@ -55,13 +59,7 @@ func mpvSetCmd(mpvConn *net.UnixConn, cmd []interface{}) []byte {
 	if err != nil {
 		return []byte{}
 	}
-	mpvConn.Write(append(jsonData, '\n'))
-	readline := make([]byte, 1024)
-	n, err := mpvConn.Read(readline)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "mpv cmd err 2", err)
-	}
-	return readline[:len(readline[:n])]
+	return unixMsg(mpvConn, jsonData)
 }
 
 /*
