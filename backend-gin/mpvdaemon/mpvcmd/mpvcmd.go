@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"sync"
 )
 
 /*
@@ -35,11 +34,7 @@ type IMPVResponseInt struct {
  * Aux fxns
  */
 
-var unixSockMutex sync.Mutex
-
 func mpvGetCmd(mpvConn *net.UnixConn, cmd []string) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	query := IMPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
@@ -55,8 +50,6 @@ func mpvGetCmd(mpvConn *net.UnixConn, cmd []string) []byte {
 }
 
 func mpvSetCmd(mpvConn *net.UnixConn, cmd []interface{}) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	query := IMPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
@@ -75,14 +68,10 @@ func mpvSetCmd(mpvConn *net.UnixConn, cmd []interface{}) []byte {
  * MPV command public fxns
  */
 func Play(mpvConn *net.UnixConn) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvSetCmd(mpvConn, []interface{}{"set_property", "pause", false})
 }
 
 func Pause(mpvConn *net.UnixConn) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvSetCmd(mpvConn, []interface{}{"set_property", "pause", true})
 }
 
@@ -91,37 +80,25 @@ func IsPaused(mpvConn *net.UnixConn) []byte {
 }
 
 func GetMedia(mpvConn *net.UnixConn) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvGetCmd(mpvConn, []string{"get_property", "path"})
 }
 
 func SetMedia(mpvConn *net.UnixConn, filepath string) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvSetCmd(mpvConn, []interface{}{"loadfile", filepath})
 }
 
 func GetVolume(mpvConn *net.UnixConn) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvGetCmd(mpvConn, []string{"get_property", "volume"})
 }
 
 func SetVolume(mpvConn *net.UnixConn, vol int) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvSetCmd(mpvConn, []interface{}{"set_property", "volume", vol})
 }
 
 func GetPos(mpvConn *net.UnixConn) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvGetCmd(mpvConn, []string{"get_property", "time-pos"})
 }
 
 func SetPos(mpvConn *net.UnixConn, pos int) []byte {
-	unixSockMutex.Lock()
-	defer unixSockMutex.Unlock()
 	return mpvSetCmd(mpvConn, []interface{}{"set_property", "time-pos", pos})
 }
