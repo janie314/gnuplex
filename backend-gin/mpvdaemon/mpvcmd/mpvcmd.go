@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sync"
+	"time"
+
+	"golang.org/x/exp/slices"
 )
 
 /*
@@ -34,14 +38,29 @@ type IMPVResponseInt struct {
  * Aux fxns
  */
 
+var mu sync.Mutex
+
 func unixMsg(mpvConn *net.UnixConn, msg []byte) []byte {
+	mu.Lock()
+	defer mu.Unlock()
+	mpvConn.SetDeadline(time.Now().Add(15 * time.Millisecond))
 	mpvConn.Write(append(msg, '\n'))
 	readline := make([]byte, 2048)
+	var res []byte
+	mpvConn.SetDeadline(time.Now().Add(15 * time.Millisecond))
 	n, err := mpvConn.Read(readline)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "mpv cmd err", err)
 	}
-	return readline[:len(readline[:n])]
+	k := slices.Index(readline, '\n')
+	if k == -1 {
+		res = readline[:len(readline[:n])]
+		fmt.Println("res", string(res))
+	} else {
+		res = readline[:len(readline[:k])]
+		fmt.Println("res", string(res))
+	}
+	return res
 }
 
 func mpvGetCmd(mpvConn *net.UnixConn, cmd []string) []byte {
