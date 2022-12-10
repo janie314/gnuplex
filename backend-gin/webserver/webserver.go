@@ -37,6 +37,7 @@ func initUnixConn() *net.UnixConn {
 func Run(wg *sync.WaitGroup, db *sql.DB) {
 	defer wg.Done()
 	router := gin.Default()
+	router.SetTrustedProxies(nil)
 	mpvConn := initUnixConn()
 	/*
 	 * Serve static files
@@ -53,6 +54,17 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	})
 	router.GET("/api/paused", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused(mpvConn))
+	})
+	router.GET("/api/media", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetMedia(mpvConn))
+	})
+	router.POST("/api/media", func(c *gin.Context) {
+		mediafile := c.Query("mediafile")
+		if mediafile == "" {
+			c.String(http.StatusBadRequest, "empty mediafile string")
+		} else {
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mpvConn, mediafile))
+		}
 	})
 	router.GET("/api/vol", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume(mpvConn))
@@ -81,18 +93,15 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad pos string")
 			}
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(mpvConn, pos))
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetPos(mpvConn, pos))
 		}
 	})
 	router.GET("/api/last25", func(c *gin.Context) {
 		c.JSON(http.StatusOK, sqliteconn.Last25(db))
 	})
-	/*
-		router.GET("/api/medialibrary", func(c *gin.Context) {
-			c.Data(http.StatusOK, "application/json", db.GetMedialib())
-		})
-	*/
-
+	router.GET("/api/medialist", func(c *gin.Context) {
+		c.JSON(http.StatusOK, sqliteconn.GetMedialib(db))
+	})
 	/*
 	 * Execution
 	 */

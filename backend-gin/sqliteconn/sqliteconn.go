@@ -10,11 +10,10 @@ import (
 )
 
 func Init() *sql.DB {
-	db, err := sql.Open("sqlite", "../tmp/test.sqlite3")
+	db, err := sql.Open("sqlite", "../tmp/gnuplex.sqlite3")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 	_, err = db.Query("create table if not exists pos_cache (filepath string not null primary key, pos int);")
 	res := true
 	if err != nil {
@@ -38,20 +37,25 @@ func Init() *sql.DB {
 }
 
 func GetMedialib(db *sql.DB) []string {
-	rows, err := db.Query(`select filepath from medialist`)
+	rows, err := db.Query("select filepath from medialist;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "getmedialib query problem", err)
+		fmt.Fprintln(os.Stderr, err)
 		return []string{}
 	}
-	res := make([]string, 16384)
-	var line string
+	// TODO: append or [i]
+	res := make([]string, 131072)
+	str := ""
+	i := 0
 	for rows.Next() {
-		err = rows.Scan(&line)
+		err = rows.Scan(&str)
 		if err != nil {
-			res = append(res, line)
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			res[i] = str
+			i++
 		}
 	}
-	return res
+	return res[:i]
 }
 
 func Last25(db *sql.DB) []string {
@@ -62,13 +66,15 @@ func Last25(db *sql.DB) []string {
 	}
 	res := make([]string, 16384)
 	str := ""
+	i := 0
 	for rows.Next() {
 		err = rows.Scan(&str)
-		fmt.Println(str)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
-			res = append(res, str)
+		} else {
+			res[i] = str
+			i++
 		}
 	}
-	return res
+	return res[:i]
 }
