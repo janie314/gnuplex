@@ -1,7 +1,7 @@
-#!/usr/bin/env ruby
-pid1 = spawn "./gnuplex"
-pid2 = spawn "./devserver/dmz.sh"
-pid3 = spawn "npm run --prefix frontend dev"
-Process.wait pid1
-Process.wait pid2
-Process.wait pid3
+#!/usr/bin/sh
+basedir=$(realpath $(dirname "$0"))
+cd "$basedir/frontend"
+npm i
+npm run build
+cd ../backend
+go run . --debug
