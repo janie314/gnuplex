@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { APICall } from "./lib/API";
 import "./App.css";
+import { Medialist } from "./components/Medialist";
 
 interface IMPVRes {
   data?: number | string;
@@ -80,39 +81,12 @@ function App() {
       </div>
 
       <div className="panel rightpanel">
-        <div className="moviegroup">
-          <span className="subtitle">Now Playing</span>
-          <a className="mediafile" href="#">{media}</a>
-        </div>
-        <div className="moviegroup">
-          <span className="subtitle">Recent</span>
-          {last25.map((mediafile: string, i: number) => (
-            <a
-              className="mediafile"
-              key={i}
-              href="#"
-              onClick={() => APICall.setOriginMedia(mediafile)}
-            >
-              {mediafile}
-            </a>
-          ))}
-        </div>
-        <div className="moviegroup">
-          <span className="subtitle">Library</span>
-          {mediafiles.map((mediafile: string, i: number) => (
-            <a
-              className="mediafile"
-              key={i}
-              href="#"
-              onClick={() => APICall.setOriginMedia(mediafile)}
-            >
-              {mediafile}
-            </a>
-          ))}
-        </div>
+        <Medialist medialist={[media]} subtitle="Now Playing" />
+        <Medialist medialist={last25} subtitle="Recent" />
+        <Medialist medialist={mediafiles} subtitle="Library" />
       </div>
     </div>
   );
 }
 
-export default App;
+export { App };
