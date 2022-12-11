@@ -14,6 +14,6 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
-    outDir: "../backend-gin/public/",
+    outDir: "../backend/public/",
   },
 });
