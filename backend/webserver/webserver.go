@@ -84,5 +84,5 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	/*
 	 * Execution
 	 */
-	router.Run(":50000")
+	router.Run(":40000")
 }
