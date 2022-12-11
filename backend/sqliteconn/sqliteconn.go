@@ -14,18 +14,18 @@ func Init() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = db.Query("create table if not exists pos_cache (filepath string not null primary key, pos int);")
+	_, err = db.Exec("create table if not exists pos_cache (filepath string not null primary key, pos int);")
 	res := true
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
 	}
-	db.Query("create table if not exists history (id integer not null unique, mediafile	text, primary key(id AUTOINCREMENT));")
+	_, err = db.Exec("create table if not exists history (id integer not null unique, mediafile	text, primary key(id AUTOINCREMENT));")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
 	}
-	db.Query("create table if not exists medialist (filepath text not null,  primary key(filepath)) ;")
+	_, err = db.Exec("create table if not exists medialist (filepath text not null,  primary key(filepath)) ;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
