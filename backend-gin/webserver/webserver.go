@@ -2,14 +2,9 @@ package webserver
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
-	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"sync"
-	"time"
 
 	"gnuplex-backend/mpvdaemon/mpvcmd"
 	"gnuplex-backend/sqliteconn"
@@ -17,28 +12,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func initUnixConn() *net.UnixConn {
-	var mpvUnixAddr *net.UnixAddr
-	var mpvConn *net.UnixConn
-	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for mpvConn == nil {
-		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			time.Sleep(3 * time.Second)
-		}
-	}
-	return mpvConn
-}
-
 func Run(wg *sync.WaitGroup, db *sql.DB) {
 	defer wg.Done()
 	router := gin.Default()
 	router.SetTrustedProxies(nil)
-	mpvConn := initUnixConn()
+	mpvcmd.InitUnixConn()
 	/*
 	 * Serve static files
 	 */
@@ -47,27 +25,28 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	 * API endpoints
 	 */
 	router.POST("/api/play", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.Play(mpvConn))
+		c.Data(http.StatusOK, "application/json", mpvcmd.Play())
 	})
 	router.POST("/api/pause", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.Pause(mpvConn))
+		c.Data(http.StatusOK, "application/json", mpvcmd.Pause())
 	})
 	router.GET("/api/paused", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused(mpvConn))
+		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused())
 	})
 	router.GET("/api/media", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetMedia(mpvConn))
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetMedia())
 	})
 	router.POST("/api/media", func(c *gin.Context) {
 		mediafile := c.Query("mediafile")
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mpvConn, mediafile))
+			sqliteconn.AddHist(db, mediafile)
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mediafile))
 		}
 	})
 	router.GET("/api/vol", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume(mpvConn))
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume())
 	})
 	router.POST("/api/vol", func(c *gin.Context) {
 		param := c.Query("vol")
@@ -78,11 +57,11 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad vol string")
 			}
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(mpvConn, vol))
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(vol))
 		}
 	})
 	router.GET("/api/pos", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos(mpvConn))
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos())
 	})
 	router.POST("/api/pos", func(c *gin.Context) {
 		param := c.Query("pos")
@@ -93,7 +72,7 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad pos string")
 			}
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetPos(mpvConn, pos))
+			c.Data(http.StatusOK, "application/json", mpvcmd.SetPos(pos))
 		}
 	})
 	router.GET("/api/last25", func(c *gin.Context) {

@@ -1,14 +1,15 @@
 package mpvcmd
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 	"os"
+	"strings"
 	"sync"
 	"time"
-
-	"golang.org/x/exp/slices"
 )
 
 /*
@@ -39,83 +40,94 @@ type IMPVResponseInt struct {
  */
 
 var mu sync.Mutex
+var mpvConn *net.UnixConn
 
-func unixMsg(mpvConn *net.UnixConn, msg []byte) []byte {
-	mu.Lock()
-	defer mu.Unlock()
-	mpvConn.SetDeadline(time.Now().Add(15 * time.Millisecond))
-	mpvConn.Write(append(msg, '\n'))
-	readline := make([]byte, 2048)
-	var res []byte
-	mpvConn.SetDeadline(time.Now().Add(15 * time.Millisecond))
-	n, err := mpvConn.Read(readline)
+func InitUnixConn() {
+	var mpvUnixAddr *net.UnixAddr
+	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "mpv cmd err", err)
+		log.Fatal(err)
 	}
-	k := slices.Index(readline, '\n')
-	if k == -1 {
-		res = readline[:len(readline[:n])]
-		fmt.Println("res", string(res))
-	} else {
-		res = readline[:len(readline[:k])]
-		fmt.Println("res", string(res))
+	for mpvConn == nil {
+		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			time.Sleep(3 * time.Second)
+		}
 	}
-	return res
 }
 
-func mpvGetCmd(mpvConn *net.UnixConn, cmd []string) []byte {
+func unixMsg(msg []byte) []byte {
+	fmt.Println("waiting4lock", string(msg))
+	mu.Lock()
+	fmt.Println("GOTLOCK", string(msg))
+	defer mu.Unlock()
+	n, err := mpvConn.Write(append(msg, '\n'))
+	fmt.Println("n1, err", n, err, string(msg))
+	scanner := bufio.NewScanner(mpvConn)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "request_id") {
+			return []byte(line)
+		}
+	}
+	return []byte{}
+}
+
+func mpvGetCmd(cmd []string) []byte {
 	query := IMPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
 	}
-	return unixMsg(mpvConn, jsonData)
+	return unixMsg(jsonData)
 }
 
-func mpvSetCmd(mpvConn *net.UnixConn, cmd []interface{}) []byte {
+func mpvSetCmd(cmd []interface{}) []byte {
 	query := IMPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
 	}
-	return unixMsg(mpvConn, jsonData)
+	fmt.Println("J", string(jsonData))
+	return unixMsg(jsonData)
 }
 
 /*
  * MPV command public fxns
  */
-func Play(mpvConn *net.UnixConn) []byte {
-	return mpvSetCmd(mpvConn, []interface{}{"set_property", "pause", false})
+func Play() []byte {
+	return mpvSetCmd([]interface{}{"set_property", "pause", false})
 }
 
-func Pause(mpvConn *net.UnixConn) []byte {
-	return mpvSetCmd(mpvConn, []interface{}{"set_property", "pause", true})
+func Pause() []byte {
+	return mpvSetCmd([]interface{}{"set_property", "pause", true})
 }
 
-func IsPaused(mpvConn *net.UnixConn) []byte {
-	return mpvGetCmd(mpvConn, []string{"get_property", "pause"})
+func IsPaused() []byte {
+	return mpvGetCmd([]string{"get_property", "pause"})
 }
 
-func GetMedia(mpvConn *net.UnixConn) []byte {
-	return mpvGetCmd(mpvConn, []string{"get_property", "path"})
+func GetMedia() []byte {
+	return mpvGetCmd([]string{"get_property", "path"})
 }
 
-func SetMedia(mpvConn *net.UnixConn, filepath string) []byte {
-	return mpvSetCmd(mpvConn, []interface{}{"loadfile", filepath})
+func SetMedia(filepath string) []byte {
+	return mpvSetCmd([]interface{}{"loadfile", filepath})
 }
 
-func GetVolume(mpvConn *net.UnixConn) []byte {
-	return mpvGetCmd(mpvConn, []string{"get_property", "volume"})
+func GetVolume() []byte {
+	return mpvGetCmd([]string{"get_property", "volume"})
 }
 
-func SetVolume(mpvConn *net.UnixConn, vol int) []byte {
-	return mpvSetCmd(mpvConn, []interface{}{"set_property", "volume", vol})
+func SetVolume(vol int) []byte {
+	return mpvSetCmd([]interface{}{"set_property", "volume", vol})
 }
 
-func GetPos(mpvConn *net.UnixConn) []byte {
-	return mpvGetCmd(mpvConn, []string{"get_property", "time-pos"})
+func GetPos() []byte {
+	return mpvGetCmd([]string{"get_property", "time-pos"})
 }
 
-func SetPos(mpvConn *net.UnixConn, pos int) []byte {
-	return mpvSetCmd(mpvConn, []interface{}{"set_property", "time-pos", pos})
+func SetPos(pos int) []byte {
+	return mpvSetCmd([]interface{}{"set_property", "time-pos", pos})
 }
