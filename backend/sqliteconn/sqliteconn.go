@@ -37,7 +37,7 @@ func Init() *sql.DB {
 }
 
 func GetMedialib(db *sql.DB) []string {
-	rows, err := db.Query("select filepath from medialist;")
+	rows, err := db.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return []string{}
