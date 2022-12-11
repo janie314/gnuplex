@@ -58,12 +58,12 @@ func InitUnixConn() {
 }
 
 func unixMsg(msg []byte) []byte {
-	fmt.Println("waiting4lock", string(msg))
 	mu.Lock()
-	fmt.Println("GOTLOCK", string(msg))
 	defer mu.Unlock()
-	n, err := mpvConn.Write(append(msg, '\n'))
-	fmt.Println("n1, err", n, err, string(msg))
+	_, err := mpvConn.Write(append(msg, '\n'))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 	scanner := bufio.NewScanner(mpvConn)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -89,7 +89,6 @@ func mpvSetCmd(cmd []interface{}) []byte {
 	if err != nil {
 		return []byte{}
 	}
-	fmt.Println("J", string(jsonData))
 	return unixMsg(jsonData)
 }
 
