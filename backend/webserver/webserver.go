@@ -81,6 +81,10 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	router.GET("/api/medialist", func(c *gin.Context) {
 		c.JSON(http.StatusOK, sqliteconn.GetMedialib(db))
 	})
+	router.POST("/api/medialist", func(c *gin.Context) {
+		sqliteconn.ScanLib(db)
+		c.String(http.StatusOK, "OK")
+	})
 	/*
 	 * Execution
 	 */
