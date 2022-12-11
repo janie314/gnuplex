@@ -17,12 +17,15 @@ function App() {
   const [last25, setLast25] = useState<string[]>([]);
 
   useEffect(() => {
-    APICall.getOriginPos().then((res: number) => setPos(res));
-    APICall.getOriginVol().then((res: number) => setVol(res));
     APICall.getOriginMedia().then((res: string) => setMedia(res));
     APICall.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
     APICall.getOriginLast25().then((res: string[]) => setLast25(res));
   }, []);
+
+  useEffect(() => {
+    APICall.getOriginPos().then((res: number) => setPos(res));
+    APICall.getOriginVol().then((res: number) => setVol(res));
+  }, [media]);
 
   return (
     <div className="App">
@@ -81,9 +84,17 @@ function App() {
       </div>
 
       <div className="panel rightpanel">
-        <Medialist medialist={[media]} subtitle="Now Playing" />
-        <Medialist medialist={last25} subtitle="Recent" />
-        <Medialist medialist={mediafiles} subtitle="Library" />
+        <Medialist
+          medialist={[media]}
+          subtitle="Now Playing"
+          setMedia={setMedia}
+        />
+        <Medialist medialist={last25} subtitle="Recent" setMedia={setMedia} />
+        <Medialist
+          medialist={mediafiles}
+          subtitle="Library"
+          setMedia={setMedia}
+        />
       </div>
     </div>
   );
