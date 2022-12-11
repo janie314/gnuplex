@@ -15,6 +15,11 @@ func ScanLib(db *sql.DB) {
 		fmt.Fprintln(os.Stderr, "Scanlib query problem")
 		return
 	}
+	defer db.Exec(`delete from medialist where filepath like '%.srt';`)
+	defer db.Exec(`delete from medialist where filepath like '%.txt';`)
+	defer db.Exec(`delete from medialist where filepath like '%.jpg';`)
+	defer db.Exec(`delete from medialist where filepath like '%.docx';`)
+	defer db.Exec(`delete from medialist where filepath like '%.pdf';`)
 	for rows.Next() {
 		err := rows.Scan(&dir)
 		if err != nil {
