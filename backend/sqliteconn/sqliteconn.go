@@ -30,6 +30,11 @@ func Init() *sql.DB {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
 	}
+	_, err = db.Exec("create table if not exists mediadirs (filepath text not null, primary key(filepath)) ;")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		res = false
+	}
 	if !res {
 		log.Fatal("I could not initialize the database...")
 	}
