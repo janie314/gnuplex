@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { APICall } from "../lib/API";
 import "../App.css";
 
@@ -17,7 +17,9 @@ function Medialist(
           className="mediafile"
           key={i}
           href="#"
-          onClick={() => {
+          onClick={(e: SyntheticEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
             APICall.setOriginMedia(mediafile).then(() => APICall.sleep(2000))
               .then(() => {
                 props.setMedia(mediafile);
