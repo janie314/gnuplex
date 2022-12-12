@@ -2,16 +2,16 @@
 
 # Prerequisites
 
-- mpv (`sudo dnf install mpv` or `sudo apt install mpv` should work.)
-- https://github.com/rbenv/rbenv
+- mpv 
+- Go 
+- NodeJS / npm 
+
+Try e.g. `sudo dnf install mpv go nodejs npm` or `sudo apt install mpv go nodejs npm`.
 
 # Installation
 
 ```bash
-git clone https://git.sr.ht/~janie-luv/gnuplex
-cd gnuplex/backend
-rbenv install
-cd ..
+git clone https://gitlab.com/jane314/gnuplex.git
 ./build
 ```
 
@@ -19,4 +19,10 @@ cd ..
 
 ```bash
 ./gnuplex
+```
+
+# Testing
+
+```bash
+./dev
 ```
