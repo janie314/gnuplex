@@ -4,4 +4,4 @@ cd "$basedir/frontend"
 npm i
 npm run build
 cd ../backend
-go build
+go build 
