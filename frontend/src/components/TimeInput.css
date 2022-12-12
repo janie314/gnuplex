@@ -1,0 +1,14 @@
+.time-input {
+    display: flex;
+    flex-direction: row;
+}
+
+.time-input-timenum {
+    font: 16px monospace;
+    width: 3ch;
+}
+
+.time-input-timesep {
+    font: 18px monospace;
+    width: 1ch;
+}

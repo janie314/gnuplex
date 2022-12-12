@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { APICall } from "./lib/API";
 import "./App.css";
 import { Medialist } from "./components/Medialist";
+import { TimeInput } from "./components/TimeInput";
 
 interface IMPVRes {
   data?: number | string;
@@ -44,15 +45,7 @@ function App() {
         </div>
         <div className="controlgroup">
           <span>Pos</span>
-          <input
-            className="timeinput"
-            type="number"
-            value={pos}
-            min={0}
-            onChange={(e) => {
-              setPos(Number(e.target.value));
-            }}
-          />
+          <TimeInput rawtime={pos} setRawtime={setPos} />
           <input
             type="button"
             value="Set"
