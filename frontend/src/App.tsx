@@ -33,8 +33,18 @@ function App() {
       <div className="panel leftpanel">
         <span className="logo">GNUPlex</span>
         <div className="controlgroup">
-          <input type="button" value="Play" onClick={APICall.play} />
-          <input type="button" value="Pause" onClick={APICall.pause} />
+          <input
+            className="play-button"
+            type="button"
+            value="⏵"
+            onClick={APICall.play}
+          />
+          <input
+            className="pause-button"
+            type="button"
+            value="⏸"
+            onClick={APICall.pause}
+          />
         </div>
         <div className="controlgroup">
           <input
@@ -44,20 +54,10 @@ function App() {
           />
         </div>
         <div className="controlgroup">
-          <span>Pos</span>
           <TimeInput rawtime={pos} setRawtime={setPos} />
-          <input
-            type="button"
-            value="Set"
-            min={0}
-            max={250}
-            onClick={(e) => {
-              APICall.setOriginPos(pos);
-            }}
-          />
         </div>
         <div className="controlgroup">
-          <span>Vol</span>
+          <span id="vol-label">Vol</span>
           <input
             className="volinput"
             type="number"
@@ -68,6 +68,7 @@ function App() {
           />
           <input
             type="button"
+            id="vol-set"
             value="Set"
             onClick={(e) => {
               APICall.setOriginVol(vol);
