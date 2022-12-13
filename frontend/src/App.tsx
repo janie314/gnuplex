@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { APICall } from "./lib/API";
 import "./App.css";
 import { Medialist } from "./components/Medialist";
-import { TimeInput } from "./components/TimeInput";
+import { TimeVolInput } from "./components/TimeVolInput";
 
 interface IMPVRes {
   data?: number | string;
@@ -11,6 +11,7 @@ interface IMPVRes {
 }
 
 function App() {
+  const [toggle, setToggle] = useState(false);
   const [pos, setPos] = useState(0);
   const [vol, setVol] = useState(0);
   const [media, setMedia] = useState("");
@@ -26,7 +27,7 @@ function App() {
   useEffect(() => {
     APICall.getOriginPos().then((res: number) => setPos(res));
     APICall.getOriginVol().then((res: number) => setVol(res));
-  }, [media]);
+  }, [media, toggle]);
 
   return (
     <div className="App">
@@ -37,13 +38,19 @@ function App() {
             className="play-button"
             type="button"
             value="⏵"
-            onClick={APICall.play}
+            onClick={() =>
+              APICall.play().then(() => APICall.sleep(2000)).then(() =>
+                setToggle(!toggle)
+              )}
           />
           <input
             className="pause-button"
             type="button"
             value="⏸"
-            onClick={APICall.pause}
+            onClick={() =>
+              APICall.pause().then(() => APICall.sleep(2000)).then(() =>
+                setToggle(!toggle)
+              )}
           />
         </div>
         <div className="controlgroup">
@@ -54,26 +61,10 @@ function App() {
           />
         </div>
         <div className="controlgroup">
-          <TimeInput rawtime={pos} setRawtime={setPos} />
+          <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
         </div>
         <div className="controlgroup">
-          <span id="vol-label">Vol</span>
-          <input
-            className="volinput"
-            type="number"
-            value={vol}
-            onChange={(e) => {
-              setVol(Number(e.target.value));
-            }}
-          />
-          <input
-            type="button"
-            id="vol-set"
-            value="Set"
-            onClick={(e) => {
-              APICall.setOriginVol(vol);
-            }}
-          />
+          <TimeVolInput vol={vol} setVol={setVol} type="vol" />
         </div>
       </div>
 
