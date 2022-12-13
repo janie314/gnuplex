@@ -1,4 +1,5 @@
 import { SyntheticEvent, useEffect, useState } from "react";
+import { APICall } from "../lib/API";
 import "./TimeInput.css";
 
 const enum TimeUnit {
@@ -48,6 +49,7 @@ function TimeInput(props: {
 
   return (
     <div className="time-input">
+      <span className="time-input-label">Pos</span>
       <input
         className="time-input-timenum"
         type="text"
@@ -67,6 +69,16 @@ function TimeInput(props: {
         type="text"
         value={Number(secs).toString().padStart(2, "0")}
         onChange={(e) => setTime(e.target.value, TimeUnit.secs)}
+      />
+      <input
+        type="button"
+        className="time-input-button"
+        value="Set"
+        min={0}
+        max={250}
+        onClick={(e) => {
+          APICall.setOriginPos(props.rawtime);
+        }}
       />
     </div>
   );
