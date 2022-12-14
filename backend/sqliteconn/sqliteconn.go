@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	_ "modernc.org/sqlite"
 )
@@ -35,51 +36,43 @@ func Init() *sql.DB {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
 	}
+	_, err = db.Exec("create table if not exists version_info (key string not null primary key, value string);")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		res = false
+	}
+	_, err = db.Exec("insert or ignore into version_info values ('db_schema_version', '1');")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		res = false
+	}
 	if !res {
 		log.Fatal("I could not initialize the database...")
 	}
+	UpgradeDB(db)
 	return db
 }
 
-func GetMedialib(db *sql.DB) []string {
-	rows, err := db.Query("select filepath from medialist order by filepath;")
+func UpgradeDB(db *sql.DB) error {
+	rows, err := db.Query("select value from version_info where key = 'db_schema_version';")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return []string{}
+		log.Fatal("Upgrade db error", err)
 	}
-	// TODO: append or [i]
-	res := make([]string, 131072)
-	str := ""
-	i := 0
-	for rows.Next() {
-		err = rows.Scan(&str)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		} else {
-			res[i] = str
-			i++
-		}
+	next := rows.Next()
+	if !next {
+		log.Fatal("Upgrade db error: no version schema", err)
 	}
-	return res[:i]
-}
-
-func Last25(db *sql.DB) []string {
-	rows, err := db.Query("select distinct mediafile from history order by id desc limit 25;")
+	var vers string
+	err = rows.Scan(&vers)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return []string{}
+		log.Fatal("Bad version schema 1", err)
 	}
-	res := make([]string, 16384)
-	str := ""
-	i := 0
-	for rows.Next() {
-		err = rows.Scan(&str)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		} else {
-			res[i] = str
-			i++
-		}
+	versNum, err := strconv.Atoi(vers)
+	if err != nil {
+		log.Fatal("Bad version schema 2", err)
 	}
-	return res[:i]
+	if versNum < 1 {
+		fmt.Println("Should I do something?")
+	}
+	return nil
 }

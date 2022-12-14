@@ -8,12 +8,13 @@ import (
 	"path/filepath"
 )
 
-func ScanLib(db *sql.DB) {
-	rows, err := db.Query("select distinct filepath from mediadirs;")
+func ScanLib(db *sql.DB) error {
+	var err error
 	var dir string
+	rows, err := db.Query("select distinct filepath from mediadirs;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Scanlib query problem")
-		return
+		return err
 	}
 	defer db.Exec(`delete from medialist where filepath like '%.srt';`)
 	defer db.Exec(`delete from medialist where filepath like '%.txt';`)
@@ -34,6 +35,7 @@ func ScanLib(db *sql.DB) {
 			})
 		}
 	}
+	return err
 }
 
 func AddHist(db *sql.DB, mediafile string) error {
@@ -50,4 +52,47 @@ func AddMedia(db *sql.DB, mediafile string) error {
 		fmt.Fprintln(os.Stderr, err)
 	}
 	return err
+}
+
+func GetMedialib(db *sql.DB) []string {
+	rows, err := db.Query("select filepath from medialist order by filepath;")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return []string{}
+	}
+	// TODO: append or [i]
+	res := make([]string, 131072)
+	str := ""
+	i := 0
+	for rows.Next() {
+		err = rows.Scan(&str)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			res[i] = str
+			i++
+		}
+	}
+	return res[:i]
+}
+
+func Last25(db *sql.DB) []string {
+	rows, err := db.Query("select distinct mediafile from history order by id desc limit 25;")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return []string{}
+	}
+	res := make([]string, 16384)
+	str := ""
+	i := 0
+	for rows.Next() {
+		err = rows.Scan(&str)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			res[i] = str
+			i++
+		}
+	}
+	return res[:i]
 }

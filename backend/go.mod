@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/gin-gonic/gin v1.8.1
+	github.com/reugn/go-quartz v0.5.0
 	modernc.org/sqlite v1.20.0
 )
 
