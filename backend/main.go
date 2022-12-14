@@ -5,6 +5,7 @@ import (
 	"gnuplex-backend/mpvdaemon"
 	"gnuplex-backend/sqliteconn"
 	"gnuplex-backend/webserver"
+	"log"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -35,9 +36,15 @@ func main() {
 	 */
 	sched := quartz.NewStdScheduler()
 	sched.Start()
-	scanLibTrigger, _ := quartz.NewCronTrigger("13 10 * * *")
+	scanLibTrigger, err := quartz.NewCronTrigger("13 10 * * * *")
+	if err != nil {
+		log.Fatal("CronTrigger init failure", err)
+	}
 	scanLibJob := quartz.NewFunctionJob(func() (int, error) { return 0, sqliteconn.ScanLib((db)) })
-	sched.ScheduleJob(scanLibJob, scanLibTrigger)
+	err = sched.ScheduleJob(scanLibJob, scanLibTrigger)
+	if err != nil {
+		log.Fatal("Scheduler init failure", err)
+	}
 	/*
 	 * Main execution
 	 */
