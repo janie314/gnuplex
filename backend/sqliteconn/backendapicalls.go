@@ -53,3 +53,46 @@ func AddMedia(db *sql.DB, mediafile string) error {
 	}
 	return err
 }
+
+func GetMedialib(db *sql.DB) []string {
+	rows, err := db.Query("select filepath from medialist order by filepath;")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return []string{}
+	}
+	// TODO: append or [i]
+	res := make([]string, 131072)
+	str := ""
+	i := 0
+	for rows.Next() {
+		err = rows.Scan(&str)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			res[i] = str
+			i++
+		}
+	}
+	return res[:i]
+}
+
+func Last25(db *sql.DB) []string {
+	rows, err := db.Query("select distinct mediafile from history order by id desc limit 25;")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return []string{}
+	}
+	res := make([]string, 16384)
+	str := ""
+	i := 0
+	for rows.Next() {
+		err = rows.Scan(&str)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			res[i] = str
+			i++
+		}
+	}
+	return res[:i]
+}
