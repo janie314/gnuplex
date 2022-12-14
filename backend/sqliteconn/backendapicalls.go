@@ -8,12 +8,13 @@ import (
 	"path/filepath"
 )
 
-func ScanLib(db *sql.DB) {
-	rows, err := db.Query("select distinct filepath from mediadirs;")
+func ScanLib(db *sql.DB) error {
+	var err error
 	var dir string
+	rows, err := db.Query("select distinct filepath from mediadirs;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Scanlib query problem")
-		return
+		return err
 	}
 	defer db.Exec(`delete from medialist where filepath like '%.srt';`)
 	defer db.Exec(`delete from medialist where filepath like '%.txt';`)
@@ -34,6 +35,7 @@ func ScanLib(db *sql.DB) {
 			})
 		}
 	}
+	return err
 }
 
 func AddHist(db *sql.DB, mediafile string) error {
