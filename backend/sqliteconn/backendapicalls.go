@@ -41,7 +41,7 @@ func ScanLib(db *sql.DB) error {
 func AddHist(db *sql.DB, mediafile string) error {
 	_, err := db.Exec("insert into history (mediafile) values (?);", mediafile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "AddHist err", err)
 	}
 	return err
 }
@@ -49,7 +49,7 @@ func AddHist(db *sql.DB, mediafile string) error {
 func AddMedia(db *sql.DB, mediafile string) error {
 	_, err := db.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "AddMedia err", err)
 	}
 	return err
 }

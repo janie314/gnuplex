@@ -3,6 +3,7 @@ package sqliteconn
 import (
 	"database/sql"
 	"fmt"
+	"gnuplex-backend/consts"
 	"log"
 	"os"
 	"strconv"
@@ -41,7 +42,7 @@ func Init() *sql.DB {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
 	}
-	_, err = db.Exec("insert or ignore into version_info values ('db_schema_version', '1');")
+	_, err = db.Exec("insert or ignore into version_info values ('db_schema_version', ?);", consts.DBVersion)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		res = false
@@ -71,8 +72,9 @@ func UpgradeDB(db *sql.DB) error {
 	if err != nil {
 		log.Fatal("Bad version schema 2", err)
 	}
-	if versNum < 1 {
+	if versNum < consts.DBVersion {
 		fmt.Println("Should I do something?")
 	}
+	rows.Close()
 	return nil
 }

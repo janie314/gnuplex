@@ -32,7 +32,7 @@ function TimeVolInput(props: {
     }
 
     function setTime(val: string, unit: TimeUnit) {
-      const n = Number(val);
+      const n = Number(val) || 0;
       if (props.rawtime === undefined || props.setRawtime === undefined) {
         return;
       }

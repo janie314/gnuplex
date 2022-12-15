@@ -1,5 +1,7 @@
 # GNUPlex
 
+Version 0.1 (Currituck)
+
 # Prerequisites
 
 - mpv 
