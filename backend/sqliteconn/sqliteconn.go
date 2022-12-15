@@ -74,5 +74,6 @@ func UpgradeDB(db *sql.DB) error {
 	if versNum < 1 {
 		fmt.Println("Should I do something?")
 	}
+	rows.Close()
 	return nil
 }
