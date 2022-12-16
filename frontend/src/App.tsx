@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { APICall } from "./lib/API";
+import { APICall } from "./lib/APICall";
 import "./App.css";
 import { Medialist } from "./components/Medialist";
 import { TimeVolInput } from "./components/TimeVolInput";
+import { CRUDPopup } from "./components/CRUDPopup";
 
 interface IMPVRes {
   data?: number | string;
@@ -17,6 +18,7 @@ function App() {
   const [media, setMedia] = useState("");
   const [mediafiles, setMediafiles] = useState<string[]>([]);
   const [last25, setLast25] = useState<string[]>([]);
+  const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
 
   useEffect(() => {
     APICall.getOriginMedia().then((res: string) => setMedia(res));
@@ -30,58 +32,69 @@ function App() {
   }, [media, toggle]);
 
   return (
-    <div className="App">
-      <div className="panel leftpanel">
-        <span className="logo">GNUPlex</span>
-        <div className="controlgroup">
-          <input
-            className="play-button"
-            type="button"
-            value="⏵"
-            onClick={() =>
-              APICall.play().then(() => APICall.sleep(2000)).then(() =>
-                setToggle(!toggle)
-              )}
-          />
-          <input
-            className="pause-button"
-            type="button"
-            value="⏸"
-            onClick={() =>
-              APICall.pause().then(() => APICall.sleep(2000)).then(() =>
-                setToggle(!toggle)
-              )}
-          />
+    <>
+      <div
+        className="App"
+        style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
+      >
+        <div className="panel leftpanel">
+          <span className="logo">GNUPlex</span>
+          <div className="controlgroup">
+            <input
+              className="play-button"
+              type="button"
+              value="⏵"
+              onClick={() =>
+                APICall.play().then(() => APICall.sleep(2000)).then(() =>
+                  setToggle(!toggle)
+                )}
+            />
+            <input
+              className="pause-button"
+              type="button"
+              value="⏸"
+              onClick={() =>
+                APICall.pause().then(() => APICall.sleep(2000)).then(() =>
+                  setToggle(!toggle)
+                )}
+            />
+          </div>
+          <div className="controlgroup">
+            <input
+              type="button"
+              value="Manage Library"
+              onClick={() => {
+                setMediadirInputPopup(true);
+              }}
+            />
+          </div>
+          <div className="controlgroup">
+            <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
+          </div>
+          <div className="controlgroup">
+            <TimeVolInput vol={vol} setVol={setVol} type="vol" />
+          </div>
         </div>
-        <div className="controlgroup">
-          <input
-            type="button"
-            value="Refresh Library"
-            onClick={APICall.refreshOriginMediafiles}
-          />
-        </div>
-        <div className="controlgroup">
-          <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
-        </div>
-        <div className="controlgroup">
-          <TimeVolInput vol={vol} setVol={setVol} type="vol" />
-        </div>
-      </div>
 
-      <div className="panel rightpanel">
-        <Medialist
-          medialist={[media]}
-          subtitle="Now Playing"
-          setMedia={setMedia}
-        />
-        <Medialist medialist={last25} subtitle="Recent" setMedia={setMedia} />
-        <Medialist
-          medialist={mediafiles}
-          subtitle="Library"
-          setMedia={setMedia}
-        />
+        <div className="panel rightpanel">
+          <Medialist
+            medialist={[media]}
+            subtitle="Now Playing"
+            setMedia={setMedia}
+          />
+          <Medialist medialist={last25} subtitle="Recent" setMedia={setMedia} />
+          <Medialist
+            medialist={mediafiles}
+            subtitle="Library"
+            setMedia={setMedia}
+          />
+        </div>
       </div>
-    </div>
+      <CRUDPopup
+        visible={mediadirInputPopup}
+        setMediadirInputPopup={setMediadirInputPopup}
+      />
+    </>
   );
 }
 

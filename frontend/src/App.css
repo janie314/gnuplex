@@ -49,7 +49,8 @@ input[type=button]:hover {
   white-space: pre-wrap;
 }
 
-.moviegroup>.subtitle {
+.subtitle {
+  font: 16px sans-serif;
   font-weight: bold;
 }
 
