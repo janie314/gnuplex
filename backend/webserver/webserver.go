@@ -20,7 +20,13 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	/*
 	 * Serve static files
 	 */
-	router.Static("/gnuplex", "./public")
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/home")
+	})
+	router.GET("/gnuplex", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/home")
+	})
+	router.Static("/home", "./public")
 	/*
 	 * API endpoints
 	 */
