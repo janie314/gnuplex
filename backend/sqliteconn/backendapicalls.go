@@ -6,17 +6,22 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
-func ScanLib(db *sql.DB) error {
+func ScanLib(db *sql.DB, mu *sync.Mutex) error {
+	mu.Lock()
+	fmt.Println("got a lock")
+	defer mu.Unlock()
+	defer fmt.Println("rem a lock")
 	var reterr error
-	mediadirs := GetMediadirs(db)
+	mediadirs := GetMediadirs(db, mu, true)
 	for _, mediadir := range mediadirs {
 		dir, err := os.Stat(mediadir)
 		if (err == nil) && dir.IsDir() {
 			err = filepath.WalkDir(mediadir, func(path string, entry fs.DirEntry, err error) error {
 				if err == nil && (!entry.IsDir()) {
-					return AddMedia(db, path)
+					return AddMedia(db, mu, path)
 				} else {
 					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadir)
 					return err
@@ -38,7 +43,11 @@ func ScanLib(db *sql.DB) error {
 	return reterr
 }
 
-func AddHist(db *sql.DB, mediafile string) error {
+func AddHist(db *sql.DB, mu *sync.Mutex, mediafile string) error {
+	mu.Lock()
+	fmt.Println("got b lock")
+	defer mu.Unlock()
+	defer fmt.Println("rem b lock")
 	_, err := db.Exec("insert into history (mediafile) values (?);", mediafile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "AddHist err", err)
@@ -46,7 +55,11 @@ func AddHist(db *sql.DB, mediafile string) error {
 	return err
 }
 
-func AddMedia(db *sql.DB, mediafile string) error {
+func AddMedia(db *sql.DB, mu *sync.Mutex, mediafile string) error {
+	mu.Lock()
+	fmt.Println("got c lock")
+	defer mu.Unlock()
+	defer fmt.Println("rem c lock")
 	_, err := db.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "AddMedia err", err)
@@ -54,7 +67,15 @@ func AddMedia(db *sql.DB, mediafile string) error {
 	return err
 }
 
-func GetMediadirs(db *sql.DB) []string {
+func GetMediadirs(db *sql.DB, mu *sync.Mutex, ignorelock bool) []string {
+	if !ignorelock {
+		mu.Lock()
+		fmt.Println("got d lock")
+		defer mu.Unlock()
+		defer fmt.Println("rem d lock")
+	} else {
+		fmt.Println("ignoring d lock")
+	}
 	rows, err := db.Query("select filepath from mediadirs order by filepath;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -76,7 +97,11 @@ func GetMediadirs(db *sql.DB) []string {
 	return res[:i]
 }
 
-func SetMediadirs(db *sql.DB, mediadirs []string) error {
+func SetMediadirs(db *sql.DB, mu *sync.Mutex, mediadirs []string) error {
+	mu.Lock()
+	fmt.Println("got e lock")
+	defer mu.Unlock()
+	defer fmt.Println("rem e lock")
 	var err error
 	db.Exec("delete from mediadirs;")
 	for _, mediafile := range mediadirs {
@@ -88,7 +113,11 @@ func SetMediadirs(db *sql.DB, mediadirs []string) error {
 	return err
 }
 
-func GetMedialib(db *sql.DB) []string {
+func GetMedialib(db *sql.DB, mu *sync.Mutex) []string {
+	mu.Lock()
+	fmt.Println("got f lock")
+	defer mu.Unlock()
+	defer fmt.Println("rem f lock")
 	rows, err := db.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -110,7 +139,11 @@ func GetMedialib(db *sql.DB) []string {
 	return res[:i]
 }
 
-func Last25(db *sql.DB) []string {
+func Last25(db *sql.DB, mu *sync.Mutex) []string {
+	mu.Lock()
+	fmt.Println("got g lock")
+	defer mu.Unlock()
+	defer fmt.Println("rem g lock")
 	rows, err := db.Query("select distinct mediafile from history order by id desc limit 25;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

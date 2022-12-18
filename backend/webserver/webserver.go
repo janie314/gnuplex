@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Run(wg *sync.WaitGroup, db *sql.DB) {
+func Run(wg *sync.WaitGroup, db *sql.DB, mu *sync.Mutex) {
 	defer wg.Done()
 	router := gin.Default()
 	router.SetTrustedProxies(nil)
@@ -48,7 +48,7 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			sqliteconn.AddHist(db, mediafile)
+			sqliteconn.AddHist(db, mu, mediafile)
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mediafile))
 		}
 	})
@@ -68,7 +68,7 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 		}
 	})
 	router.GET("/api/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, sqliteconn.GetMediadirs(db))
+		c.JSON(http.StatusOK, sqliteconn.GetMediadirs(db, mu, false))
 	})
 	router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))
@@ -77,7 +77,7 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = sqliteconn.SetMediadirs(db, mediadirs)
+			err = sqliteconn.SetMediadirs(db, mu, mediadirs)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -101,13 +101,13 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 		}
 	})
 	router.GET("/api/last25", func(c *gin.Context) {
-		c.JSON(http.StatusOK, sqliteconn.Last25(db))
+		c.JSON(http.StatusOK, sqliteconn.Last25(db, mu))
 	})
 	router.GET("/api/medialist", func(c *gin.Context) {
-		c.JSON(http.StatusOK, sqliteconn.GetMedialib(db))
+		c.JSON(http.StatusOK, sqliteconn.GetMedialib(db, mu))
 	})
 	router.POST("/api/medialist", func(c *gin.Context) {
-		sqliteconn.ScanLib(db)
+		sqliteconn.ScanLib(db, mu)
 		c.String(http.StatusOK, "OK")
 	})
 	/*

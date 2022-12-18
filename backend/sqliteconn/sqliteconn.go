@@ -7,11 +7,16 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 
 	_ "modernc.org/sqlite"
 )
 
-func Init() *sql.DB {
+func Init(mu *sync.Mutex) *sql.DB {
+	fmt.Println("got h lock")
+	defer fmt.Println("rem h lock")
+	mu.Lock()
+	defer mu.Unlock()
 	db, err := sql.Open("sqlite", "../tmp/gnuplex.sqlite3")
 	if err != nil {
 		log.Fatal(err)

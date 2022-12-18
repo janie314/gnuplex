@@ -56,7 +56,7 @@ function CRUDPopup(props: {
               );
             }}
           />
-          <WorkingSpinnerTSX visible={refreshLibraryWorking}/>
+          <WorkingSpinnerTSX visible={refreshLibraryWorking} />
         </div>
         <div className="okcancel">
           <input

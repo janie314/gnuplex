@@ -28,8 +28,9 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(2)
-	db := sqliteconn.Init()
-	go webserver.Run(&wg, db)
+	var mu sync.Mutex
+	db := sqliteconn.Init(&mu)
+	go webserver.Run(&wg, db, &mu)
 	go mpvdaemon.Run(&wg)
 	/*
 	 * Scheduler process
@@ -40,7 +41,7 @@ func main() {
 	if err != nil {
 		log.Fatal("CronTrigger init failure", err)
 	}
-	scanLibJob := quartz.NewFunctionJob(func() (int, error) { return 0, sqliteconn.ScanLib((db)) })
+	scanLibJob := quartz.NewFunctionJob(func() (int, error) { return 0, sqliteconn.ScanLib(db, &mu) })
 	err = sched.ScheduleJob(scanLibJob, scanLibTrigger)
 	if err != nil {
 		log.Fatal("Scheduler init failure", err)
