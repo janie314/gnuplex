@@ -68,7 +68,7 @@ func Run(wg *sync.WaitGroup, db *sql.DB, mu *sync.Mutex) {
 		}
 	})
 	router.GET("/api/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, sqliteconn.GetMediadirs(db, mu))
+		c.JSON(http.StatusOK, sqliteconn.GetMediadirs(db, mu, false))
 	})
 	router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))

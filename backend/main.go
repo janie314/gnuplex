@@ -28,8 +28,8 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(2)
-	db := sqliteconn.Init()
 	var mu sync.Mutex
+	db := sqliteconn.Init(&mu)
 	go webserver.Run(&wg, db, &mu)
 	go mpvdaemon.Run(&wg)
 	/*
