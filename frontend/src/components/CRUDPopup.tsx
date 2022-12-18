@@ -28,6 +28,18 @@ function CRUDPopup(props: {
         <div>
           <input
             type="button"
+            value="Save Media Directories"
+            onClick={() => {
+              const arr = mediadirs.trim().split("\n").filter((line) =>
+                !/^\s*$/.test(line)
+              ).map((line) => line.trim());
+              APICall.setOriginMediadirs(arr);
+            }}
+          />
+        </div>
+        <div>
+          <input
+            type="button"
             value="Refresh Library"
             onClick={() => {
               APICall.refreshOriginMediafiles();
@@ -38,16 +50,6 @@ function CRUDPopup(props: {
           <input
             type="button"
             value="OK"
-            onClick={(e) => {
-              const arr = mediadirs.trim().split("\n").filter((line) =>
-                !/^\s*$/.test(line)
-              ).map((line) => line.trim());
-              APICall.setOriginMediadirs(arr);
-            }}
-          />
-          <input
-            type="button"
-            value="Cancel"
             onClick={() => props.setMediadirInputPopup(false)}
           >
           </input>
