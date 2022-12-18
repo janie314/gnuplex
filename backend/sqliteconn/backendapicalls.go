@@ -54,6 +54,40 @@ func AddMedia(db *sql.DB, mediafile string) error {
 	return err
 }
 
+func GetMediadirs(db *sql.DB) []string {
+	rows, err := db.Query("select filepath from mediadirs order by filepath;")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return []string{}
+	}
+	// TODO: append or [i]
+	res := make([]string, 10000)
+	str := ""
+	i := 0
+	for rows.Next() {
+		err = rows.Scan(&str)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			res[i] = str
+			i++
+		}
+	}
+	return res[:i]
+}
+
+func SetMediadirs(db *sql.DB, mediadirs []string) error {
+	var err error
+	db.Exec("delete from mediadirs;")
+	for _, mediafile := range mediadirs {
+		_, err := db.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "AddMediadir err", err)
+		}
+	}
+	return err
+}
+
 func GetMedialib(db *sql.DB) []string {
 	rows, err := db.Query("select filepath from medialist order by filepath;")
 	if err != nil {

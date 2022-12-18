@@ -8,6 +8,11 @@ function CRUDPopup(props: {
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [mediadirs, setMediadirs] = useState("");
+  useEffect(() => {
+    APICall.getOriginMediadirs().then((res: string[]) => {
+      setMediadirs(res.join("\n"));
+    });
+  }, [props.visible]);
   if (props.visible) {
     return (
       <div className="crudpopup">
@@ -34,11 +39,10 @@ function CRUDPopup(props: {
             type="button"
             value="OK"
             onClick={(e) => {
-              console.log(
-                mediadirs.trim().split("\n").filter((line) =>
-                  !/^\s*$/.test(line)
-                ).map((line) => line.trim()),
-              );
+              const arr = mediadirs.trim().split("\n").filter((line) =>
+                !/^\s*$/.test(line)
+              ).map((line) => line.trim());
+              APICall.setOriginMediadirs(arr);
             }}
           />
           <input
