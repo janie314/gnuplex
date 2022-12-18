@@ -1,18 +1,23 @@
-import { SyntheticEvent, useEffect, useState } from "react";
-import "../App.css";
+import { useEffect, useState } from "react";
 import { APICall } from "../lib/APICall";
+import "../App.css";
 import "./CRUDPopup.css";
+import { WorkingSpinnerTSX } from "./WorkingSpinner";
 
 function CRUDPopup(props: {
   visible: boolean;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [mediadirs, setMediadirs] = useState("");
+  const [refreshLibraryWorking, setRefreshLibraryWorking] = useState(false);
+  const [saveMediadirsWorking, setSaveMediadirsWorking] = useState(false);
+
   useEffect(() => {
     APICall.getOriginMediadirs().then((res: string[]) => {
       setMediadirs(res.join("\n"));
     });
   }, [props.visible]);
+
   if (props.visible) {
     return (
       <div className="crudpopup">
@@ -30,10 +35,13 @@ function CRUDPopup(props: {
             type="button"
             value="Save Media Directories"
             onClick={() => {
+              setSaveMediadirsWorking(true);
               const arr = mediadirs.trim().split("\n").filter((line) =>
                 !/^\s*$/.test(line)
               ).map((line) => line.trim());
-              APICall.setOriginMediadirs(arr);
+              APICall.setOriginMediadirs(arr).then(() =>
+                setSaveMediadirsWorking(false)
+              );
             }}
           />
         </div>
@@ -42,9 +50,13 @@ function CRUDPopup(props: {
             type="button"
             value="Refresh Library"
             onClick={() => {
-              APICall.refreshOriginMediafiles();
+              setRefreshLibraryWorking(true);
+              APICall.refreshOriginMediafiles().then(() =>
+                setRefreshLibraryWorking(false)
+              );
             }}
           />
+          <WorkingSpinnerTSX visible={refreshLibraryWorking}/>
         </div>
         <div className="okcancel">
           <input

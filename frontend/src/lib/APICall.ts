@@ -97,9 +97,7 @@ class APICall {
   }
 
   public static async refreshOriginMediafiles() {
-    return await fetch(`/api/medialist`, { method: "POST" }).then((res) =>
-      res.json()
-    );
+    return await fetch(`/api/medialist`, { method: "POST" });
   }
 
   public static async getOriginLast25() {

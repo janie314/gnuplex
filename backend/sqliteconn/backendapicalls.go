@@ -9,33 +9,33 @@ import (
 )
 
 func ScanLib(db *sql.DB) error {
-	var err error
-	var dir string
-	rows, err := db.Query("select distinct filepath from mediadirs;")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Scanlib query problem")
-		return err
-	}
-	defer db.Exec(`delete from medialist where filepath like '%.srt';`)
-	defer db.Exec(`delete from medialist where filepath like '%.txt';`)
-	defer db.Exec(`delete from medialist where filepath like '%.jpg';`)
-	defer db.Exec(`delete from medialist where filepath like '%.docx';`)
-	defer db.Exec(`delete from medialist where filepath like '%.pdf';`)
-	for rows.Next() {
-		err := rows.Scan(&dir)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		} else {
-			defer filepath.WalkDir(dir, func(path string, entry fs.DirEntry, err error) error {
-				if !entry.IsDir() {
+	var reterr error
+	mediadirs := GetMediadirs(db)
+	for _, mediadir := range mediadirs {
+		dir, err := os.Stat(mediadir)
+		if (err == nil) && dir.IsDir() {
+			err = filepath.WalkDir(mediadir, func(path string, entry fs.DirEntry, err error) error {
+				if err == nil && (!entry.IsDir()) {
 					return AddMedia(db, path)
 				} else {
-					return nil
+					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadir)
+					return err
 				}
 			})
+			if err != nil {
+				reterr = err
+			}
+		} else {
+			fmt.Fprintln(os.Stderr, "Bad mediadir: ", mediadir)
+			reterr = err
 		}
 	}
-	return err
+	db.Exec(`delete from medialist where filepath like '%.srt';`)
+	db.Exec(`delete from medialist where filepath like '%.txt';`)
+	db.Exec(`delete from medialist where filepath like '%.jpg';`)
+	db.Exec(`delete from medialist where filepath like '%.docx';`)
+	db.Exec(`delete from medialist where filepath like '%.pdf';`)
+	return reterr
 }
 
 func AddHist(db *sql.DB, mediafile string) error {

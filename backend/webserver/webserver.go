@@ -3,7 +3,6 @@ package webserver
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
@@ -73,7 +72,6 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	})
 	router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))
-		fmt.Println("m", string(mediadirsJson))
 		var mediadirs []string
 		err := json.Unmarshal(mediadirsJson, &mediadirs)
 		if err != nil {
@@ -81,9 +79,9 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 		} else {
 			err = sqliteconn.SetMediadirs(db, mediadirs)
 			if err == nil {
-				c.String(http.StatusOK, "ok")
+				c.JSON(http.StatusOK, "ok")
 			} else {
-				c.String(http.StatusInternalServerError, "Couldn't add the mediadirs")
+				c.JSON(http.StatusInternalServerError, "Couldn't add the mediadirs")
 			}
 		}
 	})
