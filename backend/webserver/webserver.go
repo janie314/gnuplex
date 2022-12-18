@@ -2,6 +2,8 @@ package webserver
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
@@ -20,7 +22,13 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 	/*
 	 * Serve static files
 	 */
-	router.Static("/gnuplex", "./public")
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/home")
+	})
+	router.GET("/gnuplex", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/home")
+	})
+	router.Static("/home", "./public")
 	/*
 	 * API endpoints
 	 */
@@ -58,6 +66,25 @@ func Run(wg *sync.WaitGroup, db *sql.DB) {
 				c.String(http.StatusBadRequest, "bad vol string")
 			}
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(vol))
+		}
+	})
+	router.GET("/api/mediadirs", func(c *gin.Context) {
+		c.JSON(http.StatusOK, sqliteconn.GetMediadirs(db))
+	})
+	router.POST("/api/mediadirs", func(c *gin.Context) {
+		mediadirsJson := []byte(c.Query("mediadirs"))
+		fmt.Println("m", string(mediadirsJson))
+		var mediadirs []string
+		err := json.Unmarshal(mediadirsJson, &mediadirs)
+		if err != nil {
+			c.String(http.StatusBadRequest, "bad mediadirs string")
+		} else {
+			err = sqliteconn.SetMediadirs(db, mediadirs)
+			if err == nil {
+				c.String(http.StatusOK, "ok")
+			} else {
+				c.String(http.StatusInternalServerError, "Couldn't add the mediadirs")
+			}
 		}
 	})
 	router.GET("/api/pos", func(c *gin.Context) {

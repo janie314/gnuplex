@@ -63,7 +63,6 @@ class APICall {
       `/api/media`,
     ).then((res) => res.json()).then((res: IMPVRes) => {
       if (res.data !== undefined) {
-        // @ts-ignore
         return res.data as string;
       } else {
         return "";
@@ -73,9 +72,22 @@ class APICall {
 
   public static async setOriginMedia(mediafile: string) {
     return await fetch(
-      `/api/media?mediafile=${mediafile}`,
+      `/api/media?mediafile=${encodeURI(mediafile)}`,
       { method: "POST" },
+    );
+  }
+
+  public static async getOriginMediadirs() {
+    return await fetch(
+      `/api/mediadirs`,
     ).then((res) => res.json());
+  }
+
+  public static async setOriginMediadirs(mediadirs: string[]) {
+    return await fetch(
+      `/api/mediadirs?mediadirs=${encodeURI(JSON.stringify(mediadirs))}`,
+      { method: "POST" },
+    );
   }
 
   public static async getOriginMediafiles() {
