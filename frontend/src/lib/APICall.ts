@@ -80,7 +80,9 @@ class APICall {
   public static async getOriginMediadirs() {
     return await fetch(
       `/api/mediadirs`,
-    ).then((res) => res.json());
+    ).then((res) => res.json()).then((data: string[]) => {
+      return data.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
+    });
   }
 
   public static async setOriginMediadirs(mediadirs: string[]) {
