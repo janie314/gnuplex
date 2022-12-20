@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gnuplex-backend/consts"
 	"log"
-	"os"
 	"strconv"
 	"sync"
 
@@ -30,44 +29,34 @@ func Init() *LiteDB {
 		log.Fatal("Init LiteDB fatal error:", err)
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists pos_cache (filepath string not null primary key, pos int);")
-	res := true
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Init LiteDB error 1:", err)
-		res = false
+		log.Fatal("Init LiteDB error 1:", err)
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists history (id integer not null unique, mediafile	text, primary key(id AUTOINCREMENT));")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Init LiteDB error 2:", err)
-		res = false
+		log.Fatal("Init LiteDB error 2:", err)
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists medialist (filepath text not null,  primary key(filepath)) ;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Init LiteDB error 3:", err)
-		res = false
+		log.Fatal("Init LiteDB error 3:", err)
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists mediadirs (filepath text not null, primary key(filepath)) ;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Init LiteDB error 4:", err)
-		res = false
+		log.Fatal("Init LiteDB error 4:", err)
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists version_info (key string not null primary key, value string);")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Init LiteDB error 5:", err)
-		res = false
+		log.Fatal("Init LiteDB error 5:", err)
 	}
 	_, err = db.SqliteConn.Exec("insert or ignore into version_info values ('db_schema_version', ?);", consts.DBVersion)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Init LiteDB error 6:", err)
-		res = false
-	}
-	if !res {
-		log.Fatal("I could not initialize the database...")
+		log.Fatal("Init LiteDB error 6:", err)
 	}
 	UpgradeDB(&db)
 	return &db
 }
 
-func UpgradeDB(liteDB *LiteDB) error {
+func UpgradeDB(liteDB *LiteDB) {
 	rows, err := liteDB.SqliteConn.Query("select value from version_info where key = 'db_schema_version';")
 	if err != nil {
 		log.Fatal("Upgrade db error:", err)
@@ -89,5 +78,4 @@ func UpgradeDB(liteDB *LiteDB) error {
 		fmt.Println("Should I do something?")
 	}
 	rows.Close()
-	return nil
 }
