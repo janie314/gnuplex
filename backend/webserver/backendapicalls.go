@@ -38,8 +38,12 @@ func ScanLib(db *liteDB.LiteDB) error {
 	db.SqliteConn.Exec(`delete from medialist where filepath like '%.srt';`)
 	db.SqliteConn.Exec(`delete from medialist where filepath like '%.txt';`)
 	db.SqliteConn.Exec(`delete from medialist where filepath like '%.jpg';`)
+	db.SqliteConn.Exec(`delete from medialist where filepath like '%.jpeg';`)
+	db.SqliteConn.Exec(`delete from medialist where filepath like '%.torrent';`)
+	db.SqliteConn.Exec(`delete from medialist where filepath like '%.ico';`)
 	db.SqliteConn.Exec(`delete from medialist where filepath like '%.docx';`)
 	db.SqliteConn.Exec(`delete from medialist where filepath like '%.pdf';`)
+	db.SqliteConn.Exec(`delete from medialist where filepath like '%.png';`)
 	return reterr
 }
 
