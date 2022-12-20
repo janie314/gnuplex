@@ -21,11 +21,12 @@ func ScanLib(db *sql.DB, mu *sync.Mutex) error {
 		if (err == nil) && dir.IsDir() {
 			err = filepath.WalkDir(mediadir, func(path string, entry fs.DirEntry, err error) error {
 				if err == nil && (!entry.IsDir()) {
-					return AddMedia(db, mu, path)
-				} else {
+					return AddMedia(db, mu, path, true)
+				} else if err != nil {
 					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadir)
 					return err
 				}
+				return nil
 			})
 			if err != nil {
 				reterr = err
@@ -55,11 +56,15 @@ func AddHist(db *sql.DB, mu *sync.Mutex, mediafile string) error {
 	return err
 }
 
-func AddMedia(db *sql.DB, mu *sync.Mutex, mediafile string) error {
-	mu.Lock()
-	fmt.Println("got c lock")
-	defer mu.Unlock()
-	defer fmt.Println("rem c lock")
+func AddMedia(db *sql.DB, mu *sync.Mutex, mediafile string, ignorelock bool) error {
+	if !ignorelock {
+		mu.Lock()
+		fmt.Println("got c lock")
+		defer mu.Unlock()
+		defer fmt.Println("rem c lock")
+	} else {
+		fmt.Println("ignoring c lock")
+	}
 	_, err := db.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "AddMedia err", err)

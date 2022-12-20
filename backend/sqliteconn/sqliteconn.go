@@ -12,44 +12,49 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+type LiteDB struct {
+	SqliteConn *sql.DB
+	Mu         *sync.Mutex
+}
+
 func Init(mu *sync.Mutex) *sql.DB {
-	fmt.Println("got h lock")
-	defer fmt.Println("rem h lock")
+	fmt.Println("Got Init LiteDB lock")
+	defer fmt.Println("Rem Init LiteDB lock")
 	mu.Lock()
 	defer mu.Unlock()
 	db, err := sql.Open("sqlite", "../tmp/gnuplex.sqlite3")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Init LiteDB fatal error:", err)
 	}
 	_, err = db.Exec("create table if not exists pos_cache (filepath string not null primary key, pos int);")
 	res := true
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Init LiteDB error 1:", err)
 		res = false
 	}
 	_, err = db.Exec("create table if not exists history (id integer not null unique, mediafile	text, primary key(id AUTOINCREMENT));")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Init LiteDB error 2:", err)
 		res = false
 	}
 	_, err = db.Exec("create table if not exists medialist (filepath text not null,  primary key(filepath)) ;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Init LiteDB error 3:", err)
 		res = false
 	}
 	_, err = db.Exec("create table if not exists mediadirs (filepath text not null, primary key(filepath)) ;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Init LiteDB error 4:", err)
 		res = false
 	}
 	_, err = db.Exec("create table if not exists version_info (key string not null primary key, value string);")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Init LiteDB error 5:", err)
 		res = false
 	}
 	_, err = db.Exec("insert or ignore into version_info values ('db_schema_version', ?);", consts.DBVersion)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Init LiteDB error 6:", err)
 		res = false
 	}
 	if !res {
@@ -62,7 +67,7 @@ func Init(mu *sync.Mutex) *sql.DB {
 func UpgradeDB(db *sql.DB) error {
 	rows, err := db.Query("select value from version_info where key = 'db_schema_version';")
 	if err != nil {
-		log.Fatal("Upgrade db error", err)
+		log.Fatal("Upgrade db error:", err)
 	}
 	next := rows.Next()
 	if !next {
