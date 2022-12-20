@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
+	"gnuplex-backend/liteDB"
 	"gnuplex-backend/mpvdaemon"
-	"gnuplex-backend/sqliteconn"
 	"gnuplex-backend/webserver"
 	"log"
 	"sync"
@@ -28,9 +28,8 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(2)
-	var mu sync.Mutex
-	db := sqliteconn.Init(&mu)
-	go webserver.Run(&wg, db, &mu)
+	db := liteDB.Init()
+	go webserver.Run(&wg, db)
 	go mpvdaemon.Run(&wg)
 	/*
 	 * Scheduler process
@@ -41,7 +40,7 @@ func main() {
 	if err != nil {
 		log.Fatal("CronTrigger init failure", err)
 	}
-	scanLibJob := quartz.NewFunctionJob(func() (int, error) { return 0, sqliteconn.ScanLib(db, &mu) })
+	scanLibJob := quartz.NewFunctionJob(func() (int, error) { return 0, webserver.ScanLib(db) })
 	err = sched.ScheduleJob(scanLibJob, scanLibTrigger)
 	if err != nil {
 		log.Fatal("Scheduler init failure", err)
