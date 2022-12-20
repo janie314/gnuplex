@@ -74,6 +74,9 @@ function App() {
           <div className="controlgroup">
             <TimeVolInput vol={vol} setVol={setVol} type="vol" />
           </div>
+          <div className="controlgroup">
+            <a href="https://gitlab.com/jane314/gnuplex/-/issues" target="_blank">Bug?</a>
+          </div>
         </div>
 
         <div className="panel rightpanel">
