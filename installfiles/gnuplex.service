@@ -2,6 +2,7 @@
 Description=GNUPlex
 
 [Service]
+Environment=XDG_RUNTIME_DIR=/run/user/1000
 ExecStart=/usr/bin/gnuplex
 Restart=always
 RestartSec=5
