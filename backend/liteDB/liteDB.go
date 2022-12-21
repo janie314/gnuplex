@@ -22,7 +22,7 @@ func Init() *LiteDB {
 	log.Println("Got Init LiteDB lock")
 	defer db.Mu.Unlock()
 	defer log.Println("Rem Init LiteDB lock")
-	conn, err := sql.Open("sqlite", "../tmp/gnuplex.sqlite3")
+	conn, err := sql.Open("sqlite", consts.DBFilepath)
 	db.SqliteConn = conn
 	if err != nil {
 		log.Fatal("Init LiteDB fatal error:", err)

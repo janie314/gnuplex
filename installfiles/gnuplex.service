@@ -1,0 +1,10 @@
+[Unit]
+Description=GNUPlex
+
+[Service]
+ExecStart=/usr/bin/gnuplex
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
