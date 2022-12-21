@@ -1,8 +1,7 @@
 package mpvdaemon
 
 import (
-	"fmt"
-	"os"
+	"log"
 	"os/exec"
 	"sync"
 	"time"
@@ -13,7 +12,9 @@ func Run(wg *sync.WaitGroup) {
 	for {
 		cmd := exec.Command("mpv", "--idle=yes", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
 		err := cmd.Run()
-		fmt.Fprintln(os.Stderr, err)
+		if err != nil {
+			log.Println("Error: mpvdaemon.Run: ", err)
+		}
 		time.Sleep(3 * time.Second)
 	}
 }

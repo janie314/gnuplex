@@ -2,7 +2,6 @@ package liteDB
 
 import (
 	"database/sql"
-	"fmt"
 	"gnuplex-backend/consts"
 	"log"
 	"strconv"
@@ -20,9 +19,9 @@ func Init() *LiteDB {
 	var db LiteDB
 	db.Mu = &sync.Mutex{}
 	db.Mu.Lock()
-	fmt.Println("Got Init LiteDB lock")
+	log.Println("Got Init LiteDB lock")
 	defer db.Mu.Unlock()
-	defer fmt.Println("Rem Init LiteDB lock")
+	defer log.Println("Rem Init LiteDB lock")
 	conn, err := sql.Open("sqlite", "../tmp/gnuplex.sqlite3")
 	db.SqliteConn = conn
 	if err != nil {
@@ -75,7 +74,7 @@ func UpgradeDB(liteDB *LiteDB) {
 		log.Fatal("Bad version schema 2", err)
 	}
 	if versNum < consts.DBVersion {
-		fmt.Println("Should I do something?")
+		log.Println("Should I do something?")
 	}
 	rows.Close()
 }
