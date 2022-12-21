@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"gnuplex-backend/liteDB"
+	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon/mpvcmd"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ func Run(wg *sync.WaitGroup, db *liteDB.LiteDB) {
 	router.GET("/gnuplex", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	router.Static("/home", "./public")
+	router.Static("/home", consts.StaticFilespath)
 	/*
 	 * API endpoints
 	 */
