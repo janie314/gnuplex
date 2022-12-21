@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"gnuplex-backend/liteDB"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 )
 
 func ScanLib(db *liteDB.LiteDB) error {
 	db.Mu.Lock()
-	fmt.Println("got a lock")
+	log.Println("Got ScanLib lock")
 	defer db.Mu.Unlock()
-	defer fmt.Println("rem a lock")
+	defer log.Println("Rem ScanLib lock")
 	var reterr error
 	mediadirs := GetMediadirs(db, true)
 	for _, mediadir := range mediadirs {
@@ -31,7 +32,7 @@ func ScanLib(db *liteDB.LiteDB) error {
 				reterr = err
 			}
 		} else {
-			fmt.Fprintln(os.Stderr, "Bad mediadir: ", mediadir)
+			log.Println("Error: Bad mediadir: ", mediadir)
 			reterr = err
 		}
 	}
@@ -49,12 +50,12 @@ func ScanLib(db *liteDB.LiteDB) error {
 
 func AddHist(liteDB *liteDB.LiteDB, mediafile string) error {
 	liteDB.Mu.Lock()
-	fmt.Println("got b lock")
+	log.Println("Got AddHist lock")
 	defer liteDB.Mu.Unlock()
-	defer fmt.Println("rem b lock")
+	defer log.Println("Rem AddHist lock")
 	_, err := liteDB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "AddHist err", err)
+		log.Println("Error: AddHist err", err)
 	}
 	return err
 }
@@ -62,15 +63,15 @@ func AddHist(liteDB *liteDB.LiteDB, mediafile string) error {
 func AddMedia(db *liteDB.LiteDB, mediafile string, ignorelock bool) error {
 	if !ignorelock {
 		db.Mu.Lock()
-		fmt.Println("got c lock")
+		log.Println("Got AddMedia lock")
 		defer db.Mu.Unlock()
-		defer fmt.Println("rem c lock")
+		defer log.Println("Rem AddMedia lock")
 	} else {
-		fmt.Println("ignoring c lock")
+		log.Println("Ignoring AddMedia lock")
 	}
 	_, err := db.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "AddMedia err", err)
+		log.Println("Error: AddMedia err", err)
 	}
 	return err
 }
@@ -78,28 +79,29 @@ func AddMedia(db *liteDB.LiteDB, mediafile string, ignorelock bool) error {
 func GetMediadirs(db *liteDB.LiteDB, ignorelock bool) []string {
 	if !ignorelock {
 		db.Mu.Lock()
-		fmt.Println("got d lock")
+		log.Println("Got GetMediadirs lock")
 		defer db.Mu.Unlock()
-		defer fmt.Println("rem d lock")
+		defer log.Println("Rem GetMediadirs lock")
 	} else {
-		fmt.Println("ignoring d lock")
+		log.Println("Ignoring GetMediadirs lock")
 	}
 	rows, err := db.SqliteConn.Query("select filepath from mediadirs order by filepath;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		log.Println("Error: GetMediadirs: ", err)
 		return []string{}
 	}
-	// TODO: append or [i]
 	res := make([]string, 10000)
 	str := ""
 	i := 0
 	for rows.Next() {
 		err = rows.Scan(&str)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		} else {
+			fmt.Println("Error: GetMediadirs:", err)
+		} else if i < len(res) {
 			res[i] = str
 			i++
+		} else {
+			res = append(res, str)
 		}
 	}
 	return res[:i]
@@ -107,15 +109,15 @@ func GetMediadirs(db *liteDB.LiteDB, ignorelock bool) []string {
 
 func SetMediadirs(db *liteDB.LiteDB, mediadirs []string) error {
 	db.Mu.Lock()
-	fmt.Println("got e lock")
+	log.Println("Got SetMediadirs lock")
 	defer db.Mu.Unlock()
-	defer fmt.Println("rem e lock")
+	defer log.Println("Rem SetMediadirs lock")
 	var err error
 	db.SqliteConn.Exec("delete from mediadirs;")
 	for _, mediafile := range mediadirs {
 		_, err := db.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "AddMediadir err", err)
+			log.Println("Error: AddMediadir", err)
 		}
 	}
 	return err
@@ -123,25 +125,26 @@ func SetMediadirs(db *liteDB.LiteDB, mediadirs []string) error {
 
 func GetMedialib(db *liteDB.LiteDB) []string {
 	db.Mu.Lock()
-	fmt.Println("got f lock")
+	log.Println("Got GetMedialib lock")
 	defer db.Mu.Unlock()
-	defer fmt.Println("rem f lock")
+	defer log.Println("Rem GetMedialib lock")
 	rows, err := db.SqliteConn.Query("select filepath from medialist order by filepath;")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		log.Println("Error: GetMedialib: ", err)
 		return []string{}
 	}
-	// TODO: append or [i]
 	res := make([]string, 131072)
 	str := ""
 	i := 0
 	for rows.Next() {
 		err = rows.Scan(&str)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		} else {
+			fmt.Println("Error: GetMedialib:", err)
+		} else if i < len(res) {
 			res[i] = str
 			i++
+		} else {
+			res = append(res, str)
 		}
 	}
 	return res[:i]
@@ -149,9 +152,9 @@ func GetMedialib(db *liteDB.LiteDB) []string {
 
 func Last25(db *liteDB.LiteDB) []string {
 	db.Mu.Lock()
-	fmt.Println("got g lock")
+	log.Println("Got Last25 lock")
 	defer db.Mu.Unlock()
-	defer fmt.Println("rem g lock")
+	defer fmt.Println("Rem Last25 lock")
 	rows, err := db.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -163,10 +166,12 @@ func Last25(db *liteDB.LiteDB) []string {
 	for rows.Next() {
 		err = rows.Scan(&str)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		} else {
+			fmt.Println("Error: Last25:", err)
+		} else if i < len(res) {
 			res[i] = str
 			i++
+		} else {
+			res = append(res, str)
 		}
 	}
 	return res[:i]

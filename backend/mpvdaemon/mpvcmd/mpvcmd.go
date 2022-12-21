@@ -51,7 +51,7 @@ func InitUnixConn() {
 	for mpvConn == nil {
 		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			log.Println("Warning: InitUnixConn:", err)
 			time.Sleep(3 * time.Second)
 		}
 	}
