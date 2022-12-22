@@ -7,6 +7,7 @@ import { WorkingSpinnerTSX } from "./WorkingSpinner";
 function CRUDPopup(props: {
   visible: boolean;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  closeHook: () => void;
 }) {
   const [mediadirs, setMediadirs] = useState("");
   const [refreshLibraryWorking, setRefreshLibraryWorking] = useState(false);
@@ -62,7 +63,10 @@ function CRUDPopup(props: {
           <input
             type="button"
             value="OK"
-            onClick={() => props.setMediadirInputPopup(false)}
+            onClick={() => {
+              props.closeHook();
+              props.setMediadirInputPopup(false);
+            }}
           >
           </input>
         </div>
