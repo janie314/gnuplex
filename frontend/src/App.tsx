@@ -12,7 +12,8 @@ interface IMPVRes {
 }
 
 function App() {
-  const [toggle, setToggle] = useState(false);
+  const [volPosToggle, setVolPosToggle] = useState(false);
+  const [mediaToggle, setMediaToggle] = useState(false);
   const [pos, setPos] = useState(0);
   const [vol, setVol] = useState(0);
   const [media, setMedia] = useState("");
@@ -24,12 +25,12 @@ function App() {
     APICall.getOriginMedia().then((res: string) => setMedia(res));
     APICall.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
     APICall.getOriginLast25().then((res: string[]) => setLast25(res));
-  }, []);
+  }, [mediaToggle]);
 
   useEffect(() => {
     APICall.getOriginPos().then((res: number) => setPos(res));
     APICall.getOriginVol().then((res: number) => setVol(res));
-  }, [media, toggle]);
+  }, [media, volPosToggle]);
 
   return (
     <>
@@ -46,7 +47,7 @@ function App() {
               value="⏵"
               onClick={() =>
                 APICall.play().then(() => APICall.sleep(2000)).then(() =>
-                  setToggle(!toggle)
+                  setVolPosToggle(!volPosToggle)
                 )}
             />
             <input
@@ -55,7 +56,7 @@ function App() {
               value="⏸"
               onClick={() =>
                 APICall.pause().then(() => APICall.sleep(2000)).then(() =>
-                  setToggle(!toggle)
+                  setVolPosToggle(!volPosToggle)
                 )}
             />
           </div>
@@ -101,6 +102,9 @@ function App() {
       <CRUDPopup
         visible={mediadirInputPopup}
         setMediadirInputPopup={setMediadirInputPopup}
+        closeHook={() => {
+          setMediaToggle(!mediaToggle);
+        }}
       />
     </>
   );

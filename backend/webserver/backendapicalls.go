@@ -16,11 +16,16 @@ func ScanLib(db *liteDB.LiteDB) error {
 	defer log.Println("Rem ScanLib lock")
 	var reterr error
 	mediadirs := GetMediadirs(db, true)
+	medialist := GetMedialib(db, true)
+	mediadirHash := make(map[string]bool, len(mediadirs))
+	for _, path := range medialist {
+		mediadirHash[path] = true
+	}
 	for _, mediadir := range mediadirs {
 		dir, err := os.Stat(mediadir)
 		if (err == nil) && dir.IsDir() {
 			err = filepath.WalkDir(mediadir, func(path string, entry fs.DirEntry, err error) error {
-				if err == nil && (!entry.IsDir()) {
+				if err == nil && (!entry.IsDir()) && (!mediadirHash[path]) {
 					return AddMedia(db, path, true)
 				} else if err != nil {
 					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadir)
@@ -123,11 +128,15 @@ func SetMediadirs(db *liteDB.LiteDB, mediadirs []string) error {
 	return err
 }
 
-func GetMedialib(db *liteDB.LiteDB) []string {
-	db.Mu.Lock()
-	log.Println("Got GetMedialib lock")
-	defer db.Mu.Unlock()
-	defer log.Println("Rem GetMedialib lock")
+func GetMedialib(db *liteDB.LiteDB, ignorelock bool) []string {
+	if !ignorelock {
+		db.Mu.Lock()
+		log.Println("Got GetMedialib lock")
+		defer db.Mu.Unlock()
+		defer log.Println("Rem GetMedialib lock")
+	} else {
+		log.Println("Ignoring GetMedialib lock")
+	}
 	rows, err := db.SqliteConn.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMedialib: ", err)
