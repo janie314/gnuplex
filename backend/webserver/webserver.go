@@ -104,7 +104,7 @@ func Run(wg *sync.WaitGroup, db *liteDB.LiteDB) {
 		c.JSON(http.StatusOK, Last25(db))
 	})
 	router.GET("/api/medialist", func(c *gin.Context) {
-		c.JSON(http.StatusOK, GetMedialib(db))
+		c.JSON(http.StatusOK, GetMedialib(db, false))
 	})
 	router.POST("/api/medialist", func(c *gin.Context) {
 		ScanLib(db)
