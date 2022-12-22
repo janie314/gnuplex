@@ -36,7 +36,7 @@ func main() {
 	 */
 	sched := quartz.NewStdScheduler()
 	sched.Start()
-	scanLibTrigger, err := quartz.NewCronTrigger("13 10 * * * *")
+	scanLibTrigger, err := quartz.NewCronTrigger("0 15 10 * * ?")
 	if err != nil {
 		log.Fatal("CronTrigger init failure", err)
 	}
