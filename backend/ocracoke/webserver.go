@@ -100,6 +100,24 @@ func Init(wg *sync.WaitGroup, debug bool) (*Ocracoke, error) {
 			}
 		}
 	})
+	oc.Router.GET("/api/file_exts", func(c *gin.Context) {
+		c.JSON(http.StatusOK, oc.GetFileExts(false))
+	})
+	oc.Router.POST("/api/file_exts", func(c *gin.Context) {
+		fileExtsJson := []byte(c.Query("file_exts"))
+		var fileExts []string
+		err := json.Unmarshal(fileExtsJson, &fileExts)
+		if err != nil {
+			c.String(http.StatusBadRequest, "bad mediadirs string")
+		} else {
+			err = oc.SetFileExts(fileExts)
+			if err == nil {
+				c.JSON(http.StatusOK, "ok")
+			} else {
+				c.JSON(http.StatusInternalServerError, "Couldn't add the fileexts")
+			}
+		}
+	})
 	oc.Router.GET("/api/pos", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos())
 	})

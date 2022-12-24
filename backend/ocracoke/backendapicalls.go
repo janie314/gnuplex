@@ -151,6 +151,53 @@ func (oc *Ocracoke) SetMediadirs(mediadirs []string) error {
 	return err
 }
 
+func (oc *Ocracoke) GetFileExts(ignorelock bool) []string {
+	if !ignorelock {
+		oc.DB.Mu.Lock()
+		log.Println("Got GetFileExts lock")
+		defer oc.DB.Mu.Unlock()
+		defer log.Println("Rem GetFileExtslock")
+	} else {
+		log.Println("Ignoring GetFileExts lock")
+	}
+	rows, err := oc.DB.SqliteConn.Query("select (ext, exclude) from file_exts order by ext ;")
+	if err != nil {
+		log.Println("Error: GetFileExts: ", err)
+		return []string{}
+	}
+	res := make([]string, 10000)
+	str := ""
+	i := 0
+	for rows.Next() {
+		err = rows.Scan(&str)
+		if err != nil {
+			fmt.Println("Error: GetFileExts:", err)
+		} else if i < len(res) {
+			res[i] = str
+			i++
+		} else {
+			res = append(res, str)
+		}
+	}
+	return res[:i]
+}
+
+func (oc *Ocracoke) SetFileExts(file_exts []string) error {
+	oc.DB.Mu.Lock()
+	log.Println("Got SetFileExtslock")
+	defer oc.DB.Mu.Unlock()
+	defer log.Println("Rem SetFileExtslock")
+	var err error
+	oc.DB.SqliteConn.Exec("delete from file_exts;")
+	for _, ext := range file_exts {
+		_, err := oc.DB.SqliteConn.Exec("insert or ignore into file_exts (filepath) values (?, true);", ext)
+		if err != nil {
+			log.Println("Error: SetFileExts", err)
+		}
+	}
+	return err
+}
+
 func (oc *Ocracoke) GetMedialib(ignorelock bool) []string {
 	if !ignorelock {
 		oc.DB.Mu.Lock()

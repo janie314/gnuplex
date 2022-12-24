@@ -91,6 +91,21 @@ class APICall {
       { method: "POST" },
     );
   }
+  
+  public static async getOriginFileExts() {
+    return await fetch(
+      `/api/file_exts`,
+    ).then((res) => res.json()).then((data: string[]) => {
+      return data.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
+    });
+  }
+
+  public static async setOriginFileExts(file_exts: string[]) {
+    return await fetch(
+      `/api/file_exts?file_exts=${encodeURI(JSON.stringify(file_exts))}`,
+      { method: "POST" },
+    );
+  }
 
   public static async getOriginMediafiles() {
     return await fetch(`/api/medialist`).then((res) => res.json());
