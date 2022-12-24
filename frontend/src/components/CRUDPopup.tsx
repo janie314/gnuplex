@@ -19,6 +19,9 @@ function CRUDPopup(props: {
     APICall.getOriginMediadirs().then((res: string[]) => {
       setMediadirs(res.join("\n"));
     });
+    APICall.getOriginFileExts().then((res: string[]) => {
+      setFileExts(res.join("\n"));
+    });
   }, [props.visible]);
 
   if (props.visible) {
@@ -33,13 +36,13 @@ function CRUDPopup(props: {
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
         >
         </textarea>
-                <span className="subtitle">Excluded File Extensions</span>
+        <span className="subtitle">Excluded File Extensions</span>
         <textarea
           value={file_exts}
           onChange={(e) => setFileExts(e.target.value)}
           className="crudpopup-textarea"
           rows={10}
-          placeholder=".pdf\n.txt"
+          placeholder=".pdf"
         >
         </textarea>
         <div>
@@ -52,7 +55,7 @@ function CRUDPopup(props: {
               const arr1 = mediadirs.trim().split("\n").filter((line) =>
                 !/^\s*$/.test(line)
               ).map((line) => line.trim());
-              const arr2 = mediadirs.trim().split("\n").filter((line) =>
+              const arr2 = file_exts.trim().split("\n").filter((line) =>
                 !/^\s*$/.test(line)
               ).map((line) => line.trim());
               APICall.setOriginMediadirs(arr1).then(() =>
@@ -63,6 +66,7 @@ function CRUDPopup(props: {
               );
             }}
           />
+          <WorkingSpinnerTSX visible={saveFileExtsWorking || saveMediadirsWorking} />
         </div>
         <div>
           <input

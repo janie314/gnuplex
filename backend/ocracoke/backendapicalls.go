@@ -160,7 +160,7 @@ func (oc *Ocracoke) GetFileExts(ignorelock bool) []string {
 	} else {
 		log.Println("Ignoring GetFileExts lock")
 	}
-	rows, err := oc.DB.SqliteConn.Query("select (ext, exclude) from file_exts order by ext ;")
+	rows, err := oc.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
 	if err != nil {
 		log.Println("Error: GetFileExts: ", err)
 		return []string{}
@@ -190,7 +190,7 @@ func (oc *Ocracoke) SetFileExts(file_exts []string) error {
 	var err error
 	oc.DB.SqliteConn.Exec("delete from file_exts;")
 	for _, ext := range file_exts {
-		_, err := oc.DB.SqliteConn.Exec("insert or ignore into file_exts (filepath) values (?, true);", ext)
+		_, err := oc.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", ext)
 		if err != nil {
 			log.Println("Error: SetFileExts", err)
 		}
