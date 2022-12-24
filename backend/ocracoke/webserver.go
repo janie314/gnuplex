@@ -39,9 +39,9 @@ func Init(wg *sync.WaitGroup, debug bool) (*Ocracoke, error) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
 	if debug {
-		oc.Router.Static("/home", consts.ProdStaticFilespath)
-	} else {
 		oc.Router.Static("/home", consts.DevStaticFilespath)
+	} else {
+		oc.Router.Static("/home", consts.ProdStaticFilespath)
 	}
 	/*
 	 * API endpoints
