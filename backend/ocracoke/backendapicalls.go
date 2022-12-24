@@ -8,38 +8,62 @@ import (
 	"path/filepath"
 )
 
+type dBFSDiff struct {
+	inDB bool
+	inFS bool
+}
+
 func (oc *Ocracoke) ScanLib() error {
 	oc.DB.Mu.Lock()
 	log.Println("Got ScanLib lock")
 	defer oc.DB.Mu.Unlock()
 	defer log.Println("Rem ScanLib lock")
 	var reterr error
-	mediadirs := oc.GetMediadirs(true)
-	medialist := oc.GetMedialib(true)
-	mediadirHash := make(map[string]bool, len(mediadirs))
-	for _, path := range medialist {
-		mediadirHash[path] = true
+	mediadirsFromDB := oc.GetMediadirs(true)
+	medialistFromDB := oc.GetMedialib(true)
+	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
+	for _, path := range medialistFromDB {
+		medialist[path] = &dBFSDiff{
+			inDB: true,
+			inFS: false,
+		}
 	}
-	for _, mediadir := range mediadirs {
-		dir, err := os.Stat(mediadir)
+	for _, mediadirFromDB := range mediadirsFromDB {
+		dir, err := os.Stat(mediadirFromDB)
 		if (err == nil) && dir.IsDir() {
-			err = filepath.WalkDir(mediadir, func(path string, entry fs.DirEntry, err error) error {
-				if err == nil && (!entry.IsDir()) && (!mediadirHash[path]) {
-					return oc.AddMedia(path, true)
-				} else if err != nil {
-					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadir)
+			err = filepath.WalkDir(mediadirFromDB, func(path string, entry fs.DirEntry, err error) error {
+				if err != nil {
+					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadirFromDB)
 					return err
+				} else if !entry.IsDir() {
+					if medialist[path] == nil {
+						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
+						return oc.AddMedia(path, true)
+					} else if medialist[path].inDB {
+						medialist[path].inFS = true
+						return nil
+					} else {
+						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
+						return oc.AddMedia(path, true)
+					}
+				} else {
+					return nil
 				}
-				return nil
 			})
 			if err != nil {
 				reterr = err
 			}
 		} else {
-			log.Println("Error: Bad mediadir: ", mediadir)
+			log.Println("Error: Bad mediadir: ", mediadirFromDB)
 			reterr = err
 		}
 	}
+	for _, path := range medialistFromDB {
+		if !medialist[path].inFS {
+			oc.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
+		}
+	}
+	// TODO: do this at the application level
 	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.srt';`)
 	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.txt';`)
 	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.jpg';`)
