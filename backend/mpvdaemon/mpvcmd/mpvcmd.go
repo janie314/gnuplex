@@ -42,13 +42,13 @@ type IMPVResponseInt struct {
 var mu sync.Mutex
 var mpvConn *net.UnixConn
 
-func InitUnixConn() {
+func InitUnixConn(wg *sync.WaitGroup) {
 	var mpvUnixAddr *net.UnixAddr
 	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
 	if err != nil {
 		log.Fatal(err)
 	}
-	for mpvConn == nil {
+	for i := 10; mpvConn == nil || i >= 0; i-- {
 		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
 		if err != nil {
 			log.Println("Warning: InitUnixConn:", err)

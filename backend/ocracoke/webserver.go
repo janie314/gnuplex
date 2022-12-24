@@ -1,61 +1,76 @@
-package webserver
+package ocracoke
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"sync"
 
 	"gnuplex-backend/consts"
-	"gnuplex-backend/liteDB"
 	"gnuplex-backend/mpvdaemon/mpvcmd"
+	"gnuplex-backend/ocracoke/liteDB"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Run(wg *sync.WaitGroup, db *liteDB.LiteDB) {
-	defer wg.Done()
-	router := gin.Default()
-	router.SetTrustedProxies(nil)
-	mpvcmd.InitUnixConn()
+type Ocracoke struct {
+	DB     *liteDB.LiteDB
+	Router *gin.Engine
+}
+
+func Init(wg *sync.WaitGroup, debug bool) (*Ocracoke, error) {
+	oc := new(Ocracoke)
+	oc.Router = gin.Default()
+	oc.Router.SetTrustedProxies(nil)
+	go mpvcmd.InitUnixConn(wg)
+	db, err := liteDB.Init(debug)
+	if err != nil {
+		return nil, err
+	}
+	oc.DB = db
 	/*
 	 * Serve static files
 	 */
-	router.GET("/", func(c *gin.Context) {
+	oc.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	router.GET("/gnuplex", func(c *gin.Context) {
+	oc.Router.GET("/gnuplex", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	router.Static("/home", consts.StaticFilespath)
+	if debug {
+		oc.Router.Static("/home", consts.ProdStaticFilespath)
+	} else {
+		oc.Router.Static("/home", consts.DevStaticFilespath)
+	}
 	/*
 	 * API endpoints
 	 */
-	router.POST("/api/play", func(c *gin.Context) {
+	oc.Router.POST("/api/play", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.Play())
 	})
-	router.POST("/api/pause", func(c *gin.Context) {
+	oc.Router.POST("/api/pause", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.Pause())
 	})
-	router.GET("/api/paused", func(c *gin.Context) {
+	oc.Router.GET("/api/paused", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused())
 	})
-	router.GET("/api/media", func(c *gin.Context) {
+	oc.Router.GET("/api/media", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetMedia())
 	})
-	router.POST("/api/media", func(c *gin.Context) {
+	oc.Router.POST("/api/media", func(c *gin.Context) {
 		mediafile := c.Query("mediafile")
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			AddHist(db, mediafile)
+			oc.AddHist(mediafile)
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mediafile))
 		}
 	})
-	router.GET("/api/vol", func(c *gin.Context) {
+	oc.Router.GET("/api/vol", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume())
 	})
-	router.POST("/api/vol", func(c *gin.Context) {
+	oc.Router.POST("/api/vol", func(c *gin.Context) {
 		param := c.Query("vol")
 		if param == "" {
 			c.String(http.StatusBadRequest, "empty vol string")
@@ -67,17 +82,17 @@ func Run(wg *sync.WaitGroup, db *liteDB.LiteDB) {
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(vol))
 		}
 	})
-	router.GET("/api/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, GetMediadirs(db, false))
+	oc.Router.GET("/api/mediadirs", func(c *gin.Context) {
+		c.JSON(http.StatusOK, oc.GetMediadirs(false))
 	})
-	router.POST("/api/mediadirs", func(c *gin.Context) {
+	oc.Router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))
 		var mediadirs []string
 		err := json.Unmarshal(mediadirsJson, &mediadirs)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = SetMediadirs(db, mediadirs)
+			err = oc.SetMediadirs(mediadirs)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -85,10 +100,10 @@ func Run(wg *sync.WaitGroup, db *liteDB.LiteDB) {
 			}
 		}
 	})
-	router.GET("/api/pos", func(c *gin.Context) {
+	oc.Router.GET("/api/pos", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos())
 	})
-	router.POST("/api/pos", func(c *gin.Context) {
+	oc.Router.POST("/api/pos", func(c *gin.Context) {
 		param := c.Query("pos")
 		if param == "" {
 			c.String(http.StatusBadRequest, "empty pos string")
@@ -100,18 +115,24 @@ func Run(wg *sync.WaitGroup, db *liteDB.LiteDB) {
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetPos(pos))
 		}
 	})
-	router.GET("/api/last25", func(c *gin.Context) {
-		c.JSON(http.StatusOK, Last25(db))
+	oc.Router.GET("/api/last25", func(c *gin.Context) {
+		c.JSON(http.StatusOK, oc.Last25())
 	})
-	router.GET("/api/medialist", func(c *gin.Context) {
-		c.JSON(http.StatusOK, GetMedialib(db, false))
+	oc.Router.GET("/api/medialist", func(c *gin.Context) {
+		c.JSON(http.StatusOK, oc.GetMedialib(false))
 	})
-	router.POST("/api/medialist", func(c *gin.Context) {
-		ScanLib(db)
+	oc.Router.POST("/api/medialist", func(c *gin.Context) {
+		oc.ScanLib()
 		c.String(http.StatusOK, "OK")
 	})
-	/*
-	 * Execution
-	 */
-	router.Run(":40000")
+	return oc, nil
+}
+
+func (ocracoke *Ocracoke) Run(wg *sync.WaitGroup) error {
+	defer wg.Done()
+	err := ocracoke.Router.Run(":40000")
+	if err != nil {
+		log.Println("Ocracoke error:", err)
+	}
+	return err
 }

@@ -15,50 +15,64 @@ type LiteDB struct {
 	Mu         *sync.Mutex
 }
 
-func Init() *LiteDB {
+func Init(debug bool) (*LiteDB, error) {
 	var db LiteDB
+	var conn *sql.DB
+	var err error
 	db.Mu = &sync.Mutex{}
 	db.Mu.Lock()
 	log.Println("Got Init LiteDB lock")
 	defer db.Mu.Unlock()
 	defer log.Println("Rem Init LiteDB lock")
-	conn, err := sql.Open("sqlite", consts.DBFilepath)
+	if debug {
+		conn, err = sql.Open("sqlite", consts.DevDBFilepath)
+	} else {
+		conn, err = sql.Open("sqlite", consts.ProdDBFilepath)
+	}
 	db.SqliteConn = conn
 	if err != nil {
-		log.Fatal("Init LiteDB fatal error:", err)
+		log.Println("Init LiteDB fatal error:", err)
+		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists pos_cache (filepath string not null primary key, pos int);")
 	if err != nil {
-		log.Fatal("Init LiteDB error 1:", err)
+		log.Println("Init LiteDB error 1:", err)
+		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists history (id integer not null unique, mediafile	text, primary key(id AUTOINCREMENT));")
 	if err != nil {
-		log.Fatal("Init LiteDB error 2:", err)
+		log.Println("Init LiteDB error 2:", err)
+		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists medialist (filepath text not null,  primary key(filepath)) ;")
 	if err != nil {
-		log.Fatal("Init LiteDB error 3:", err)
+		log.Println("Init LiteDB error 3:", err)
+		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists mediadirs (filepath text not null, primary key(filepath)) ;")
 	if err != nil {
-		log.Fatal("Init LiteDB error 4:", err)
+		log.Println("Init LiteDB error 4:", err)
+		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists version_info (key string not null primary key, value string);")
 	if err != nil {
-		log.Fatal("Init LiteDB error 5:", err)
+		log.Println("Init LiteDB error 5:", err)
+		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("insert or ignore into version_info values ('db_schema_version', ?);", consts.DBVersion)
 	if err != nil {
-		log.Fatal("Init LiteDB error 6:", err)
+		log.Println("Init LiteDB error 6:", err)
+		return nil, err
 	}
-	UpgradeDB(&db)
-	return &db
+	upgradeDB(&db)
+	return &db, nil
 }
 
-func UpgradeDB(liteDB *LiteDB) {
-	rows, err := liteDB.SqliteConn.Query("select value from version_info where key = 'db_schema_version';")
+func upgradeDB(db *LiteDB) error {
+	rows, err := db.SqliteConn.Query("select value from version_info where key = 'db_schema_version';")
 	if err != nil {
-		log.Fatal("Upgrade db error:", err)
+		log.Println("Upgrade db error:", err)
+		return err
 	}
 	next := rows.Next()
 	if !next {
@@ -67,14 +81,17 @@ func UpgradeDB(liteDB *LiteDB) {
 	var vers string
 	err = rows.Scan(&vers)
 	if err != nil {
-		log.Fatal("Bad version schema 1", err)
+		log.Println("Bad version schema 1", err)
+		return err
 	}
 	versNum, err := strconv.Atoi(vers)
 	if err != nil {
-		log.Fatal("Bad version schema 2", err)
+		log.Println("Bad version schema 2", err)
+		return err
 	}
 	if versNum < consts.DBVersion {
 		log.Println("Should I do something?")
 	}
 	rows.Close()
+	return nil
 }
