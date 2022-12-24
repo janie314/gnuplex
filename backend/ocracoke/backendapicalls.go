@@ -1,22 +1,21 @@
-package webserver
+package ocracoke
 
 import (
 	"fmt"
-	"gnuplex-backend/liteDB"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 )
 
-func ScanLib(db *liteDB.LiteDB) error {
-	db.Mu.Lock()
+func (oc *Ocracoke) ScanLib() error {
+	oc.DB.Mu.Lock()
 	log.Println("Got ScanLib lock")
-	defer db.Mu.Unlock()
+	defer oc.DB.Mu.Unlock()
 	defer log.Println("Rem ScanLib lock")
 	var reterr error
-	mediadirs := GetMediadirs(db, true)
-	medialist := GetMedialib(db, true)
+	mediadirs := oc.GetMediadirs(true)
+	medialist := oc.GetMedialib(true)
 	mediadirHash := make(map[string]bool, len(mediadirs))
 	for _, path := range medialist {
 		mediadirHash[path] = true
@@ -26,7 +25,7 @@ func ScanLib(db *liteDB.LiteDB) error {
 		if (err == nil) && dir.IsDir() {
 			err = filepath.WalkDir(mediadir, func(path string, entry fs.DirEntry, err error) error {
 				if err == nil && (!entry.IsDir()) && (!mediadirHash[path]) {
-					return AddMedia(db, path, true)
+					return oc.AddMedia(path, true)
 				} else if err != nil {
 					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadir)
 					return err
@@ -41,56 +40,56 @@ func ScanLib(db *liteDB.LiteDB) error {
 			reterr = err
 		}
 	}
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.srt';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.txt';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.jpg';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.jpeg';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.torrent';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.ico';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.docx';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.pdf';`)
-	db.SqliteConn.Exec(`delete from medialist where filepath like '%.png';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.srt';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.txt';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.jpg';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.jpeg';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.torrent';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.ico';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.docx';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.pdf';`)
+	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.png';`)
 	return reterr
 }
 
-func AddHist(liteDB *liteDB.LiteDB, mediafile string) error {
-	liteDB.Mu.Lock()
+func (oc *Ocracoke) AddHist(mediafile string) error {
+	oc.DB.Mu.Lock()
 	log.Println("Got AddHist lock")
-	defer liteDB.Mu.Unlock()
+	defer oc.DB.Mu.Unlock()
 	defer log.Println("Rem AddHist lock")
-	_, err := liteDB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
+	_, err := oc.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddHist err", err)
 	}
 	return err
 }
 
-func AddMedia(db *liteDB.LiteDB, mediafile string, ignorelock bool) error {
+func (oc *Ocracoke) AddMedia(mediafile string, ignorelock bool) error {
 	if !ignorelock {
-		db.Mu.Lock()
+		oc.DB.Mu.Lock()
 		log.Println("Got AddMedia lock")
-		defer db.Mu.Unlock()
+		defer oc.DB.Mu.Unlock()
 		defer log.Println("Rem AddMedia lock")
 	} else {
 		log.Println("Ignoring AddMedia lock")
 	}
-	_, err := db.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
+	_, err := oc.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddMedia err", err)
 	}
 	return err
 }
 
-func GetMediadirs(db *liteDB.LiteDB, ignorelock bool) []string {
+func (oc *Ocracoke) GetMediadirs(ignorelock bool) []string {
 	if !ignorelock {
-		db.Mu.Lock()
+		oc.DB.Mu.Lock()
 		log.Println("Got GetMediadirs lock")
-		defer db.Mu.Unlock()
+		defer oc.DB.Mu.Unlock()
 		defer log.Println("Rem GetMediadirs lock")
 	} else {
 		log.Println("Ignoring GetMediadirs lock")
 	}
-	rows, err := db.SqliteConn.Query("select filepath from mediadirs order by filepath;")
+	rows, err := oc.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMediadirs: ", err)
 		return []string{}
@@ -112,15 +111,15 @@ func GetMediadirs(db *liteDB.LiteDB, ignorelock bool) []string {
 	return res[:i]
 }
 
-func SetMediadirs(db *liteDB.LiteDB, mediadirs []string) error {
-	db.Mu.Lock()
+func (oc *Ocracoke) SetMediadirs(mediadirs []string) error {
+	oc.DB.Mu.Lock()
 	log.Println("Got SetMediadirs lock")
-	defer db.Mu.Unlock()
+	defer oc.DB.Mu.Unlock()
 	defer log.Println("Rem SetMediadirs lock")
 	var err error
-	db.SqliteConn.Exec("delete from mediadirs;")
+	oc.DB.SqliteConn.Exec("delete from mediadirs;")
 	for _, mediafile := range mediadirs {
-		_, err := db.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
+		_, err := oc.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
 		if err != nil {
 			log.Println("Error: AddMediadir", err)
 		}
@@ -128,16 +127,16 @@ func SetMediadirs(db *liteDB.LiteDB, mediadirs []string) error {
 	return err
 }
 
-func GetMedialib(db *liteDB.LiteDB, ignorelock bool) []string {
+func (oc *Ocracoke) GetMedialib(ignorelock bool) []string {
 	if !ignorelock {
-		db.Mu.Lock()
+		oc.DB.Mu.Lock()
 		log.Println("Got GetMedialib lock")
-		defer db.Mu.Unlock()
+		defer oc.DB.Mu.Unlock()
 		defer log.Println("Rem GetMedialib lock")
 	} else {
 		log.Println("Ignoring GetMedialib lock")
 	}
-	rows, err := db.SqliteConn.Query("select filepath from medialist order by filepath;")
+	rows, err := oc.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMedialib: ", err)
 		return []string{}
@@ -159,12 +158,12 @@ func GetMedialib(db *liteDB.LiteDB, ignorelock bool) []string {
 	return res[:i]
 }
 
-func Last25(db *liteDB.LiteDB) []string {
-	db.Mu.Lock()
+func (oc *Ocracoke) Last25() []string {
+	oc.DB.Mu.Lock()
 	log.Println("Got Last25 lock")
-	defer db.Mu.Unlock()
+	defer oc.DB.Mu.Unlock()
 	defer fmt.Println("Rem Last25 lock")
-	rows, err := db.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
+	rows, err := oc.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return []string{}

@@ -2,9 +2,8 @@ package main
 
 import (
 	"flag"
-	"gnuplex-backend/liteDB"
 	"gnuplex-backend/mpvdaemon"
-	"gnuplex-backend/webserver"
+	"gnuplex-backend/ocracoke"
 	"log"
 	"sync"
 
@@ -27,10 +26,13 @@ func main() {
 	 * Main daemon setup
 	 */
 	var wg sync.WaitGroup
-	wg.Add(2)
-	db := liteDB.Init()
-	go webserver.Run(&wg, db)
-	go mpvdaemon.Run(&wg)
+	wg.Add(1)
+	oc, err := ocracoke.Init(&wg, *debug)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go oc.Run(&wg)
+	go mpvdaemon.Run(&wg, *debug)
 	/*
 	 * Scheduler process
 	 */
@@ -40,7 +42,9 @@ func main() {
 	if err != nil {
 		log.Fatal("CronTrigger init failure", err)
 	}
-	scanLibJob := quartz.NewFunctionJob(func() (int, error) { return 0, webserver.ScanLib(db) })
+	scanLibJob := quartz.NewFunctionJob(func() (int, error) {
+		return 0, oc.ScanLib()
+	})
 	err = sched.ScheduleJob(scanLibJob, scanLibTrigger)
 	if err != nil {
 		log.Fatal("Scheduler init failure", err)

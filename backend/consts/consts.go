@@ -1,8 +1,10 @@
 package consts
 
 const (
-	GNUPlexVersion  = "0.1 Currituck"
-	DBVersion       = 1
-	DBFilepath      = "/etc/gnuplex/gnuplex.sqlite3"
-	StaticFilespath = "/var/gnuplex/home"
+	GNUPlexVersion      = "0.1 Currituck"
+	DBVersion           = 1
+	DevDBFilepath       = "../tmp/gnuplex.sqlite3"
+	ProdDBFilepath      = "/etc/gnuplex/gnuplex.sqlite3"
+	DevStaticFilespath  = "./public"
+	ProdStaticFilespath = "/var/gnuplex/home"
 )
