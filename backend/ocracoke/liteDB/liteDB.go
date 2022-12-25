@@ -54,6 +54,11 @@ func Init(debug bool) (*LiteDB, error) {
 		log.Println("Init LiteDB error 4:", err)
 		return nil, err
 	}
+	_, err = db.SqliteConn.Exec("create table if not exists file_exts (ext text not null, exclude int, primary key(ext)) ;")
+	if err != nil {
+		log.Println("Init LiteDB error 7:", err)
+		return nil, err
+	}
 	_, err = db.SqliteConn.Exec("create table if not exists version_info (key string not null primary key, value string);")
 	if err != nil {
 		log.Println("Init LiteDB error 5:", err)

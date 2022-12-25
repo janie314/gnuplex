@@ -10,12 +10,17 @@ function CRUDPopup(props: {
   closeHook: () => void;
 }) {
   const [mediadirs, setMediadirs] = useState("");
+  const [file_exts, setFileExts] = useState("");
   const [refreshLibraryWorking, setRefreshLibraryWorking] = useState(false);
   const [saveMediadirsWorking, setSaveMediadirsWorking] = useState(false);
+  const [saveFileExtsWorking, setSaveFileExtsWorking] = useState(false);
 
   useEffect(() => {
     APICall.getOriginMediadirs().then((res: string[]) => {
       setMediadirs(res.join("\n"));
+    });
+    APICall.getOriginFileExts().then((res: string[]) => {
+      setFileExts(res.join("\n"));
     });
   }, [props.visible]);
 
@@ -31,19 +36,38 @@ function CRUDPopup(props: {
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
         >
         </textarea>
+        <span className="subtitle">Excluded File Extensions</span>
+        <textarea
+          value={file_exts}
+          onChange={(e) => setFileExts(e.target.value)}
+          className="crudpopup-textarea"
+          rows={10}
+          placeholder=".pdf"
+        >
+        </textarea>
         <div>
           <input
             type="button"
-            value="Save Media Directories"
+            value="Save Settings"
             onClick={() => {
               setSaveMediadirsWorking(true);
-              const arr = mediadirs.trim().split("\n").filter((line) =>
+              setSaveFileExtsWorking(true);
+              const arr1 = mediadirs.trim().split("\n").filter((line) =>
                 !/^\s*$/.test(line)
               ).map((line) => line.trim());
-              APICall.setOriginMediadirs(arr).then(() =>
+              const arr2 = file_exts.trim().split("\n").filter((line) =>
+                !/^\s*$/.test(line)
+              ).map((line) => line.trim());
+              APICall.setOriginMediadirs(arr1).then(() =>
                 setSaveMediadirsWorking(false)
               );
+              APICall.setOriginFileExts(arr2).then(() =>
+                setSaveFileExtsWorking(false)
+              );
             }}
+          />
+          <WorkingSpinnerTSX
+            visible={saveFileExtsWorking || saveMediadirsWorking}
           />
         </div>
         <div>
