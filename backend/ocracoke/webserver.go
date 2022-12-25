@@ -19,12 +19,12 @@ type Ocracoke struct {
 	Router *gin.Engine
 }
 
-func Init(wg *sync.WaitGroup, debug bool) (*Ocracoke, error) {
+func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
 	oc := new(Ocracoke)
 	oc.Router = gin.Default()
 	oc.Router.SetTrustedProxies(nil)
 	go mpvcmd.InitUnixConn(wg)
-	db, err := liteDB.Init(debug)
+	db, err := liteDB.Init(prod)
 	if err != nil {
 		return nil, err
 	}
@@ -38,10 +38,10 @@ func Init(wg *sync.WaitGroup, debug bool) (*Ocracoke, error) {
 	oc.Router.GET("/gnuplex", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	if debug {
-		oc.Router.Static("/home", consts.DevStaticFilespath)
-	} else {
+	if prod {
 		oc.Router.Static("/home", consts.ProdStaticFilespath)
+	} else {
+		oc.Router.Static("/home", consts.DevStaticFilespath)
 	}
 	/*
 	 * API endpoints

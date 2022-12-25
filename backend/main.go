@@ -15,9 +15,10 @@ func main() {
 	/*
 	 * Cmd line flags
 	 */
-	debug := flag.Bool("debug", false, "Enable non-production mode + more verbose logging.")
+	prod := flag.Bool("prod", false, "Run in prod mode.")
+	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	flag.Parse()
-	if !(*debug) {
+	if *prod {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)
@@ -27,12 +28,12 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	oc, err := ocracoke.Init(&wg, *debug)
+	oc, err := ocracoke.Init(&wg, *prod)
 	if err != nil {
 		log.Fatal(err)
 	}
 	go oc.Run(&wg)
-	go mpvdaemon.Run(&wg, *debug)
+	go mpvdaemon.Run(&wg, *verbose)
 	/*
 	 * Scheduler process
 	 */

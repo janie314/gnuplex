@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-func Run(wg *sync.WaitGroup, debug bool) {
+func Run(wg *sync.WaitGroup, verbose bool) {
 	defer wg.Done()
 	for {
 		var cmd *exec.Cmd
-		if !debug {
+		if !verbose {
 			cmd = exec.Command("mpv", "--idle=yes", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
 		} else {
 			cmd = exec.Command("mpv", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")

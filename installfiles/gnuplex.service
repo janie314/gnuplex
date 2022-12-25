@@ -4,7 +4,7 @@ Description=GNUPlex
 [Service]
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 Environment=PULSE_RUNTIME_PATH=/run/user/1000/pulse
-ExecStart=/usr/bin/gnuplex
+ExecStart=/usr/bin/gnuplex --prod
 Restart=always
 RestartSec=5
 User=janie

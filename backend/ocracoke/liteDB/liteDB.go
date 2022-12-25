@@ -15,7 +15,7 @@ type LiteDB struct {
 	Mu         *sync.Mutex
 }
 
-func Init(debug bool) (*LiteDB, error) {
+func Init(prod bool) (*LiteDB, error) {
 	var db LiteDB
 	var conn *sql.DB
 	var err error
@@ -24,7 +24,7 @@ func Init(debug bool) (*LiteDB, error) {
 	log.Println("Got Init LiteDB lock")
 	defer db.Mu.Unlock()
 	defer log.Println("Rem Init LiteDB lock")
-	if debug {
+	if prod {
 		conn, err = sql.Open("sqlite", consts.DevDBFilepath)
 	} else {
 		conn, err = sql.Open("sqlite", consts.ProdDBFilepath)
