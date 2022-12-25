@@ -17,7 +17,7 @@
 }
 
 .rightpanel {
-  flex: 4;
+  flex: 5;
 }
 
 a {
@@ -58,10 +58,22 @@ input[type=button]:hover {
   margin-top: 1ch;
 }
 
+.logo-panel {
+  background-color: black;
+}
+
 .logo {
   background-color: black;
   color: white;
   font: 25px monospace;
+}
+
+.version {
+  background-color: black;
+  color: white;
+  font: 15px monospace;
+  font-style: italic;
+  margin-left: 1%;
 }
 
 .mediafile {

@@ -12,6 +12,7 @@ interface IMPVRes {
 }
 
 function App() {
+  const [version, setVersion] = useState("");
   const [volPosToggle, setVolPosToggle] = useState(false);
   const [mediaToggle, setMediaToggle] = useState(false);
   const [pos, setPos] = useState(0);
@@ -20,6 +21,10 @@ function App() {
   const [mediafiles, setMediafiles] = useState<string[]>([]);
   const [last25, setLast25] = useState<string[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
+
+  useEffect(() => {
+    APICall.getOriginVersion().then((version: string) => setVersion(version));
+  }, []);
 
   useEffect(() => {
     APICall.getOriginMedia().then((res: string) => setMedia(res));
@@ -39,7 +44,10 @@ function App() {
         style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
       >
         <div className="panel leftpanel">
-          <span className="logo">GNUPlex</span>
+          <div className="logo-panel">
+            <span className="logo">GNUPlex</span>
+            <span className="version">{version}</span>
+          </div>
           <div className="controlgroup">
             <input
               className="play-button"
@@ -72,7 +80,7 @@ function App() {
               type="button"
               value="Cast YouTube"
               onClick={() => {
-                const url = window.prompt("YouTube URL:","") || "";
+                const url = window.prompt("YouTube URL:", "") || "";
                 APICall.setOriginMedia(url);
               }}
             />
