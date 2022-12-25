@@ -68,6 +68,14 @@ function App() {
                 setMediadirInputPopup(true);
               }}
             />
+            <input
+              type="button"
+              value="Cast YouTube"
+              onClick={() => {
+                const url = window.prompt("YouTube URL:","") || "";
+                APICall.setOriginMedia(url);
+              }}
+            />
           </div>
           <div className="controlgroup">
             <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
