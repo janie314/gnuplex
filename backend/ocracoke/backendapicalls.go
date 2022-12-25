@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type dBFSDiff struct {
@@ -21,12 +22,17 @@ func (oc *Ocracoke) ScanLib() error {
 	var reterr error
 	mediadirsFromDB := oc.GetMediadirs(true)
 	medialistFromDB := oc.GetMedialib(true)
+	fileExts := oc.GetFileExts(true)
+	fileExtHash := make(map[string]bool)
 	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
 	for _, path := range medialistFromDB {
 		medialist[path] = &dBFSDiff{
 			inDB: true,
 			inFS: false,
 		}
+	}
+	for _, ext := range fileExts {
+		fileExtHash[ext] = true
 	}
 	for _, mediadirFromDB := range mediadirsFromDB {
 		dir, err := os.Stat(mediadirFromDB)
@@ -36,7 +42,11 @@ func (oc *Ocracoke) ScanLib() error {
 					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadirFromDB)
 					return err
 				} else if !entry.IsDir() {
-					if medialist[path] == nil {
+					pathLC := strings.ToLower(path)
+					ext := pathLC[strings.LastIndex(path, ".")+1:]
+					if fileExtHash[ext] || fileExtHash["."+ext] {
+						return nil
+					} else if medialist[path] == nil {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
 						return oc.AddMedia(path, true)
 					} else if medialist[path].inDB {
@@ -63,16 +73,6 @@ func (oc *Ocracoke) ScanLib() error {
 			oc.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
 		}
 	}
-	// TODO: do this at the application level
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.srt';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.txt';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.jpg';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.jpeg';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.torrent';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.ico';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.docx';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.pdf';`)
-	oc.DB.SqliteConn.Exec(`delete from medialist where filepath like '%.png';`)
 	return reterr
 }
 
@@ -190,7 +190,7 @@ func (oc *Ocracoke) SetFileExts(file_exts []string) error {
 	var err error
 	oc.DB.SqliteConn.Exec("delete from file_exts;")
 	for _, ext := range file_exts {
-		_, err := oc.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", ext)
+		_, err := oc.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
 		if err != nil {
 			log.Println("Error: SetFileExts", err)
 		}
