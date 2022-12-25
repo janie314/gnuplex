@@ -32,6 +32,12 @@ class APICall {
     });
   }
 
+  public static async getOriginVersion() {
+    return await fetch(
+      `/api/version`,
+    ).then((res) => res.json()) as string;
+  }
+
   public static async setOriginPos(pos: number) {
     return await fetch(
       `/api/pos?pos=${pos}`,

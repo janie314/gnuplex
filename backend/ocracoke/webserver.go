@@ -46,6 +46,9 @@ func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
 	/*
 	 * API endpoints
 	 */
+	oc.Router.GET("/api/version", func(c *gin.Context) {
+		c.JSON(http.StatusOK, consts.GNUPlexVersion)
+	})
 	oc.Router.POST("/api/play", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.Play())
 	})
