@@ -66,7 +66,9 @@ function CRUDPopup(props: {
               );
             }}
           />
-          <WorkingSpinnerTSX visible={saveFileExtsWorking || saveMediadirsWorking} />
+          <WorkingSpinnerTSX
+            visible={saveFileExtsWorking || saveMediadirsWorking}
+          />
         </div>
         <div>
           <input

@@ -91,7 +91,7 @@ class APICall {
       { method: "POST" },
     );
   }
-  
+
   public static async getOriginFileExts() {
     return await fetch(
       `/api/file_exts`,
