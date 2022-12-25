@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon"
 	"gnuplex-backend/ocracoke"
 	"log"
@@ -12,6 +14,7 @@ import (
 )
 
 func main() {
+	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	/*
 	 * Cmd line flags
 	 */

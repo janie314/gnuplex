@@ -25,9 +25,9 @@ func Init(prod bool) (*LiteDB, error) {
 	defer db.Mu.Unlock()
 	defer log.Println("Rem Init LiteDB lock")
 	if prod {
-		conn, err = sql.Open("sqlite", consts.DevDBFilepath)
-	} else {
 		conn, err = sql.Open("sqlite", consts.ProdDBFilepath)
+	} else {
+		conn, err = sql.Open("sqlite", consts.DevDBFilepath)
 	}
 	db.SqliteConn = conn
 	if err != nil {

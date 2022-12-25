@@ -47,7 +47,7 @@ git clone https://gitlab.com/jane314/gnuplex.git
 ./dev
 ```
 
-# Install server mode
+# Install or update server mode
 
 Ensure port port 40000 is open on your server. The site will be hosted at
 `http:hostname:40000/`.

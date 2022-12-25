@@ -1,8 +1,9 @@
 #!/usr/bin/sh
 basedir=$(realpath $(dirname "$0"))
 cp -v "$basedir/installfiles/gnuplex.service" /etc/systemd/system
+systemctl daemon-reload
+systemctl stop gnuplex
 systemctl enable gnuplex
-mkdir -v /etc/gnuplex 
 mkdir -vp /var/gnuplex/home
 sh "$basedir/build"
 cp -v "$basedir/backend/gnuplex-backend" /usr/bin/gnuplex
