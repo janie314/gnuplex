@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon"
-	"gnuplex-backend/ocracoke"
+	"gnuplex-backend/server"
 	"log"
 	"sync"
 
@@ -15,12 +15,13 @@ import (
 )
 
 func main() {
-	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
+	fmt.Println("GNUPlex Server Version " + consts.GNUPlexVersion)
 	/*
 	 * Cmd line flags
 	 */
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
+	port := flag.Int("port", 40000, "Port to listen on.")
 	flag.Parse()
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -32,11 +33,11 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	oc, err := ocracoke.Init(&wg, *prod)
+	oc, err := server.Init(&wg, *prod, port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	go oc.Run(&wg)
+	go server.Run(&wg)
 	go mpvdaemon.Run(&wg, *verbose)
 	/*
 	 * Scheduler process

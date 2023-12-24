@@ -2,6 +2,7 @@ package ocracoke
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,71 +10,73 @@ import (
 
 	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon/mpvcmd"
-	"gnuplex-backend/ocracoke/liteDB"
+	"gnuplex-backend/server/liteDB"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Ocracoke struct {
+type Server struct {
 	DB     *liteDB.LiteDB
 	Router *gin.Engine
+	port   int
 }
 
-func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
-	oc := new(Ocracoke)
-	oc.Router = gin.Default()
-	oc.Router.SetTrustedProxies(nil)
+func Init(wg *sync.WaitGroup, prod bool, port int) (*Server, error) {
+	server := new(Server)
+	server.Router = gin.Default()
+	server.Router.SetTrustedProxies(nil)
 	go mpvcmd.InitUnixConn(wg)
 	db, err := liteDB.Init(prod)
 	if err != nil {
 		return nil, err
 	}
-	oc.DB = db
+	server.DB = db
+	server.port = port
 	/*
 	 * Serve static files
 	 */
-	oc.Router.GET("/", func(c *gin.Context) {
+	server.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	oc.Router.GET("/gnuplex", func(c *gin.Context) {
+	server.Router.GET("/gnuplex", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
 	if prod {
-		oc.Router.Static("/home", consts.ProdStaticFilespath)
+		server.Router.Static("/home", consts.ProdStaticFilespath)
 	} else {
-		oc.Router.Static("/home", consts.DevStaticFilespath)
+		server.Router.Static("/home", consts.DevStaticFilespath)
 	}
 	/*
 	 * API endpoints
 	 */
-	oc.Router.GET("/api/version", func(c *gin.Context) {
+	server.Router.GET("/api/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})
-	oc.Router.POST("/api/play", func(c *gin.Context) {
+	server.Router.POST("/api/play", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.Play())
 	})
-	oc.Router.POST("/api/pause", func(c *gin.Context) {
+	server.Router.POST("/api/pause", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.Pause())
 	})
-	oc.Router.GET("/api/paused", func(c *gin.Context) {
+	server.Router.GET("/api/paused", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused())
 	})
-	oc.Router.GET("/api/media", func(c *gin.Context) {
+	server.Router.GET("/api/media", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetMedia())
 	})
-	oc.Router.POST("/api/media", func(c *gin.Context) {
+	server.Router.POST("/api/media", func(c *gin.Context) {
 		mediafile := c.Query("mediafile")
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			oc.AddHist(mediafile)
+			server.AddHist(mediafile)
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mediafile))
 		}
 	})
-	oc.Router.GET("/api/vol", func(c *gin.Context) {
+	server.Router.GET("/api/vol", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume())
 	})
-	oc.Router.POST("/api/vol", func(c *gin.Context) {
+	server.Router.POST("/api/vol", func(c *gin.Context) {
 		param := c.Query("vol")
 		if param == "" {
 			c.String(http.StatusBadRequest, "empty vol string")
@@ -85,17 +88,17 @@ func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(vol))
 		}
 	})
-	oc.Router.GET("/api/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, oc.GetMediadirs(false))
+	server.Router.GET("/api/mediadirs", func(c *gin.Context) {
+		c.JSON(http.StatusOK, server.GetMediadirs(false))
 	})
-	oc.Router.POST("/api/mediadirs", func(c *gin.Context) {
+	server.Router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))
 		var mediadirs []string
 		err := json.Unmarshal(mediadirsJson, &mediadirs)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = oc.SetMediadirs(mediadirs)
+			err = server.SetMediadirs(mediadirs)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -103,17 +106,17 @@ func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
 			}
 		}
 	})
-	oc.Router.GET("/api/file_exts", func(c *gin.Context) {
-		c.JSON(http.StatusOK, oc.GetFileExts(false))
+	server.Router.GET("/api/file_exts", func(c *gin.Context) {
+		c.JSON(http.StatusOK, server.GetFileExts(false))
 	})
-	oc.Router.POST("/api/file_exts", func(c *gin.Context) {
+	server.Router.POST("/api/file_exts", func(c *gin.Context) {
 		fileExtsJson := []byte(c.Query("file_exts"))
 		var fileExts []string
 		err := json.Unmarshal(fileExtsJson, &fileExts)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = oc.SetFileExts(fileExts)
+			err = server.SetFileExts(fileExts)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -121,10 +124,10 @@ func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
 			}
 		}
 	})
-	oc.Router.GET("/api/pos", func(c *gin.Context) {
+	server.Router.GET("/api/pos", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos())
 	})
-	oc.Router.POST("/api/pos", func(c *gin.Context) {
+	server.Router.POST("/api/pos", func(c *gin.Context) {
 		param := c.Query("pos")
 		if param == "" {
 			c.String(http.StatusBadRequest, "empty pos string")
@@ -136,22 +139,22 @@ func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
 			c.Data(http.StatusOK, "application/json", mpvcmd.SetPos(pos))
 		}
 	})
-	oc.Router.GET("/api/last25", func(c *gin.Context) {
-		c.JSON(http.StatusOK, oc.Last25())
+	server.Router.GET("/api/last25", func(c *gin.Context) {
+		c.JSON(http.StatusOK, server.Last25())
 	})
-	oc.Router.GET("/api/medialist", func(c *gin.Context) {
-		c.JSON(http.StatusOK, oc.GetMedialib(false))
+	server.Router.GET("/api/medialist", func(c *gin.Context) {
+		c.JSON(http.StatusOK, server.GetMedialib(false))
 	})
-	oc.Router.POST("/api/medialist", func(c *gin.Context) {
-		oc.ScanLib()
+	server.Router.POST("/api/medialist", func(c *gin.Context) {
+		server.ScanLib()
 		c.String(http.StatusOK, "OK")
 	})
-	return oc, nil
+	return server, nil
 }
 
-func (ocracoke *Ocracoke) Run(wg *sync.WaitGroup) error {
+func (server *Server) Run(wg *sync.WaitGroup) error {
 	defer wg.Done()
-	err := ocracoke.Router.Run(":40000")
+	err := server.Router.Run(fmt.Sprintf(":%d", server.port))
 	if err != nil {
 		log.Println("Ocracoke error:", err)
 	}
