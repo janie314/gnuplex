@@ -7,4 +7,5 @@ const (
 	ProdDBFilepath      = "/var/gnuplex/gnuplex.sqlite3"
 	DevStaticFilespath  = "./public"
 	ProdStaticFilespath = "/var/gnuplex/home"
+	IssuesURL           = "https://github.com/janie314/gnuplex/issues"
 )
