@@ -33,11 +33,11 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	oc, err := server.Init(&wg, *prod, port)
+	srv, err := server.Init(&wg, *prod, *port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	go server.Run(&wg)
+	go srv.Run(&wg)
 	go mpvdaemon.Run(&wg, *verbose)
 	/*
 	 * Scheduler process
@@ -51,7 +51,7 @@ func main() {
 		log.Fatal("CronTrigger init failure", err)
 	}
 	scanLibJob := quartz.NewFunctionJob(func(_ context.Context) (int, error) {
-		return 0, oc.ScanLib()
+		return 0, srv.ScanLib()
 	})
 	err = sched.ScheduleJob(ctx, scanLibJob, scanLibTrigger)
 	if err != nil {
