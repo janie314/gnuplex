@@ -10,6 +10,7 @@ import (
 
 	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon/mpvcmd"
+	"gnuplex-backend/server/api_endpoints"
 	"gnuplex-backend/server/liteDB"
 
 	"github.com/gin-gonic/gin"
