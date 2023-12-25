@@ -2,7 +2,6 @@ package mpv
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -92,22 +91,4 @@ func unixMsg(msg []byte) []byte {
 		}
 	}
 	return []byte{}
-}
-
-func mpvGetCmd(cmd []string) []byte {
-	query := IMPVQueryString{Command: cmd}
-	jsonData, err := json.Marshal(query)
-	if err != nil {
-		return []byte{}
-	}
-	return unixMsg(jsonData)
-}
-
-func mpvSetCmd(cmd []interface{}) []byte {
-	query := IMPVQuery{Command: cmd}
-	jsonData, err := json.Marshal(query)
-	if err != nil {
-		return []byte{}
-	}
-	return unixMsg(jsonData)
 }

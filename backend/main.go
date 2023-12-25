@@ -22,6 +22,7 @@ func main() {
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	port := flag.Int("port", 40000, "Port to listen on.")
+	base_url := flag.String("base_url", "", "Base URL for server HTTP requests (e.g. /gnuplex)")
 	flag.Parse()
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -33,7 +34,7 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	srv, err := server.Init(&wg, *prod, *port)
+	srv, err := server.Init(&wg, *prod, *port, *base_url)
 	if err != nil {
 		log.Fatal(err)
 	}

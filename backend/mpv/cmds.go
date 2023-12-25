@@ -1,5 +1,9 @@
 package mpv
 
+import (
+	"encoding/json"
+)
+
 /*
  * MPV command public fxns
  */
@@ -41,4 +45,29 @@ func SetPos(pos int) []byte {
 
 func IncPos(pos int) []byte {
 	return mpvSetCmd([]interface{}{"seek", pos})
+}
+
+func Screenshot() []byte {
+	return mpvSetCmd([]interface{}{"screenshot"})
+}
+
+/*
+ * key wrapper functions
+ */
+func mpvGetCmd(cmd []string) []byte {
+	query := IMPVQueryString{Command: cmd}
+	jsonData, err := json.Marshal(query)
+	if err != nil {
+		return []byte{}
+	}
+	return unixMsg(jsonData)
+}
+
+func mpvSetCmd(cmd []interface{}) []byte {
+	query := IMPVQuery{Command: cmd}
+	jsonData, err := json.Marshal(query)
+	if err != nil {
+		return []byte{}
+	}
+	return unixMsg(jsonData)
 }
