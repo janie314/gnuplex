@@ -7,7 +7,6 @@ import (
 	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon"
 	"gnuplex-backend/server"
-	"gnuplex-backend/server/api_endpoints"
 	"log"
 	"sync"
 
@@ -52,7 +51,7 @@ func main() {
 		log.Fatal("CronTrigger init failure", err)
 	}
 	scanLibJob := quartz.NewFunctionJob(func(_ context.Context) (int, error) {
-		return 0, apiEndpoints.ScanLib()
+		return 0, srv.ScanLib(false)
 	})
 	err = sched.ScheduleJob(ctx, scanLibJob, scanLibTrigger)
 	if err != nil {

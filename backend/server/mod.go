@@ -9,9 +9,8 @@ import (
 	"sync"
 
 	"gnuplex-backend/consts"
+	"gnuplex-backend/liteDB"
 	"gnuplex-backend/mpvdaemon/mpvcmd"
-	"gnuplex-backend/server/api_endpoints"
-	"gnuplex-backend/server/liteDB"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,34 +21,7 @@ type Server struct {
 	port   int
 }
 
-func Init(wg *sync.WaitGroup, prod bool, port int) (*Server, error) {
-	server := new(Server)
-	server.Router = gin.Default()
-	server.Router.SetTrustedProxies(nil)
-	go mpvcmd.InitUnixConn(wg)
-	db, err := liteDB.Init(prod)
-	if err != nil {
-		return nil, err
-	}
-	server.DB = db
-	server.port = port
-	/*
-	 * Serve static files
-	 */
-	server.Router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/home")
-	})
-	server.Router.GET("/gnuplex", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/home")
-	})
-	if prod {
-		server.Router.Static("/home", consts.ProdStaticFilespath)
-	} else {
-		server.Router.Static("/home", consts.DevStaticFilespath)
-	}
-	/*
-	 * API endpoints
-	 */
+func (server *Server) InitEndpoints() {
 	server.Router.GET("/api/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})
@@ -99,7 +71,7 @@ func Init(wg *sync.WaitGroup, prod bool, port int) (*Server, error) {
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = server.SetMediadirs(mediadirs)
+			err = server.SetMediadirs(mediadirs, false)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -117,7 +89,7 @@ func Init(wg *sync.WaitGroup, prod bool, port int) (*Server, error) {
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = server.SetFileExts(fileExts)
+			err = server.SetFileExts(fileExts, false)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -147,9 +119,39 @@ func Init(wg *sync.WaitGroup, prod bool, port int) (*Server, error) {
 		c.JSON(http.StatusOK, server.GetMedialib(false))
 	})
 	server.Router.POST("/api/medialist", func(c *gin.Context) {
-		server.ScanLib()
+		server.ScanLib(false)
 		c.String(http.StatusOK, "OK")
 	})
+}
+
+func Init(wg *sync.WaitGroup, prod bool, port int) (*Server, error) {
+	server := new(Server)
+	server.Router = gin.Default()
+	server.Router.SetTrustedProxies(nil)
+	go mpvcmd.InitUnixConn(wg)
+	db, err := liteDB.Init(prod)
+	if err != nil {
+		return nil, err
+	}
+	server.DB = db
+	server.port = port
+	/*
+	 * Serve static files
+	 */
+	server.Router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/home")
+	})
+	server.Router.GET("/gnuplex", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/home")
+	})
+	if prod {
+		server.Router.Static("/home", consts.ProdStaticFilespath)
+	} else {
+		server.Router.Static("/home", consts.DevStaticFilespath)
+	}
+	/*
+	 * API endpoints
+	 */
 	return server, nil
 }
 
@@ -157,7 +159,7 @@ func (server *Server) Run(wg *sync.WaitGroup) error {
 	defer wg.Done()
 	err := server.Router.Run(fmt.Sprintf(":%d", server.port))
 	if err != nil {
-		log.Println("Ocracoke error:", err)
+		log.Println("Server error:", err)
 	}
 	return err
 }
