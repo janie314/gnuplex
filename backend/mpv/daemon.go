@@ -1,4 +1,4 @@
-package mpvcmd
+package mpv
 
 import (
 	"bufio"
@@ -7,10 +7,30 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
 )
+
+func Run(wg *sync.WaitGroup, verbose bool) {
+	defer wg.Done()
+	for {
+		var cmd *exec.Cmd
+		if !verbose {
+			cmd = exec.Command("mpv", "--cursor-autohide=always", "--idle=yes", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
+		} else {
+			cmd = exec.Command("mpv", "--cursor-autohide=always", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
+		}
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			log.Println("Error: mpvdaemon.Run: ", err)
+		}
+		time.Sleep(3 * time.Second)
+	}
+}
 
 /*
  * Types
@@ -90,43 +110,4 @@ func mpvSetCmd(cmd []interface{}) []byte {
 		return []byte{}
 	}
 	return unixMsg(jsonData)
-}
-
-/*
- * MPV command public fxns
- */
-func Play() []byte {
-	return mpvSetCmd([]interface{}{"set_property", "pause", false})
-}
-
-func Pause() []byte {
-	return mpvSetCmd([]interface{}{"set_property", "pause", true})
-}
-
-func IsPaused() []byte {
-	return mpvGetCmd([]string{"get_property", "pause"})
-}
-
-func GetMedia() []byte {
-	return mpvGetCmd([]string{"get_property", "path"})
-}
-
-func SetMedia(filepath string) []byte {
-	return mpvSetCmd([]interface{}{"loadfile", filepath})
-}
-
-func GetVolume() []byte {
-	return mpvGetCmd([]string{"get_property", "volume"})
-}
-
-func SetVolume(vol int) []byte {
-	return mpvSetCmd([]interface{}{"set_property", "volume", vol})
-}
-
-func GetPos() []byte {
-	return mpvGetCmd([]string{"get_property", "time-pos"})
-}
-
-func SetPos(pos int) []byte {
-	return mpvSetCmd([]interface{}{"set_property", "time-pos", pos})
 }

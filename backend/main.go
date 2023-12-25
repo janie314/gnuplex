@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"gnuplex-backend/consts"
-	"gnuplex-backend/mpvdaemon"
+	"gnuplex-backend/mpv"
 	"gnuplex-backend/server"
 	"log"
 	"sync"
@@ -38,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 	go srv.Run(&wg)
-	go mpvdaemon.Run(&wg, *verbose)
+	go mpv.Run(&wg, *verbose)
 	/*
 	 * Scheduler process
 	 */
