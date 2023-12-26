@@ -34,40 +34,15 @@ func New(prod bool) (*LiteDB, error) {
 		log.Println("Init LiteDB fatal error:", err)
 		return nil, err
 	}
-	_, err = db.SqliteConn.Exec("create table if not exists pos_cache (filepath string not null primary key, pos int);")
-	if err != nil {
-		log.Println("Init LiteDB error 1:", err)
-		return nil, err
-	}
-	_, err = db.SqliteConn.Exec("create table if not exists history (id integer not null unique, mediafile	text, primary key(id AUTOINCREMENT));")
-	if err != nil {
-		log.Println("Init LiteDB error 2:", err)
-		return nil, err
-	}
-	_, err = db.SqliteConn.Exec("create table if not exists medialist (filepath text not null,  primary key(filepath)) ;")
-	if err != nil {
-		log.Println("Init LiteDB error 3:", err)
-		return nil, err
-	}
-	_, err = db.SqliteConn.Exec("create table if not exists mediadirs (filepath text not null, primary key(filepath)) ;")
-	if err != nil {
-		log.Println("Init LiteDB error 4:", err)
-		return nil, err
-	}
-	_, err = db.SqliteConn.Exec("create table if not exists file_exts (ext text not null, exclude int, primary key(ext)) ;")
-	if err != nil {
-		log.Println("Init LiteDB error 7:", err)
-		return nil, err
-	}
-	_, err = db.SqliteConn.Exec("create table if not exists version_info (key string not null primary key, value string);")
-	if err != nil {
-		log.Println("Init LiteDB error 5:", err)
-		return nil, err
-	}
-	_, err = db.SqliteConn.Exec("insert or ignore into version_info values ('db_schema_version', ?);", consts.DBVersion)
-	if err != nil {
-		log.Println("Init LiteDB error 6:", err)
-		return nil, err
+	/*
+	 * DB initialization SQL statements
+	 */
+	for i, statement := range consts.InitStatements() {
+		_, err = db.SqliteConn.Exec(statement)
+		if err != nil {
+			log.Println("Init LiteDB error ", i, ":", err)
+			return nil, err
+		}
 	}
 	upgradeDB(&db)
 	return &db, nil
