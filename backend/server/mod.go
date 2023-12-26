@@ -129,7 +129,7 @@ func Init(wg *sync.WaitGroup, prod bool, port int, base_url string) (*Server, er
 	server.Router = gin.Default()
 	server.Router.SetTrustedProxies(nil)
 	go mpv.InitUnixConn(wg)
-	db, err := liteDB.Init(prod)
+	db, err := liteDB.New(prod)
 	if err != nil {
 		return nil, err
 	}

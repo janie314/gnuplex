@@ -15,7 +15,7 @@ type LiteDB struct {
 	Mu         *sync.Mutex
 }
 
-func Init(prod bool) (*LiteDB, error) {
+func New(prod bool) (*LiteDB, error) {
 	var db LiteDB
 	var conn *sql.DB
 	var err error
@@ -99,20 +99,4 @@ func upgradeDB(db *LiteDB) error {
 	}
 	rows.Close()
 	return nil
-}
-
-func (db *LiteDB) Lock(name string, ignorelock bool) {
-	if !ignorelock {
-		db.Mu.Lock()
-		log.Println("Got ", name, " lock")
-	} else {
-		log.Println("Ignoring ", name, " lock")
-	}
-}
-
-func (db *LiteDB) Unlock(name string, ignorelock bool) {
-	if !ignorelock {
-		db.Mu.Unlock()
-		log.Println("Rem ", name, " lock")
-	}
 }
