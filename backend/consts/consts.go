@@ -3,7 +3,7 @@ package consts
 import "fmt"
 
 const (
-	GNUPlexVersion      string = "0.100 Mellon"
+	GNUPlexVersion      string = "0.100 Mellon (PQA1)"
 	DBVersion           int    = 1
 	DevStaticFilespath  string = "./public"
 	ProdStaticFilespath string = "/var/gnuplex/home"
