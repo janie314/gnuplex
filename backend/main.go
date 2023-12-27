@@ -23,7 +23,9 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	port := flag.Int("port", 40000, "Port to listen on.")
 	db := flag.String("db", "gnuplex.sqlite3", "Filepath to SQLite database.")
-	base_url := flag.String("base_url", "", "Base URL for server HTTP requests (e.g. /gnuplex)")
+	api_url_base := flag.String("api_url_base", "/api", "Base URL for server HTTP requests")
+	static_url_base := flag.String("static_url_base", "/home", "Base URL for static files")
+	static_dir := flag.String("static_dir", "public", "Static file directory")
 	flag.Parse()
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -35,7 +37,7 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	srv, err := server.New(&wg, *prod, *port, *base_url, *db)
+	srv, err := server.New(&wg, *prod, *port, *static_url_base, *api_url_base, *db, *static_dir)
 	if err != nil {
 		log.Fatal(err)
 	}
