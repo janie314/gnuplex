@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { APICall } from "./lib/APICall.ts";
 import "./App.css";
 import { Medialist } from "./components/Medialist.tsx";
+import { MediaControls } from "./components/MediaControls.tsx";
 import { TimeVolInput } from "./components/TimeVolInput.tsx";
 import { CRUDPopup } from "./components/CRUDPopup.tsx";
 
@@ -122,6 +123,7 @@ function App() {
           setMediaToggle(!mediaToggle);
         }}
       />
+      <MediaControls />
     </>
   );
 }
