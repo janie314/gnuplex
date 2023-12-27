@@ -56,10 +56,9 @@ Ensure port port 40000 is open on your server. The site will be hosted at
 sudo sh install-server
 ```
 
-# Release History 
+# Release History
 
-| Release | Date | Changes |
-| - | - | - |
+| Release        | Date       | Changes          |
+| -------------- | ---------- | ---------------- |
 | 0.91 Currituck | 2022-12-25 | YouTube casting. |
-| 0.9 Currituck | 2022-12-25 | Initial release. |
-
+| 0.9 Currituck  | 2022-12-25 | Initial release. |

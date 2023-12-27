@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+basedir=$(realpath $(dirname "$0"))
+cd "$basedir/backend"
+./gnuplex-backend
