@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { APICall } from "./lib/APICall";
+import { APICall } from "./lib/APICall.ts";
 import "./App.css";
-import { Medialist } from "./components/Medialist";
-import { TimeVolInput } from "./components/TimeVolInput";
-import { CRUDPopup } from "./components/CRUDPopup";
+import { Medialist } from "./components/Medialist.tsx";
+import { TimeVolInput } from "./components/TimeVolInput.tsx";
+import { CRUDPopup } from "./components/CRUDPopup.tsx";
 
 interface IMPVRes {
   data?: number | string;
