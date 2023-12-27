@@ -6,7 +6,9 @@ import "./CRUDPopup.css";
 function MediaControls() {
   return (
     <div className="mediacontrols">
-      WHAT
+      <input type="button" value="⥀" />
+      <input type="button" value="⏵" />
+      <input type="button" value="⥁" />
     </div>
   );
 }
