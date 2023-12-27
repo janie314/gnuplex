@@ -15,20 +15,14 @@ type LiteDB struct {
 	Mu         *sync.Mutex
 }
 
-func New(prod bool) (*LiteDB, error) {
+func New(prod bool, path string) (*LiteDB, error) {
 	var db LiteDB
-	var conn *sql.DB
-	var err error
 	db.Mu = &sync.Mutex{}
 	db.Mu.Lock()
 	log.Println("Got Init LiteDB lock")
 	defer db.Mu.Unlock()
 	defer log.Println("Rem Init LiteDB lock")
-	if prod {
-		conn, err = sql.Open("sqlite", consts.ProdDBFilepath)
-	} else {
-		conn, err = sql.Open("sqlite", consts.DevDBFilepath)
-	}
+	conn, err := sql.Open("sqlite", path)
 	db.SqliteConn = conn
 	if err != nil {
 		log.Println("Init LiteDB fatal error:", err)

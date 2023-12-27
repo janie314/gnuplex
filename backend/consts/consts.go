@@ -5,8 +5,6 @@ import "fmt"
 const (
 	GNUPlexVersion      string = "0.100 Mellon"
 	DBVersion           int    = 1
-	DevDBFilepath       string = "../tmp/gnuplex.sqlite3"
-	ProdDBFilepath      string = "/var/gnuplex/gnuplex.sqlite3"
 	DevStaticFilespath  string = "./public"
 	ProdStaticFilespath string = "/var/gnuplex/home"
 	IssuesURL           string = "https://github.com/janie314/gnuplex/issues"

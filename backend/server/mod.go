@@ -124,12 +124,12 @@ func (server *Server) initEndpoints(url_base string) {
 	})
 }
 
-func Init(wg *sync.WaitGroup, prod bool, port int, base_url string) (*Server, error) {
+func New(wg *sync.WaitGroup, prod bool, port int, base_url, path string) (*Server, error) {
 	server := new(Server)
 	server.Router = gin.Default()
 	server.Router.SetTrustedProxies(nil)
 	go mpv.InitUnixConn(wg)
-	db, err := liteDB.New(prod)
+	db, err := liteDB.New(prod, path)
 	if err != nil {
 		return nil, err
 	}

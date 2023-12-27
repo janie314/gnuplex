@@ -22,6 +22,7 @@ func main() {
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	port := flag.Int("port", 40000, "Port to listen on.")
+	path := flag.String("path", "gnuplex.sqlite3", "Filepath to SQLite database.")
 	base_url := flag.String("base_url", "", "Base URL for server HTTP requests (e.g. /gnuplex)")
 	flag.Parse()
 	if *prod {
@@ -34,7 +35,7 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	srv, err := server.Init(&wg, *prod, *port, *base_url)
+	srv, err := server.New(&wg, *prod, *port, *base_url, *path)
 	if err != nil {
 		log.Fatal(err)
 	}
