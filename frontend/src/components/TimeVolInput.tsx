@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useState } from "react";
-import { APICall } from "../lib/APICall";
+import { APICall } from "../lib/APICall.ts";
 import "./TimeVolInput.css";
 
 const enum TimeUnit {

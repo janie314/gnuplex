@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { APICall } from "../lib/APICall";
+import { APICall } from "../lib/APICall.ts";
 import "../App.css";
 import "./CRUDPopup.css";
-import { WorkingSpinnerTSX } from "./WorkingSpinner";
+import { WorkingSpinnerTSX } from "./WorkingSpinner.tsx";
 
 function CRUDPopup(props: {
   visible: boolean;
@@ -52,12 +52,12 @@ function CRUDPopup(props: {
             onClick={() => {
               setSaveMediadirsWorking(true);
               setSaveFileExtsWorking(true);
-              const arr1 = mediadirs.trim().split("\n").filter((line) =>
+              const arr1 = mediadirs.trim().split("\n").filter((
+                line: string,
+              ) => !/^\s*$/.test(line)).map((line: string) => line.trim());
+              const arr2 = file_exts.trim().split("\n").filter((line: string) =>
                 !/^\s*$/.test(line)
-              ).map((line) => line.trim());
-              const arr2 = file_exts.trim().split("\n").filter((line) =>
-                !/^\s*$/.test(line)
-              ).map((line) => line.trim());
+              ).map((line: string) => line.trim());
               APICall.setOriginMediadirs(arr1).then(() =>
                 setSaveMediadirsWorking(false)
               );
