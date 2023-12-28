@@ -18,13 +18,13 @@ function MediaControls(props: {
       </span>
       <span className="mediacontrol">⥁</span>
       <span
-        className="mediacontrol"
+        className="mediacontrol small"
         onClick={() => {
           const url = window.prompt("YouTube URL:", "") || "";
           APICall.setOriginMedia(url);
         }}
       >
-        ≋
+        Cast
       </span>
       <span>Now Playing: Night of the Living Dead</span>
       <span

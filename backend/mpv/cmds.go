@@ -2,6 +2,8 @@ package mpv
 
 import (
 	"encoding/json"
+	"errors"
+	"log"
 )
 
 /*
@@ -19,14 +21,30 @@ func Pause() []byte {
 	return mpvSetCmd([]interface{}{"set_property", "pause", true})
 }
 
-func Toggle() []byte {
-	// paused := IsPaused()
-	// TODO use generics to cast to proper response type
-	return []byte{}
+type ResponseData interface {
+	int | ~string | bool
 }
 
-func IsPaused() []byte {
-	return mpvGetCmd([]string{"get_property", "pause"})
+type MPVResponse[T ResponseData] struct {
+	data         T
+	requested_id int
+	error        string
+}
+
+func Toggle() error {
+	paused, err := mpvGetProperty[bool]("pause")
+	if err != nil {
+		if paused {
+			Play()
+		} else {
+			Pause()
+		}
+	}
+	return err
+}
+
+func IsPaused() (bool, error) {
+	return mpvGetProperty[bool]("pause")
 }
 
 func GetMedia() []byte {
@@ -71,6 +89,29 @@ func mpvGetCmd(cmd []string) []byte {
 		return []byte{}
 	}
 	return unixMsg(jsonData)
+}
+
+func mpvGetProperty[T ResponseData](prop string) (T, error) {
+	// set up query to mpv
+	query_part := []string{"get_property", prop}
+	query_struct := IMPVQueryString{Command: query_part}
+	query, err := json.Marshal(query_struct)
+	// return values
+	var response MPVResponse[T]
+	var defaultT T
+	if err != nil {
+		return defaultT, err
+	}
+	// make query and parse result
+	res_bytes := unixMsg(query)
+	err = json.Unmarshal(res_bytes, &defaultT)
+	if err != nil {
+		return defaultT, err
+	} else if response.error != "success" {
+		return defaultT, errors.New("failure from mpv query")
+	} else {
+		return response.data, nil
+	}
 }
 
 func mpvSetCmd(cmd []interface{}) []byte {

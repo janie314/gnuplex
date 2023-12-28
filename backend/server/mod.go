@@ -31,6 +31,9 @@ func (server *Server) initEndpoints(api_url_base string) {
 	server.Router.POST(api_url_base+"/pause", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpv.Pause())
 	})
+	server.Router.POST(api_url_base+"/toggle", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpv.Toggle())
+	})
 	server.Router.GET(api_url_base+"/paused", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpv.IsPaused())
 	})

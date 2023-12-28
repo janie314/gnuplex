@@ -24,6 +24,10 @@ span.mediacontrol:hover {
  cursor: default;
 }
 
+span.mediacontrol small {
+	font-size: 0.5em;
+}
+
 span.nowplaying {
 	font-family: sans-serif;
 }
