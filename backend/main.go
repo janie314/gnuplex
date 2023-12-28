@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"gnuplex-backend/consts"
-	"gnuplex-backend/mpv"
 	"gnuplex-backend/server"
 	"log"
 	"sync"
@@ -20,7 +19,6 @@ func main() {
 	 * Cmd line flags
 	 */
 	prod := flag.Bool("prod", false, "Run in prod mode.")
-	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	port := flag.Int("port", 40000, "Port to listen on.")
 	db := flag.String("db", "gnuplex.sqlite3", "Filepath to SQLite database.")
 	api_url_base := flag.String("api_url_base", "/api", "Base URL for server HTTP requests")
@@ -42,7 +40,6 @@ func main() {
 		log.Fatal(err)
 	}
 	go srv.Run(&wg)
-	go mpv.Run(&wg, *verbose)
 	/*
 	 * Scheduler process
 	 */

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func Run(wg *sync.WaitGroup, verbose bool) {
+func RunDaemon(wg *sync.WaitGroup, verbose bool) {
 	defer wg.Done()
 	for {
 		var cmd *exec.Cmd

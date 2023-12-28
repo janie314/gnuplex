@@ -2,6 +2,7 @@ package mpv
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -38,35 +39,45 @@ type IMPVResponseInt struct {
  * Aux fxns
  */
 
-var mu sync.Mutex
-var mpvConn *net.UnixConn
+type MPV struct {
+	mu   sync.Mutex
+	conn *net.UnixConn
+}
 
-func InitUnixConn(wg *sync.WaitGroup) {
-	var mpvUnixAddr *net.UnixAddr
-	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
+func New(wg *sync.WaitGroup) (*MPV, error) {
+	go RunDaemon(wg, false)
+	var mpv MPV
+	var mpv_socket *net.UnixAddr
+	mpv_socket, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	for i := 10; mpvConn == nil || i >= 0; i-- {
-		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
+	for i := 10; mpv.conn == nil || i >= 0; i-- {
+		mpv.conn, err = net.DialUnix("unix", nil, mpv_socket)
 		if err != nil {
 			log.Println("Warning: InitUnixConn:", err)
 			time.Sleep(3 * time.Second)
 		}
 	}
+	if err != nil {
+		return nil, errors.New("couldn't get mpv Unix socket opened")
+	} else {
+		return &mpv, nil
+	}
 }
 
-func unixMsg(msg []byte) []byte {
-	mu.Lock()
-	defer mu.Unlock()
-	_, err := mpvConn.Write(append(msg, '\n'))
+func (mpv *MPV) UnixMsg(msg []byte) []byte {
+	mpv.mu.Lock()
+	defer mpv.mu.Unlock()
+	_, err := mpv.conn.Write(append(msg, '\n'))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	scanner := bufio.NewScanner(mpvConn)
+	scanner := bufio.NewScanner(mpv.conn)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, "request_id") {
+			log.Println("debug", line)
 			return []byte(line)
 		}
 	}
