@@ -21,6 +21,7 @@ func Pause() []byte {
 
 func Toggle() []byte {
 	// paused := IsPaused()
+	// TODO use generics to cast to proper response type
 	return []byte{}
 }
 
