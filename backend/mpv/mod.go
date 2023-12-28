@@ -40,20 +40,21 @@ type IMPVResponseInt struct {
  */
 
 type MPV struct {
-	mu   sync.Mutex
+	mu   *sync.Mutex
 	conn *net.UnixConn
 }
 
 func New(wg *sync.WaitGroup) (*MPV, error) {
 	go RunDaemon(wg, false)
-	var mpv MPV
 	var mpv_socket *net.UnixAddr
+	mu := new(sync.Mutex)
+	conn := new(net.UnixConn)
 	mpv_socket, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
 	if err != nil {
 		return nil, err
 	}
-	for i := 10; mpv.conn == nil || i >= 0; i-- {
-		mpv.conn, err = net.DialUnix("unix", nil, mpv_socket)
+	for i := 10; conn == nil || i >= 0; i-- {
+		conn, err = net.DialUnix("unix", nil, mpv_socket)
 		if err != nil {
 			log.Println("Warning: InitUnixConn:", err)
 			time.Sleep(3 * time.Second)
@@ -62,7 +63,7 @@ func New(wg *sync.WaitGroup) (*MPV, error) {
 	if err != nil {
 		return nil, errors.New("couldn't get mpv Unix socket opened")
 	} else {
-		return &mpv, nil
+		return &MPV{conn: conn, mu: mu}, nil
 	}
 }
 

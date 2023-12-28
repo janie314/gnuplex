@@ -21,7 +21,11 @@ func New(wg *sync.WaitGroup, prod bool, port int, static_url_base, api_url_base,
 	server := new(Server)
 	server.Router = gin.Default()
 	server.Router.SetTrustedProxies(nil)
-	mpv.New(wg)
+	mpvInst, err := mpv.New(wg)
+	if err != nil {
+		return nil, err
+	}
+	server.mpv = mpvInst
 	db, err := liteDB.New(prod, db_path)
 	if err != nil {
 		return nil, err
