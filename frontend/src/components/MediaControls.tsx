@@ -4,17 +4,37 @@ import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
 
-function MediaControls() {
+function MediaControls(props: {
+  setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   return (
     <div className="mediacontrols">
-      <input type="button" className="mediacontrol" value="⥀" />
-      <input
-        type="button"
+      <span className="mediacontrol">⥀</span>
+      <span
         className="mediacontrol"
-        value="⏵"
         onClick={() => APICall.toggle()}
-      />
-      <input type="button" className="mediacontrol" value="⥁" />
+      >
+        ⏵
+      </span>
+      <span className="mediacontrol">⥁</span>
+      <span
+        className="mediacontrol"
+        onClick={() => {
+          const url = window.prompt("YouTube URL:", "") || "";
+          APICall.setOriginMedia(url);
+        }}
+      >
+        ≋
+      </span>
+      <span>Now Playing: Night of the Living Dead</span>
+      <span
+        className="mediacontrol rightjustify"
+        onClick={() => {
+          props.setMediadirInputPopup(true);
+        }}
+      >
+        🕮
+      </span>
     </div>
   );
 }

@@ -70,35 +70,10 @@ function App() {
             />
           </div>
           <div className="controlgroup">
-            <input
-              type="button"
-              value="Manage Library"
-              onClick={() => {
-                setMediadirInputPopup(true);
-              }}
-            />
-            <input
-              type="button"
-              value="Cast YouTube"
-              onClick={() => {
-                const url = window.prompt("YouTube URL:", "") || "";
-                APICall.setOriginMedia(url);
-              }}
-            />
-          </div>
-          <div className="controlgroup">
             <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
           </div>
           <div className="controlgroup">
             <TimeVolInput vol={vol} setVol={setVol} type="vol" />
-          </div>
-          <div className="controlgroup">
-            <a
-              href="https://gitlab.com/jane314/gnuplex/-/issues"
-              target="_blank"
-            >
-              Bug?
-            </a>
           </div>
         </div>
 
@@ -123,7 +98,7 @@ function App() {
           setMediaToggle(!mediaToggle);
         }}
       />
-      <MediaControls />
+      <MediaControls setMediadirInputPopup={setMediadirInputPopup} />
     </>
   );
 }
