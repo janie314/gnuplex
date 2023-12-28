@@ -19,6 +19,13 @@ class APICall {
     );
   }
 
+  public static async toggle() {
+    return await fetch(
+      `/api/toggle`,
+      { method: "POST" },
+    );
+  }
+
   public static async getOriginPos() {
     return await fetch(
       `/api/pos`,
