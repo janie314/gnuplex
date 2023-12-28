@@ -6,6 +6,10 @@ import (
 
 /*
  * MPV command public fxns
+ * Refer to the following MPV documentation
+ *     - https://mpv.io/manual/stable/#list-of-input-commands
+ *     - https://mpv.io/manual/stable/#json-ipc
+ *     - https://mpv.io/manual/stable/#properties
  */
 func Play() []byte {
 	return mpvSetCmd([]interface{}{"set_property", "pause", false})
@@ -13,6 +17,11 @@ func Play() []byte {
 
 func Pause() []byte {
 	return mpvSetCmd([]interface{}{"set_property", "pause", true})
+}
+
+func Toggle() []byte {
+	// paused := IsPaused()
+	return []byte{}
 }
 
 func IsPaused() []byte {
