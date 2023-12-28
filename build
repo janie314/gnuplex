@@ -1,6 +1,5 @@
 #!/bin/sh
 basedir=$(realpath $(dirname "$0"))
-cd "$basedir/frontend"
-deno task build
-cd ../backend
-go build 
+deno task --cwd "$basedir/frontend" build
+go build -C "$basedir/backend"
+
