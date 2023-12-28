@@ -8,7 +8,12 @@ function MediaControls() {
   return (
     <div className="mediacontrols">
       <input type="button" className="mediacontrol" value="⥀" />
-      <input type="button" className="mediacontrol" value="⏵" />
+      <input
+        type="button"
+        className="mediacontrol"
+        value="⏵"
+        onClick={() => APICall.toggle()}
+      />
       <input type="button" className="mediacontrol" value="⥁" />
     </div>
   );
