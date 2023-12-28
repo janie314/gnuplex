@@ -31,7 +31,9 @@ type MPVResponse[T ResponseData] struct {
 	error        string
 }
 
-func Toggle() error {
+// Toggles play/pause.
+// Returns the `paused` boolean status after the toggle operation is complete.
+func Toggle() (bool, error) {
 	paused, err := mpvGetProperty[bool]("pause")
 	if err != nil {
 		if paused {
@@ -39,10 +41,14 @@ func Toggle() error {
 		} else {
 			Pause()
 		}
+		return IsPaused()
+	} else {
+		return false, err
 	}
-	return err
 }
 
+// Returns the current `paused` boolean status: whether or not the mpv
+// video is paused.
 func IsPaused() (bool, error) {
 	return mpvGetProperty[bool]("pause")
 }
@@ -104,6 +110,7 @@ func mpvGetProperty[T ResponseData](prop string) (T, error) {
 	}
 	// make query and parse result
 	res_bytes := unixMsg(query)
+	log.Println("debug", string(res_bytes[:]))
 	err = json.Unmarshal(res_bytes, &defaultT)
 	if err != nil {
 		return defaultT, err

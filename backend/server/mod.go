@@ -32,10 +32,20 @@ func (server *Server) initEndpoints(api_url_base string) {
 		c.Data(http.StatusOK, "application/json", mpv.Pause())
 	})
 	server.Router.POST(api_url_base+"/toggle", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.Toggle())
+		paused, err := mpv.Toggle()
+		if err != nil {
+			c.JSON(http.StatusOK, paused)
+		} else {
+			c.JSON(http.StatusInternalServerError, nil)
+		}
 	})
 	server.Router.GET(api_url_base+"/paused", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.IsPaused())
+		paused, err := mpv.IsPaused()
+		if err != nil {
+			c.JSON(http.StatusOK, paused)
+		} else {
+			c.JSON(http.StatusInternalServerError, nil)
+		}
 	})
 	server.Router.GET(api_url_base+"/media", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpv.GetMedia())
