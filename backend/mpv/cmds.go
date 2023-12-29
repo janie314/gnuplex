@@ -62,7 +62,6 @@ func (mpv *MPV) GetMedia() (string, error) {
 }
 
 func (mpv *MPV) SetMedia(filepath string) error {
-	// TODO addhist here
 	_, err := MPVCmd(mpv, "loadfile", filepath, false, false)
 	return err
 }
@@ -138,14 +137,28 @@ func MPVCmd[T ResponseData](mpv *MPV, prop string, val T, read_query, is_prop bo
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
-	var response Response[T]
-	err = json.Unmarshal(res_bytes, &response)
-	if err != nil {
-		return zero, err
-	} else if response.Err != "success" {
-		log.Println("err", response.Err)
-		return zero, errors.New("failure from mpv query")
+	if read_query {
+		var response Response[T]
+		err = json.Unmarshal(res_bytes, &response)
+		if err != nil {
+			return zero, err
+		} else if response.Err != "success" {
+			log.Println("err", response.Err)
+			return zero, errors.New("failure from mpv query")
+		} else {
+			return response.Data, nil
+		}
 	} else {
-		return response.Data, nil
+		var response EmptyResponse
+		err = json.Unmarshal(res_bytes, &response)
+		if err != nil {
+			return zero, err
+		} else if response.Err != "success" {
+			log.Println("err", response.Err)
+			return zero, errors.New("failure from mpv query")
+		} else {
+			return zero, nil
+		}
+
 	}
 }

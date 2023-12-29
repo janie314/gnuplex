@@ -6,12 +6,12 @@ import (
 	"os"
 )
 
-func (oc *Server) Last25() []string {
-	oc.DB.Mu.Lock()
+func (srv *Server) Last25() []string {
+	srv.DB.Mu.Lock()
 	log.Println("Got Last25 lock")
-	defer oc.DB.Mu.Unlock()
+	defer srv.DB.Mu.Unlock()
 	defer fmt.Println("Rem Last25 lock")
-	rows, err := oc.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
+	rows, err := srv.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return []string{}
@@ -31,16 +31,4 @@ func (oc *Server) Last25() []string {
 		}
 	}
 	return res[:i]
-}
-
-func (server *Server) AddHist(mediafile string) error {
-	server.DB.Mu.Lock()
-	log.Println("Got AddHist lock")
-	defer server.DB.Mu.Unlock()
-	defer log.Println("Rem AddHist lock")
-	_, err := server.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
-	if err != nil {
-		log.Println("Error: AddHist err", err)
-	}
-	return err
 }

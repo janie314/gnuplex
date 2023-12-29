@@ -32,7 +32,11 @@ func (server *Server) initEndpoints(api_url_base string) {
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			writeQuery2HTTP(c, server.mpv.SetMedia(mediafile))
+			err := server.mpv.SetMedia(mediafile)
+			if err == nil {
+				server.DB.AddHist(mediafile, false)
+			}
+			writeQuery2HTTP(c, err)
 		}
 	})
 	server.Router.GET(api_url_base+"/vol", func(c *gin.Context) {
