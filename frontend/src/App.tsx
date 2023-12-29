@@ -16,6 +16,7 @@ function App() {
   const [version, setVersion] = useState("");
   const [volPosToggle, setVolPosToggle] = useState(false);
   const [mediaToggle, setMediaToggle] = useState(false);
+  const [paused, setPaused] = useState(true);
   const [pos, setPos] = useState(0);
   const [vol, setVol] = useState(0);
   const [media, setMedia] = useState("");
@@ -50,26 +51,6 @@ function App() {
             <span className="version">{version}</span>
           </div>
           <div className="controlgroup">
-            <input
-              className="play-button"
-              type="button"
-              value="⏵"
-              onClick={() =>
-                APICall.play().then(() => APICall.sleep(2000)).then(() =>
-                  setVolPosToggle(!volPosToggle)
-                )}
-            />
-            <input
-              className="pause-button"
-              type="button"
-              value="⏸"
-              onClick={() =>
-                APICall.pause().then(() => APICall.sleep(2000)).then(() =>
-                  setVolPosToggle(!volPosToggle)
-                )}
-            />
-          </div>
-          <div className="controlgroup">
             <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
           </div>
           <div className="controlgroup">
@@ -98,7 +79,11 @@ function App() {
           setMediaToggle(!mediaToggle);
         }}
       />
-      <MediaControls setMediadirInputPopup={setMediadirInputPopup} />
+      <MediaControls
+        paused={paused}
+        setPaused={setPaused}
+        setMediadirInputPopup={setMediadirInputPopup}
+      />
     </>
   );
 }

@@ -19,11 +19,13 @@ class APICall {
     );
   }
 
-  public static async toggle() {
+  // toggles the video's play/pause status.
+  // returns the current play/pause status (boolean)
+  public static async toggle(): Promise<boolean> {
     return await fetch(
       `/api/toggle`,
       { method: "POST" },
-    );
+    ).then((res) => res.json());
   }
 
   public static async getOriginPos() {

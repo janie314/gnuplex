@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
 import { APICall } from "../lib/APICall.ts";
 import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
 
 function MediaControls(props: {
+  paused: boolean;
+  setPaused: React.Dispatch<React.SetStateAction<boolean>>;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
@@ -12,9 +13,10 @@ function MediaControls(props: {
       <span className="mediacontrol">⥀</span>
       <span
         className="mediacontrol"
-        onClick={() => APICall.toggle()}
+        onClick={() =>
+          APICall.toggle().then((paused) => props.setPaused(paused))}
       >
-        ⏵
+        {props.paused ? "⏵" : "⏸"}
       </span>
       <span className="mediacontrol">⥁</span>
       <span
