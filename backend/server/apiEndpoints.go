@@ -51,6 +51,19 @@ func (server *Server) initEndpoints(api_url_base string) {
 			writeQuery2HTTP(c, server.mpv.SetVolume(float64(vol)))
 		}
 	})
+	// TODO fold this into /pos
+	server.Router.POST(api_url_base+"/incpos", func(c *gin.Context) {
+		param := c.Query("inc")
+		if param == "" {
+			c.String(http.StatusBadRequest, "empty inc string")
+		} else {
+			inc, err := strconv.Atoi(param)
+			if err != nil {
+				c.String(http.StatusBadRequest, "bad inc string")
+			}
+			writeQuery2HTTP(c, server.mpv.IncPos(float64(inc)))
+		}
+	})
 	// TODO fold into new framework
 	server.Router.GET(api_url_base+"/mediadirs", func(c *gin.Context) {
 		c.JSON(http.StatusOK, server.GetMediadirs(false))

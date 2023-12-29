@@ -5,18 +5,11 @@ interface IMPVRes {
 }
 
 class APICall {
-  public static async play() {
+  // return the current play/pause status
+  public static async paused(): Promise<boolean> {
     return await fetch(
-      `/api/play`,
-      { method: "POST" },
-    );
-  }
-
-  public static async pause() {
-    return await fetch(
-      `/api/pause`,
-      { method: "POST" },
-    );
+      `/api/paused`,
+    ).then((res) => res.json());
   }
 
   // toggles the video's play/pause status.
@@ -24,6 +17,14 @@ class APICall {
   public static async toggle(): Promise<boolean> {
     return await fetch(
       `/api/toggle`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
+
+  // seeks the video by an increment (seconds)
+  public static async incPos(inc: number): Promise<number> {
+    return await fetch(
+      `/api/incpos?inc=${inc}`,
       { method: "POST" },
     ).then((res) => res.json());
   }

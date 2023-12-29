@@ -10,7 +10,9 @@ function MediaControls(props: {
 }) {
   return (
     <div className="mediacontrols">
-      <span className="mediacontrol">⥀</span>
+      <span className="mediacontrol" onClick={() => APICall.incPos(-30)}>
+        ⥀
+      </span>
       <span
         className="mediacontrol"
         onClick={() =>
@@ -18,7 +20,9 @@ function MediaControls(props: {
       >
         {props.paused ? "⏵" : "⏸"}
       </span>
-      <span className="mediacontrol">⥁</span>
+      <span className="mediacontrol" onClick={() => APICall.incPos(30)}>
+        ⥁
+      </span>
       <span
         className="mediacontrol small"
         onClick={() => {

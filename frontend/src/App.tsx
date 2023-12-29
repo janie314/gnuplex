@@ -26,6 +26,7 @@ function App() {
 
   useEffect(() => {
     APICall.getOriginVersion().then((version: string) => setVersion(version));
+    APICall.paused().then((paused) => setPaused(paused));
   }, []);
 
   useEffect(() => {
