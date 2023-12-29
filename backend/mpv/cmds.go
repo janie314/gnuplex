@@ -39,14 +39,14 @@ type Response[T ResponseData] struct {
 func (mpv *MPV) Toggle() (bool, error) {
 	paused, err := GetMPVProperty[bool](mpv, "pause")
 	if err != nil {
-		err = SetMPVProperty(mpv, "pause", !paused)
-	} else {
 		return false, err
+	} else {
+		err = SetMPVProperty(mpv, "pause", !paused)
 	}
 	if err != nil {
-		return !paused, nil
-	} else {
 		return false, errors.New("issue with play/pause cmd")
+	} else {
+		return !paused, nil
 	}
 }
 
@@ -125,10 +125,10 @@ func SetMPVProperty[T ResponseData](mpv *MPV, prop string, val T) error {
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
-	var response Response[T]
+	var response EmptyResponse
 	err = json.Unmarshal(res_bytes, &response)
 	log.Println("debug", string(res_bytes[:]))
-	log.Println("debug", response.Data, response.Err, response.RequestId)
+	log.Println("debug", response.Err, response.RequestId)
 	if err != nil {
 		return err
 	} else if response.Err != "success" {

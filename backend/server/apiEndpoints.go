@@ -15,12 +15,12 @@ func (server *Server) initEndpoints(api_url_base string) {
 	server.Router.GET(api_url_base+"/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})
-	server.Router.POST(api_url_base+"/toggle", func(c *gin.Context) {
-		paused, err := server.mpv.Toggle()
-		readQuery2HTTP(c, paused, err)
-	})
 	server.Router.GET(api_url_base+"/paused", func(c *gin.Context) {
 		paused, err := server.mpv.IsPaused()
+		readQuery2HTTP(c, paused, err)
+	})
+	server.Router.POST(api_url_base+"/toggle", func(c *gin.Context) {
+		paused, err := server.mpv.Toggle()
 		readQuery2HTTP(c, paused, err)
 	})
 	server.Router.GET(api_url_base+"/media", func(c *gin.Context) {
