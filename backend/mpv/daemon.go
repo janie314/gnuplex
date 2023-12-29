@@ -7,6 +7,9 @@ import (
 	"sync"
 )
 
+/*
+ * Run the MPV video player process
+ */
 func RunDaemon(wg *sync.WaitGroup, verbose bool) {
 	defer wg.Done()
 	for {

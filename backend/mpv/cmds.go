@@ -1,26 +1,20 @@
 package mpv
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
+	"os"
+	"strings"
 )
 
-/*
- * MPV command public fxns
- * Refer to the following MPV documentation
- *     - https://mpv.io/manual/stable/#list-of-input-commands
- *     - https://mpv.io/manual/stable/#json-ipc
- *     - https://mpv.io/manual/stable/#properties
- */
-
-// Set mpv video's play/paused state (which is a boolean `paused`).
-func (mpv *MPV) SetPause(paused bool) error {
-	_, err := MPVCmd(mpv, "pause", false, false, true)
-	return err
+type MPVQuery struct {
+	Command []interface{} `json:"command"`
 }
 
-type ResponseData interface {
+type ResponseDatum interface {
 	float64 | ~string | bool
 }
 
@@ -29,10 +23,24 @@ type EmptyResponse struct {
 	Err       string `json:"error"`
 }
 
-type Response[T ResponseData] struct {
+type Response[T ResponseDatum] struct {
 	Data      T      `json:"data"`
 	RequestId int    `json:"request_id"`
 	Err       string `json:"error"`
+}
+
+/*
+ * MPV command public fxns
+ * Refer to the following MPV documentation
+ *     - https://mpv.io/manual/stable/#list-of-input-commands
+ *     - https://mpv.io/manual/stable/#properties
+ *     - https://mpv.io/manual/stable/#json-ipc
+ */
+
+// Set mpv video's play/paused state (which is a boolean `paused`).
+func (mpv *MPV) SetPause(paused bool) error {
+	_, err := MPVCmd(mpv, "pause", false, false, true)
+	return err
 }
 
 // Toggles play/pause.
@@ -97,18 +105,23 @@ func (mpv *MPV) Screenshot() error {
 /*
  * Execute a read or write query to MPV.
  *
- * prop and val represent two arguments from the MPV command-line interface.
- * (prop, val) could be ("seek", 30), ("screenshot", ""), ("time-pos", 444), etc.
+ * cmd_or_prop and argrepresent two arguments from the MPV command-line interface.
+ * (cmd_or_prop, arg) could be:
+ *    - ("seek", 30)
+ *    - ("screenshot", "")
+ *    - ("time-pos", 444)
+ * etc.
  *
  * read_query represents whether the command is a read-query or write-query (does it get
- * the current media file, or set it?).
+ * the current media file, or set it?). We ignore the response value of write queries and
+ * always return the zero value for the first return argument T.
  *
  * is_prop represents if the command is executed via MPV's get_property (read) or
  * set_property (write) API, e.g.
  *
- * 		set_property time-pos 444
+ *    - set_property time-pos 444
  */
-func MPVCmd[T ResponseData](mpv *MPV, prop string, val T, read_query, is_prop bool) (T, error) {
+func MPVCmd[T ResponseDatum](mpv *MPV, cmd_or_prop string, arg T, read_query, is_prop bool) (T, error) {
 	// set up query to mpv
 	var zero T
 	var query_part []interface{}
@@ -121,22 +134,22 @@ func MPVCmd[T ResponseData](mpv *MPV, prop string, val T, read_query, is_prop bo
 		}
 	}
 	if is_prop {
-		if val == zero && read_query {
-			query_part = []interface{}{prop_str, prop}
+		if arg == zero && read_query {
+			query_part = []interface{}{prop_str, cmd_or_prop}
 		} else {
-			query_part = []interface{}{prop_str, prop, val}
+			query_part = []interface{}{prop_str, cmd_or_prop, arg}
 		}
 	} else {
-		if val == zero && read_query {
-			query_part = []interface{}{prop}
+		if arg == zero && read_query {
+			query_part = []interface{}{cmd_or_prop}
 		} else {
-			query_part = []interface{}{prop, val}
+			query_part = []interface{}{cmd_or_prop, arg}
 		}
 	}
-	query_struct := IMPVQuery{Command: query_part}
+	query_struct := MPVQuery{Command: query_part}
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
-	res_bytes := mpv.UnixMsg(query)
+	res_bytes := mpv.unixCmd(query)
 	if read_query {
 		var response Response[T]
 		err = json.Unmarshal(res_bytes, &response)
@@ -162,4 +175,28 @@ func MPVCmd[T ResponseData](mpv *MPV, prop string, val T, read_query, is_prop bo
 		}
 
 	}
+}
+
+/*
+ * Send a message to the MPV unix socket.
+ *
+ * This function handles its own locking.
+ */
+func (mpv *MPV) unixCmd(msg []byte) []byte {
+	mpv.mu.Lock()
+	defer mpv.mu.Unlock()
+	log.Println("debug\tsending\t", string(msg[:]))
+	_, err := mpv.conn.Write(append(msg, '\n'))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	scanner := bufio.NewScanner(mpv.conn)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "request_id") {
+			log.Println("debug\treceiving\t", line)
+			return []byte(line)
+		}
+	}
+	return []byte{}
 }

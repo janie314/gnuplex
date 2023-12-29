@@ -138,7 +138,7 @@ func (srv *Server) initEndpoints(api_url_base string) {
 	})
 }
 
-func readQuery2HTTP[T mpv.ResponseData](c *gin.Context, val T, err error) {
+func readQuery2HTTP[T mpv.ResponseDatum](c *gin.Context, val T, err error) {
 	if err != nil {
 		log.Println("Error", err)
 		c.JSON(http.StatusInternalServerError, nil)
