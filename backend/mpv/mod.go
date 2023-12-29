@@ -72,6 +72,7 @@ func New(wg *sync.WaitGroup) (*MPV, error) {
 func (mpv *MPV) UnixMsg(msg []byte) []byte {
 	mpv.mu.Lock()
 	defer mpv.mu.Unlock()
+	log.Println("debug\tsending\t", string(msg[:]))
 	_, err := mpv.conn.Write(append(msg, '\n'))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -80,7 +81,7 @@ func (mpv *MPV) UnixMsg(msg []byte) []byte {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, "request_id") {
-			log.Println("debug", line)
+			log.Println("debug\treceiving\t", line)
 			return []byte(line)
 		}
 	}

@@ -16,7 +16,8 @@ import (
 
 // Set mpv video's play/paused state (which is a boolean `paused`).
 func (mpv *MPV) SetPause(paused bool) error {
-	return SetMPVProperty(mpv, "pause", false)
+	_, err := MPVCmd(mpv, "pause", false, false, true)
+	return err
 }
 
 type ResponseData interface {
@@ -37,11 +38,11 @@ type Response[T ResponseData] struct {
 // Toggles play/pause.
 // Returns the `paused` boolean status after the toggle operation is complete.
 func (mpv *MPV) Toggle() (bool, error) {
-	paused, err := GetMPVProperty[bool](mpv, "pause")
+	paused, err := MPVCmd[bool](mpv, "pause", false, true, true)
 	if err != nil {
 		return false, err
 	} else {
-		err = SetMPVProperty(mpv, "pause", !paused)
+		_, err = MPVCmd(mpv, "pause", !paused, false, true)
 	}
 	if err != nil {
 		return false, errors.New("issue with play/pause cmd")
@@ -53,108 +54,98 @@ func (mpv *MPV) Toggle() (bool, error) {
 // Returns the current `paused` boolean status: whether or not the mpv
 // video is paused.
 func (mpv *MPV) IsPaused() (bool, error) {
-	return GetMPVProperty[bool](mpv, "pause")
+	return MPVCmd[bool](mpv, "pause", false, true, true)
 }
 
 func (mpv *MPV) GetMedia() (string, error) {
-	return GetMPVProperty[string](mpv, "path")
+	return MPVCmd[string](mpv, "path", "", true, true)
 }
 
 func (mpv *MPV) SetMedia(filepath string) error {
 	// TODO addhist here
-	return mpv.SetCmd([]string{"loadfile", filepath})
+	_, err := MPVCmd(mpv, "loadfile", filepath, false, false)
+	return err
 }
 
 func (mpv *MPV) GetVolume() (float64, error) {
-	return GetMPVProperty[float64](mpv, "volume")
+	return MPVCmd[float64](mpv, "volume", 0, true, true)
 }
 
 func (mpv *MPV) SetVolume(vol float64) error {
-	return SetMPVProperty(mpv, "volume", vol)
+	_, err := MPVCmd(mpv, "volume", vol, false, true)
+	return err
 }
 
 func (mpv *MPV) GetPos() (float64, error) {
-	return GetMPVProperty[float64](mpv, "time-pos")
+	return MPVCmd[float64](mpv, "time-pos", 0, true, true)
 }
 
 func (mpv *MPV) SetPos(pos float64) error {
-	return SetMPVProperty(mpv, "time-pos", pos)
+	_, err := MPVCmd(mpv, "time-pos", pos, false, true)
+	return err
 }
 
 func (mpv *MPV) IncPos(pos float64) error {
-	return SetMPVProperty(mpv, "seek", pos)
+	_, err := MPVCmd(mpv, "seek", pos, false, false)
+	return err
 }
 
 func (mpv *MPV) Screenshot() error {
-	return mpv.SetCmd([]string{"screenshot"})
+	_, err := MPVCmd(mpv, "screenshot", "", false, false)
+	return err
 }
 
 /*
- * key wrapper functions
+ * Execute a read or write query to MPV.
+ *
+ * prop and val represent two arguments from the MPV command-line interface.
+ * (prop, val) could be ("seek", 30), ("screenshot", ""), ("time-pos", 444), etc.
+ *
+ * read_query represents whether the command is a read-query or write-query (does it get
+ * the current media file, or set it?).
+ *
+ * is_prop represents if the command is executed via MPV's get_property (read) or
+ * set_property (write) API, e.g.
+ *
+ * 		set_property time-pos 444
  */
-func GetMPVProperty[T ResponseData](mpv *MPV, prop string) (T, error) {
+func MPVCmd[T ResponseData](mpv *MPV, prop string, val T, read_query, is_prop bool) (T, error) {
 	// set up query to mpv
-	query_part := []string{"get_property", prop}
-	query_struct := IMPVQueryString{Command: query_part}
-	query, err := json.Marshal(query_struct)
-	// return values
-	var response Response[T]
-	var defaultT T
-	if err != nil {
-		return defaultT, err
+	var zero T
+	var query_part []interface{}
+	var prop_str string
+	if is_prop {
+		if read_query {
+			prop_str = "get_property"
+		} else {
+			prop_str = "set_property"
+		}
 	}
-	// make query and parse result
-	res_bytes := mpv.UnixMsg(query)
-	err = json.Unmarshal(res_bytes, &response)
-	log.Println("debug", string(res_bytes[:]))
-	log.Println("debug", response.Data, response.Err, response.RequestId)
-	if err != nil {
-		return defaultT, err
-	} else if response.Err != "success" {
-		log.Println("err", response.Err)
-		return defaultT, errors.New("failure from mpv query")
+	if is_prop {
+		if val == zero && read_query {
+			query_part = []interface{}{prop_str, prop}
+		} else {
+			query_part = []interface{}{prop_str, prop, val}
+		}
 	} else {
-		return response.Data, nil
+		if val == zero && read_query {
+			query_part = []interface{}{prop}
+		} else {
+			query_part = []interface{}{prop, val}
+		}
 	}
-}
-
-func SetMPVProperty[T ResponseData](mpv *MPV, prop string, val T) error {
-	// set up query to mpv
-	query_part := []interface{}{"set_property", prop, val}
 	query_struct := IMPVQuery{Command: query_part}
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
-	var response EmptyResponse
+	var response Response[T]
 	err = json.Unmarshal(res_bytes, &response)
-	log.Println("debug", string(res_bytes[:]))
-	log.Println("debug", response.Err, response.RequestId)
 	if err != nil {
-		return err
+		return zero, err
 	} else if response.Err != "success" {
 		log.Println("err", response.Err)
-		return errors.New("failure from mpv query")
+		return zero, errors.New("failure from mpv query")
 	} else {
-		return nil
-	}
-}
-
-func (mpv *MPV) SetCmd(args []string) error {
-	// set up query to mpv
-	query_struct := IMPVQueryString{Command: args}
-	query, err := json.Marshal(query_struct)
-	// make query and parse result
-	res_bytes := mpv.UnixMsg(query)
-	var response Response[bool]
-	err = json.Unmarshal(res_bytes, &response)
-	log.Println("debug", string(res_bytes[:]))
-	log.Println("debug", response.Data, response.Err, response.RequestId)
-	if err != nil {
-		return err
-	} else if response.Err != "success" {
-		log.Println("err", response.Err)
-		return errors.New("failure from mpv query")
-	} else {
-		return nil
+		return response.Data, nil
 	}
 }
