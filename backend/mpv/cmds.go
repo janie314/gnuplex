@@ -61,7 +61,8 @@ func (mpv *MPV) GetMedia() (string, error) {
 }
 
 func (mpv *MPV) SetMedia(filepath string) error {
-	return SetMPVProperty(mpv, "loadfile", filepath)
+	// TODO addhist here
+	return mpv.SetCmd([]string{"loadfile", filepath})
 }
 
 func (mpv *MPV) GetVolume() (float64, error) {
@@ -85,7 +86,7 @@ func (mpv *MPV) IncPos(pos float64) error {
 }
 
 func (mpv *MPV) Screenshot() error {
-	return mpv.SetCmd("screenshot")
+	return mpv.SetCmd([]string{"screenshot"})
 }
 
 /*
@@ -138,10 +139,9 @@ func SetMPVProperty[T ResponseData](mpv *MPV, prop string, val T) error {
 	}
 }
 
-func (mpv *MPV) SetCmd(cmd string) error {
+func (mpv *MPV) SetCmd(args []string) error {
 	// set up query to mpv
-	query_part := []string{cmd}
-	query_struct := IMPVQueryString{Command: query_part}
+	query_struct := IMPVQueryString{Command: args}
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
