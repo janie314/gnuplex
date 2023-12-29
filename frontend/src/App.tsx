@@ -35,10 +35,19 @@ function App() {
         setPaused(paused);
       }
     });
+    APICall.media().then((media: string | null) => {
+      if (media !== null) {
+        setMedia(media);
+      }
+    });
   }, []);
 
   useEffect(() => {
-    APICall.getOriginMedia().then((res: string) => setMedia(res));
+    APICall.media().then((media: string | null) => {
+      if (media !== null) {
+        setMedia(media);
+      }
+    });
     APICall.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
     APICall.getOriginLast25().then((res: string[]) => setLast25(res));
   }, [mediaToggle]);
@@ -98,7 +107,7 @@ function App() {
       />
       <MediaControls
         paused={paused}
-        media={media.split("/").slice(-1)[0]}
+        media={media}
         setPaused={setPaused}
         setMediadirInputPopup={setMediadirInputPopup}
       />

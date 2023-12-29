@@ -88,16 +88,10 @@ class APICall {
     ).then((res) => res.json());
   }
 
-  public static async getOriginMedia() {
+  public static async media(): Promise<string | null> {
     return await fetch(
       `/api/media`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        return res.data as string;
-      } else {
-        return "";
-      }
-    });
+    ).then((res) => res.json());
   }
 
   public static async setOriginMedia(mediafile: string) {

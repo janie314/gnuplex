@@ -37,7 +37,9 @@ function MediaControls(props: {
       >
         Cast
       </span>
-      <span className="mediacontrol small">Now Playing: {props.media}</span>
+      <span className="mediacontrol small">
+        Now Playing: {props.media.split("/").slice(-1).join("")}
+      </span>
       <span
         className="mediacontrol rightjustify"
         onClick={() => {
