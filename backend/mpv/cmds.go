@@ -20,18 +20,18 @@ func (mpv *MPV) SetPause(paused bool) error {
 }
 
 type ResponseData interface {
-	int | ~string | bool
+	float64 | ~string | bool
 }
 
 type EmptyResponse struct {
-	request_id int
-	error      string
+	RequestId int    `json:"request_id"`
+	Err       string `json:"error"`
 }
 
 type Response[T ResponseData] struct {
-	data      T
-	requested int
-	error     string
+	Data      T      `json:"data"`
+	RequestId int    `json:"request_id"`
+	Err       string `json:"error"`
 }
 
 // Toggles play/pause.
@@ -64,23 +64,23 @@ func (mpv *MPV) SetMedia(filepath string) error {
 	return SetMPVProperty(mpv, "loadfile", filepath)
 }
 
-func (mpv *MPV) GetVolume() (int, error) {
-	return GetMPVProperty[int](mpv, "volume")
+func (mpv *MPV) GetVolume() (float64, error) {
+	return GetMPVProperty[float64](mpv, "volume")
 }
 
-func (mpv *MPV) SetVolume(vol int) error {
+func (mpv *MPV) SetVolume(vol float64) error {
 	return SetMPVProperty(mpv, "volume", vol)
 }
 
-func (mpv *MPV) GetPos() (int, error) {
-	return GetMPVProperty[int](mpv, "time-pos")
+func (mpv *MPV) GetPos() (float64, error) {
+	return GetMPVProperty[float64](mpv, "time-pos")
 }
 
-func (mpv *MPV) SetPos(pos int) error {
+func (mpv *MPV) SetPos(pos float64) error {
 	return SetMPVProperty(mpv, "time-pos", pos)
 }
 
-func (mpv *MPV) IncPos(pos int) error {
+func (mpv *MPV) IncPos(pos float64) error {
 	return SetMPVProperty(mpv, "seek", pos)
 }
 
@@ -104,14 +104,16 @@ func GetMPVProperty[T ResponseData](mpv *MPV, prop string) (T, error) {
 	}
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
-	log.Println("debug", string(res_bytes[:]))
 	err = json.Unmarshal(res_bytes, &response)
+	log.Println("debug", string(res_bytes[:]))
+	log.Println("debug", response.Data, response.Err, response.RequestId)
 	if err != nil {
 		return defaultT, err
-	} else if response.error != "success" {
+	} else if response.Err != "success" {
+		log.Println("err", response.Err)
 		return defaultT, errors.New("failure from mpv query")
 	} else {
-		return response.data, nil
+		return response.Data, nil
 	}
 }
 
@@ -122,12 +124,14 @@ func SetMPVProperty[T ResponseData](mpv *MPV, prop string, val T) error {
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
-	log.Println("debug", string(res_bytes[:]))
 	var response Response[T]
 	err = json.Unmarshal(res_bytes, &response)
+	log.Println("debug", string(res_bytes[:]))
+	log.Println("debug", response.Data, response.Err, response.RequestId)
 	if err != nil {
 		return err
-	} else if response.error != "success" {
+	} else if response.Err != "success" {
+		log.Println("err", response.Err)
 		return errors.New("failure from mpv query")
 	} else {
 		return nil
@@ -141,12 +145,14 @@ func (mpv *MPV) SetCmd(cmd string) error {
 	query, err := json.Marshal(query_struct)
 	// make query and parse result
 	res_bytes := mpv.UnixMsg(query)
-	log.Println("debug", string(res_bytes[:]))
 	var response Response[bool]
 	err = json.Unmarshal(res_bytes, &response)
+	log.Println("debug", string(res_bytes[:]))
+	log.Println("debug", response.Data, response.Err, response.RequestId)
 	if err != nil {
 		return err
-	} else if response.error != "success" {
+	} else if response.Err != "success" {
+		log.Println("err", response.Err)
 		return errors.New("failure from mpv query")
 	} else {
 		return nil

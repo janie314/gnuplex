@@ -47,8 +47,9 @@ type MPV struct {
 func New(wg *sync.WaitGroup) (*MPV, error) {
 	go RunDaemon(wg, false)
 	var mpv_socket *net.UnixAddr
-	mu := new(sync.Mutex)
-	conn := new(net.UnixConn)
+	mpv := new(MPV)
+	mpv.mu = new(sync.Mutex)
+	var conn *net.UnixConn
 	mpv_socket, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
 	if err != nil {
 		return nil, err
@@ -63,7 +64,8 @@ func New(wg *sync.WaitGroup) (*MPV, error) {
 	if err != nil {
 		return nil, errors.New("couldn't get mpv Unix socket opened")
 	} else {
-		return &MPV{conn: conn, mu: mu}, nil
+		mpv.conn = conn
+		return mpv, nil
 	}
 }
 

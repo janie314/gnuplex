@@ -48,7 +48,7 @@ func (server *Server) initEndpoints(api_url_base string) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad vol string")
 			}
-			writeQuery2HTTP(c, server.mpv.SetVolume(vol))
+			writeQuery2HTTP(c, server.mpv.SetVolume(float64(vol)))
 		}
 	})
 	// TODO fold into new framework
@@ -101,7 +101,7 @@ func (server *Server) initEndpoints(api_url_base string) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad pos string")
 			}
-			err = server.mpv.SetPos(pos)
+			err = server.mpv.SetPos(float64(pos))
 			if err != nil {
 				c.Data(http.StatusOK, "application/json", nil)
 			} else {
@@ -123,9 +123,10 @@ func (server *Server) initEndpoints(api_url_base string) {
 
 func readQuery2HTTP[T mpv.ResponseData](c *gin.Context, val T, err error) {
 	if err != nil {
-		c.JSON(http.StatusOK, val)
-	} else {
+		log.Println("Error", err)
 		c.JSON(http.StatusInternalServerError, nil)
+	} else {
+		c.JSON(http.StatusOK, val)
 	}
 }
 

@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"sync"
-	"time"
 )
 
 func RunDaemon(wg *sync.WaitGroup, verbose bool) {
@@ -23,6 +22,5 @@ func RunDaemon(wg *sync.WaitGroup, verbose bool) {
 		if err != nil {
 			log.Println("Error: mpvdaemon.Run: ", err)
 		}
-		time.Sleep(3 * time.Second)
 	}
 }
