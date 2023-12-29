@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { APICall } from "./lib/APICall.ts";
+import { APICall } from "./lib/API.ts";
 import "./App.css";
 import { Medialist } from "./components/Medialist.tsx";
 import { MediaControls } from "./components/MediaControls.tsx";
@@ -25,8 +25,16 @@ function App() {
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
 
   useEffect(() => {
-    APICall.getOriginVersion().then((version: string) => setVersion(version));
-    APICall.paused().then((paused) => setPaused(paused));
+    APICall.version().then((version: string | null) => {
+      if (version !== null) {
+        setVersion(version);
+      }
+    });
+    APICall.paused().then((paused: boolean | null) => {
+      if (paused !== null) {
+        setPaused(paused);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -36,8 +44,16 @@ function App() {
   }, [mediaToggle]);
 
   useEffect(() => {
-    APICall.getOriginPos().then((res: number) => setPos(res));
-    APICall.getOriginVol().then((res: number) => setVol(res));
+    APICall.pos().then((res: number | null) => {
+      if (res !== null) {
+        setPos(res);
+      }
+    });
+    APICall.vol().then((res: number | null) => {
+      if (res !== null) {
+        setVol(res);
+      }
+    });
   }, [media, volPosToggle]);
 
   return (
@@ -82,6 +98,7 @@ function App() {
       />
       <MediaControls
         paused={paused}
+        media={media.split("/").slice(-1)[0]}
         setPaused={setPaused}
         setMediadirInputPopup={setMediadirInputPopup}
       />

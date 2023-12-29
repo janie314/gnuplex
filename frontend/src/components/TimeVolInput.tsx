@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useState } from "react";
-import { APICall } from "../lib/APICall.ts";
+import { APICall } from "../lib/API.ts";
 import "./TimeVolInput.css";
 
 const enum TimeUnit {
@@ -87,7 +87,7 @@ function TimeVolInput(props: {
           min={0}
           max={250}
           onClick={(e) => {
-            APICall.setOriginPos(props.rawtime as number);
+            APICall.setPos(props.rawtime as number);
           }}
         />
       </div>
@@ -114,7 +114,7 @@ function TimeVolInput(props: {
           className="timevol-input-button"
           value="Set"
           onClick={(e) => {
-            APICall.setOriginVol(props.vol as number);
+            APICall.setVol(props.vol as number);
           }}
         />
       </div>

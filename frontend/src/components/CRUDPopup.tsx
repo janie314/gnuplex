@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { APICall } from "../lib/APICall.ts";
+import { APICall } from "../lib/API.ts";
 import "../App.css";
 import "./CRUDPopup.css";
 import { WorkingSpinnerTSX } from "./WorkingSpinner.tsx";

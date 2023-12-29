@@ -1,5 +1,5 @@
 import { SyntheticEvent } from "react";
-import { APICall } from "../lib/APICall.ts";
+import { APICall } from "../lib/API.ts";
 import "../App.css";
 
 function Medialist(

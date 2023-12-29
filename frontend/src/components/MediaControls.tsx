@@ -1,10 +1,11 @@
-import { APICall } from "../lib/APICall.ts";
+import { APICall } from "../lib/API.ts";
 import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
 
 function MediaControls(props: {
   paused: boolean;
+  media: string;
   setPaused: React.Dispatch<React.SetStateAction<boolean>>;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -16,7 +17,11 @@ function MediaControls(props: {
       <span
         className="mediacontrol"
         onClick={() =>
-          APICall.toggle().then((paused) => props.setPaused(paused))}
+          APICall.toggle().then((paused: boolean | null) => {
+            if (paused !== null) {
+              props.setPaused(paused);
+            }
+          })}
       >
         {props.paused ? "⏵" : "⏸"}
       </span>
@@ -32,7 +37,7 @@ function MediaControls(props: {
       >
         Cast
       </span>
-      <span>Now Playing: Night of the Living Dead</span>
+      <span className="mediacontrol small">Now Playing: {props.media}</span>
       <span
         className="mediacontrol rightjustify"
         onClick={() => {
