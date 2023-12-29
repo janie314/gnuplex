@@ -149,6 +149,7 @@ func MPVCmd[T ResponseData](mpv *MPV, prop string, val T, read_query, is_prop bo
 			return response.Data, nil
 		}
 	} else {
+		// ignore response if it's a write query
 		var response EmptyResponse
 		err = json.Unmarshal(res_bytes, &response)
 		if err != nil {

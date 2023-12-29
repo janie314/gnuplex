@@ -52,7 +52,7 @@ func main() {
 		log.Fatal("CronTrigger init failure", err)
 	}
 	scanLibJob := quartz.NewFunctionJob(func(_ context.Context) (int, error) {
-		return 0, srv.ScanLib(false)
+		return 0, srv.DB.ScanLib(false)
 	})
 	err = sched.ScheduleJob(ctx, scanLibJob, scanLibTrigger)
 	if err != nil {

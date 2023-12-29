@@ -1,4 +1,4 @@
-package server
+package liteDB
 
 import (
 	"fmt"
@@ -14,13 +14,13 @@ type dBFSDiff struct {
 	inFS bool
 }
 
-func (srv *Server) ScanLib(ignorelock bool) error {
-	srv.DB.Lock("ScanLib", ignorelock)
-	defer srv.DB.Unlock("ScanLib", ignorelock)
+func (db *LiteDB) ScanLib(ignorelock bool) error {
+	db.Lock("ScanLib", ignorelock)
+	defer db.Unlock("ScanLib", ignorelock)
 	var reterr error
-	mediadirsFromDB := srv.GetMediadirs(true)
-	medialistFromDB := srv.GetMedialib(true)
-	fileExts := srv.GetFileExts(true)
+	mediadirsFromDB := db.GetMediadirs(true)
+	medialistFromDB := db.GetMedialib(true)
+	fileExts := db.GetFileExts(true)
 	fileExtHash := make(map[string]bool)
 	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
 	for _, path := range medialistFromDB {
@@ -46,13 +46,13 @@ func (srv *Server) ScanLib(ignorelock bool) error {
 						return nil
 					} else if medialist[path] == nil {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return srv.AddMedia(path, true)
+						return db.AddMedia(path, true)
 					} else if medialist[path].inDB {
 						medialist[path].inFS = true
 						return nil
 					} else {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return srv.AddMedia(path, true)
+						return db.AddMedia(path, true)
 					}
 				} else {
 					return nil
@@ -68,16 +68,16 @@ func (srv *Server) ScanLib(ignorelock bool) error {
 	}
 	for _, path := range medialistFromDB {
 		if !medialist[path].inFS {
-			srv.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
+			db.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
 		}
 	}
 	return reterr
 }
 
-func (srv *Server) GetMediadirs(ignorelock bool) []string {
-	srv.DB.Lock("GetMediadirs", ignorelock)
-	defer srv.DB.Unlock("GetMediadirs", ignorelock)
-	rows, err := srv.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
+func (db *LiteDB) GetMediadirs(ignorelock bool) []string {
+	db.Lock("GetMediadirs", ignorelock)
+	defer db.Unlock("GetMediadirs", ignorelock)
+	rows, err := db.SqliteConn.Query("select filepath from mediadirs order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMediadirs: ", err)
 		return []string{}
@@ -99,13 +99,13 @@ func (srv *Server) GetMediadirs(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (srv *Server) SetMediadirs(mediadirs []string, ignorelock bool) error {
-	srv.DB.Lock("SetMediadirs", ignorelock)
-	defer srv.DB.Unlock("SetMediadirs", ignorelock)
+func (db *LiteDB) SetMediadirs(mediadirs []string, ignorelock bool) error {
+	db.Lock("SetMediadirs", ignorelock)
+	defer db.Unlock("SetMediadirs", ignorelock)
 	var err error
-	srv.DB.SqliteConn.Exec("delete from mediadirs;")
+	db.SqliteConn.Exec("delete from mediadirs;")
 	for _, mediafile := range mediadirs {
-		_, err := srv.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
+		_, err := db.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
 		if err != nil {
 			log.Println("Error: AddMediadir", err)
 		}
@@ -113,10 +113,10 @@ func (srv *Server) SetMediadirs(mediadirs []string, ignorelock bool) error {
 	return err
 }
 
-func (srv *Server) GetFileExts(ignorelock bool) []string {
-	srv.DB.Lock("GetFileExts", ignorelock)
-	defer srv.DB.Unlock("GetFileExts", ignorelock)
-	rows, err := srv.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
+func (db *LiteDB) GetFileExts(ignorelock bool) []string {
+	db.Lock("GetFileExts", ignorelock)
+	defer db.Unlock("GetFileExts", ignorelock)
+	rows, err := db.SqliteConn.Query("select (ext) from file_exts order by ext ;")
 	if err != nil {
 		log.Println("Error: GetFileExts: ", err)
 		return []string{}
@@ -138,13 +138,13 @@ func (srv *Server) GetFileExts(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (srv *Server) SetFileExts(file_exts []string, ignorelock bool) error {
-	srv.DB.Lock("SetFileExts", ignorelock)
-	defer srv.DB.Unlock("SetFileExts", ignorelock)
+func (db *LiteDB) SetFileExts(file_exts []string, ignorelock bool) error {
+	db.Lock("SetFileExts", ignorelock)
+	defer db.Unlock("SetFileExts", ignorelock)
 	var err error
-	srv.DB.SqliteConn.Exec("delete from file_exts;")
+	db.SqliteConn.Exec("delete from file_exts;")
 	for _, ext := range file_exts {
-		_, err := srv.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
+		_, err := db.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
 		if err != nil {
 			log.Println("Error: SetFileExts", err)
 		}
@@ -152,10 +152,10 @@ func (srv *Server) SetFileExts(file_exts []string, ignorelock bool) error {
 	return err
 }
 
-func (srv *Server) GetMedialib(ignorelock bool) []string {
-	srv.DB.Lock("GetMedialib", ignorelock)
-	defer srv.DB.Unlock("GetMedialib", ignorelock)
-	rows, err := srv.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
+func (db *LiteDB) GetMedialib(ignorelock bool) []string {
+	db.Lock("GetMedialib", ignorelock)
+	defer db.Unlock("GetMedialib", ignorelock)
+	rows, err := db.SqliteConn.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMedialib: ", err)
 		return []string{}
@@ -177,10 +177,10 @@ func (srv *Server) GetMedialib(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (srv *Server) AddMedia(mediafile string, ignorelock bool) error {
-	srv.DB.Lock("AddMedia", ignorelock)
-	defer srv.DB.Unlock("AddMedia", ignorelock)
-	_, err := srv.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
+func (db *LiteDB) AddMedia(mediafile string, ignorelock bool) error {
+	db.Lock("AddMedia", ignorelock)
+	defer db.Unlock("AddMedia", ignorelock)
+	_, err := db.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddMedia err", err)
 	}
