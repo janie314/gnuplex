@@ -1,6 +1,7 @@
 import { APICall } from "../lib/API.ts";
 import {
   Book,
+  Chromecast,
   IconoirProvider,
   LongArrowLeftUp,
   LongArrowRightDown,
@@ -10,6 +11,7 @@ import {
 import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
+import { Slider } from "./Slider.tsx";
 
 function MediaControls(props: {
   paused: boolean;
@@ -19,12 +21,12 @@ function MediaControls(props: {
 }) {
   return (
     <div className="mediacontrols">
-      <span className="mediacontrol" onClick={() => APICall.incPos(-30)}>
+      <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
         <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
           <LongArrowLeftUp />
         </IconoirProvider>
-      </span>
-      <span
+      </div>
+      <div
         className="mediacontrol"
         onClick={() =>
           APICall.toggle().then((paused: boolean | null) => {
@@ -34,32 +36,33 @@ function MediaControls(props: {
           })}
       >
         {props.paused ? <PlaySolid /> : <PauseSolid />}
-      </span>
-      <span className="mediacontrol" onClick={() => APICall.incPos(30)}>
+      </div>
+      <div className="mediacontrol" onClick={() => APICall.incPos(30)}>
         <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
           <LongArrowRightDown />
         </IconoirProvider>
-      </span>
-      <span
-        className="mediacontrol small"
+      </div>
+      <div
+        className="mediacontrol"
         onClick={() => {
-          const url = window.prompt("YouTube URL:", "") || "";
+          const url = window.prompt("URL (YouTube, etc.):", "") || "";
           APICall.setOriginMedia(url);
         }}
       >
-        Cast
-      </span>
-      <span className="mediacontrol small">
+        <Chromecast />
+      </div>
+      <Slider />
+      <div className="mediacontrol small">
         Now Playing: {props.media.split("/").slice(-1).join("")}
-      </span>
-      <span
+      </div>
+      <div
         className="mediacontrol rightjustify"
         onClick={() => {
           props.setMediadirInputPopup(true);
         }}
       >
         <Book />
-      </span>
+      </div>
     </div>
   );
 }

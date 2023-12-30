@@ -11,26 +11,27 @@ div.mediacontrols {
 	left: 0;
 }
 
-span.mediacontrol {
+div.mediacontrol {
  min-width: 3ch;
  font-size: 2em;
- text-align: center;
  background-color: hsl(198deg 76% 90%);
  border: 1px solid hsl(198deg 76% 90%);
  font-family: sans-serif;
+ display: flex;
+ align-items: center;
 }
 
-span.mediacontrol:hover {
+div.mediacontrol:hover {
  background-color: hsl(198deg 76% 80%);
  cursor: default;
 }
 
-span.mediacontrol.small {
+div.mediacontrol.small {
 	height: 100%;
 	font-size: 1em;
 }
 
-span.nowplaying {
+div.nowplaying {
 	font-family: sans-serif;
 }
 
