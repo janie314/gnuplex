@@ -40,47 +40,53 @@ function MediaControls(props: {
 
   return (
     <div className="mediacontrols">
-      <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
-        <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
-          <LongArrowLeftUp />
-        </IconoirProvider>
-      </div>
-      <div
-        className="mediacontrol"
-        onClick={() =>
-          APICall.toggle().then((paused: boolean | null) => {
-            if (paused !== null) {
-              props.setPaused(paused);
-            }
-          })}
-      >
-        {props.paused ? <PlaySolid /> : <PauseSolid />}
-      </div>
-      <div className="mediacontrol" onClick={() => APICall.incPos(30)}>
-        <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
-          <LongArrowRightDown />
-        </IconoirProvider>
-      </div>
-      <div
-        className="mediacontrol"
-        onClick={() => {
-          const url = window.prompt("URL (YouTube, etc.):", "") || "";
-          APICall.setOriginMedia(url);
-        }}
-      >
-        <Chromecast />
-      </div>
-      <Slider vol={vol} debouncedVol={debouncedVol} setVol={setVol} />
-      <div className="mediacontrol small">
+      <div className="controlrow">
         Now Playing: {props.media.split("/").slice(-1).join("")}
       </div>
-      <div
-        className="mediacontrol rightjustify"
-        onClick={() => {
-          props.setMediadirInputPopup(true);
-        }}
-      >
-        <Book />
+      <div className="controlrow">
+        <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
+          <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
+            <LongArrowLeftUp />
+          </IconoirProvider>
+        </div>
+        <div
+          className="mediacontrol"
+          onClick={() =>
+            APICall.toggle().then((paused: boolean | null) => {
+              if (paused !== null) {
+                props.setPaused(paused);
+              }
+            })}
+        >
+          {props.paused ? <PlaySolid /> : <PauseSolid />}
+        </div>
+        <div className="mediacontrol" onClick={() => APICall.incPos(30)}>
+          <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
+            <LongArrowRightDown />
+          </IconoirProvider>
+        </div>
+      </div>
+      <div className="controlrow">
+        <div
+          className="mediacontrol"
+          onClick={() => {
+            const url = window.prompt("URL (YouTube, etc.):", "") || "";
+            APICall.setOriginMedia(url);
+          }}
+        >
+          <Chromecast />
+        </div>{" "}
+        <div
+          className="mediacontrol rightjustify"
+          onClick={() => {
+            props.setMediadirInputPopup(true);
+          }}
+        >
+          <Book />
+        </div>
+      </div>
+      <div className="controlrow">
+        <Slider vol={vol} debouncedVol={debouncedVol} setVol={setVol} />
       </div>
     </div>
   );

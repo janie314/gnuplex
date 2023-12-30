@@ -2,13 +2,21 @@ div.mediacontrols {
 	/* height: 40px; */
 	position: fixed;
 	bottom: 0;
-	width: 100%;
 	background-color: hsl(198deg 76% 90%);
 	opacity: 1;
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	align-items: center;
 	left: 0;
+	min-width: 300px;
+	padding: 2%;
+}
+
+div.controlrow {
+display: flex;
+flex-direction: row;
+width: 100%;
+justify-content: center;
 }
 
 div.mediacontrol {
