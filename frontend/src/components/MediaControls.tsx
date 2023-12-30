@@ -1,4 +1,12 @@
 import { APICall } from "../lib/API.ts";
+import {
+  Book,
+  IconoirProvider,
+  LongArrowLeftUp,
+  LongArrowRightDown,
+  PauseSolid,
+  PlaySolid,
+} from "iconoir-react";
 import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
@@ -12,7 +20,9 @@ function MediaControls(props: {
   return (
     <div className="mediacontrols">
       <span className="mediacontrol" onClick={() => APICall.incPos(-30)}>
-        ⥀
+        <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
+          <LongArrowLeftUp />
+        </IconoirProvider>
       </span>
       <span
         className="mediacontrol"
@@ -23,10 +33,12 @@ function MediaControls(props: {
             }
           })}
       >
-        {props.paused ? "⏵" : "⏸"}
+        {props.paused ? <PlaySolid /> : <PauseSolid />}
       </span>
       <span className="mediacontrol" onClick={() => APICall.incPos(30)}>
-        ⥁
+        <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
+          <LongArrowRightDown />
+        </IconoirProvider>
       </span>
       <span
         className="mediacontrol small"
@@ -46,7 +58,7 @@ function MediaControls(props: {
           props.setMediadirInputPopup(true);
         }}
       >
-        🕮
+        <Book />
       </span>
     </div>
   );
