@@ -12,13 +12,32 @@ import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
 import { Slider } from "./Slider.tsx";
+import { useDebounce } from "usehooks-ts";
+import { useEffect, useState } from "react";
 
 function MediaControls(props: {
   paused: boolean;
-  media: string;
   setPaused: React.Dispatch<React.SetStateAction<boolean>>;
+  media: string;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const [vol, setVol] = useState<number | null>(null);
+  const debouncedVol = useDebounce(vol, 500);
+
+  useEffect(() => {
+    APICall.vol().then((vol) => {
+      if (vol !== null) {
+        setVol(vol);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (vol !== null) {
+      APICall.setVol(debouncedVol as number);
+    }
+  }, [debouncedVol]);
+
   return (
     <div className="mediacontrols">
       <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
@@ -51,7 +70,7 @@ function MediaControls(props: {
       >
         <Chromecast />
       </div>
-      <Slider />
+      <Slider vol={vol} debouncedVol={debouncedVol} setVol={setVol} />
       <div className="mediacontrol small">
         Now Playing: {props.media.split("/").slice(-1).join("")}
       </div>

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "https://esm.sh/react@18.2.0",
+    "jsxImportSource": "https://esm.sh/react",
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
   }
 }

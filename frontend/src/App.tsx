@@ -14,15 +14,13 @@ interface IMPVRes {
 
 function App() {
   const [version, setVersion] = useState("");
-  const [volPosToggle, setVolPosToggle] = useState(false);
   const [mediaToggle, setMediaToggle] = useState(false);
   const [paused, setPaused] = useState(true);
-  const [pos, setPos] = useState(0);
-  const [vol, setVol] = useState(0);
   const [media, setMedia] = useState("");
   const [mediafiles, setMediafiles] = useState<string[]>([]);
   const [last25, setLast25] = useState<string[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
+  const [pos, setPos] = useState(0);
 
   useEffect(() => {
     APICall.version().then((version: string | null) => {
@@ -58,12 +56,7 @@ function App() {
         setPos(res);
       }
     });
-    APICall.vol().then((res: number | null) => {
-      if (res !== null) {
-        setVol(res);
-      }
-    });
-  }, [media, volPosToggle]);
+  }, [media]);
 
   return (
     <>
@@ -78,9 +71,6 @@ function App() {
           </div>
           <div className="controlgroup">
             <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
-          </div>
-          <div className="controlgroup">
-            <TimeVolInput vol={vol} setVol={setVol} type="vol" />
           </div>
         </div>
 
@@ -107,8 +97,8 @@ function App() {
       />
       <MediaControls
         paused={paused}
-        media={media}
         setPaused={setPaused}
+        media={media}
         setMediadirInputPopup={setMediadirInputPopup}
       />
     </>
