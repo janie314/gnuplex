@@ -5,78 +5,96 @@ interface IMPVRes {
 }
 
 class APICall {
-  public static async play() {
-    return await fetch(
-      `/api/play`,
-      { method: "POST" },
-    );
-  }
-
-  public static async pause() {
-    return await fetch(
-      `/api/pause`,
-      { method: "POST" },
-    );
-  }
-
-  public static async getOriginPos() {
-    return await fetch(
-      `/api/pos`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        // @ts-ignore
-        return Math.floor(res.data);
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  public static async getOriginVersion() {
+  /**
+   * @returns GNUPlex version string.
+   */
+  public static async version(): Promise<string> {
     return await fetch(
       `/api/version`,
-    ).then((res) => res.json()) as string;
+    ).then((res) => res.json());
   }
 
-  public static async setOriginPos(pos: number) {
+  /**
+   * @returns Whether the video player is paused.
+   */
+  public static async paused(): Promise<boolean | null> {
+    return await fetch(
+      `/api/paused`,
+    ).then((res) => res.json());
+  }
+
+  /**
+   * Toggles the video's play/pause status.
+   *
+   * @returns Whether the video player is paused following the toggle operation.
+   */
+  public static async toggle(): Promise<boolean> {
+    return await fetch(
+      `/api/toggle`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
+
+  /**
+   * Increments the video's position.
+   *
+   * @param inc How much to increment the position (seconds, can be positive or negative)
+   * @returns The video player's position (seconds) following the toggle inc operation.
+   */
+  public static async incPos(inc: number): Promise<number | null> {
+    return await fetch(
+      `/api/incpos?inc=${inc}`,
+      { method: "POST" },
+    ).then((res) => res.json());
+  }
+
+  /**
+   * @returns The video player's position (seconds).
+   */
+  public static async pos(): Promise<number | null> {
+    return await fetch(
+      `/api/pos`,
+    ).then((res) => res.json());
+  }
+
+  /**
+   * Sets the video's position.
+   *
+   * @param The position the video should seek to (seconds).
+   */
+  public static async setPos(pos: number) {
     return await fetch(
       `/api/pos?pos=${pos}`,
       { method: "POST" },
     ).then((res) => res.json());
   }
 
-  public static async getOriginVol() {
+  /**
+   * @returns The video's volume (percentage, 0 - 100+).
+   */
+  public static async vol(): Promise<number | null> {
     return await fetch(
       `/api/vol`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        // @ts-ignore
-        return Math.floor(res.data);
-      } else {
-        return 0;
-      }
-    });
+    ).then((res) => res.json());
   }
-  public static async setOriginVol(vol: number) {
+
+  /**
+   * @param vol The video's volume (percentage, 0 - 100+).
+   */
+  public static async setVol(vol: number) {
     return await fetch(
       `/api/vol?vol=${vol}`,
       { method: "POST" },
     ).then((res) => res.json());
   }
 
-  public static async getOriginMedia() {
+  public static async media(): Promise<string | null> {
     return await fetch(
       `/api/media`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        return res.data as string;
-      } else {
-        return "";
-      }
-    });
+    ).then((res) => res.json());
   }
 
-  public static async setOriginMedia(mediafile: string) {
+  public static async setMedia(mediafile: string) {
     return await fetch(
       `/api/media?mediafile=${encodeURI(mediafile)}`,
       { method: "POST" },

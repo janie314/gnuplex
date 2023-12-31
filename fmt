@@ -1,6 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 basedir=$(realpath $(dirname "$0"))
-cd "$basedir/backend"
-find . -type f -name '*.go' -exec go fmt {} \;
-cd ../frontend
+find backend -type f -name '*go*' -exec go fmt {} \;
 find . -type f -not -path '*node_modules*' -exec deno fmt {} \;
