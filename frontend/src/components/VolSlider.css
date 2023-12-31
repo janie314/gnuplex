@@ -1,8 +1,17 @@
+div.slider {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	justify-content: center;
+}
+
 .horizontal-slider {
 	width: 100%;
 	max-width: 20ch;
 	padding-left: 0.5%;
 	padding-right: 0.5%;
+	margin-left: 0.5%;
 }
 
 .thumb {

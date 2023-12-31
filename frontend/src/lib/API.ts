@@ -94,7 +94,7 @@ class APICall {
     ).then((res) => res.json());
   }
 
-  public static async setOriginMedia(mediafile: string) {
+  public static async setMedia(mediafile: string) {
     return await fetch(
       `/api/media?mediafile=${encodeURI(mediafile)}`,
       { method: "POST" },
