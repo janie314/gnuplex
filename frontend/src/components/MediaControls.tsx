@@ -11,7 +11,7 @@ import {
 import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
-import { VolSlider } from "./VolSlider.tsx";
+import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { useDebounce } from "usehooks-ts";
 import { useEffect, useState } from "react";
 
@@ -67,23 +67,23 @@ function MediaControls(props: {
         </div>
       </div>
       <div className="controlrow">
-        <div
+        <input
+          type="button"
           className="mediacontrol"
           onClick={() => {
             const url = window.prompt("URL (YouTube, etc.):", "") || "";
             APICall.setMedia(url);
           }}
-        >
-          <Chromecast />
-        </div>{" "}
-        <div
-          className="mediacontrol rightjustify"
+          value="Cast"
+        />
+        <input
+          type="button"
+          className="mediacontrol"
           onClick={() => {
             props.setMediadirInputPopup(true);
           }}
-        >
-          <Book />
-        </div>
+          value="Library"
+        />
       </div>
       <div className="controlrow">
         <VolSlider vol={vol} debouncedVol={debouncedVol} setVol={setVol} />

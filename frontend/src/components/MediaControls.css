@@ -17,19 +17,20 @@ display: flex;
 flex-direction: row;
 width: 100%;
 justify-content: center;
+ font-family: sans-serif;
 }
 
-div.mediacontrol {
- min-width: 3ch;
- font-size: 2em;
- background-color: hsl(198deg 76% 90%);
- border: 1px solid hsl(198deg 76% 90%);
- font-family: sans-serif;
+input.mediacontrol {
+ background-color: hsl(198deg 76% 85%);
+ border: 1px solid black;
  display: flex;
  align-items: center;
+ font-size: medium;
+ margin-left: 0.5%;
+ margin-right: 0.5%;
 }
 
-div.mediacontrol:hover {
+input.mediacontrol:hover {
  background-color: hsl(198deg 76% 80%);
  cursor: default;
 }
