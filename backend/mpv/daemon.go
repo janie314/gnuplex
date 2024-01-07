@@ -15,9 +15,9 @@ func RunDaemon(wg *sync.WaitGroup, verbose bool) {
 	for {
 		var cmd *exec.Cmd
 		if !verbose {
-			cmd = exec.Command("mpv", "--cursor-autohide=always", "--idle=yes", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
+			cmd = exec.Command("mpv", "--sub-auto=all", "--cursor-autohide=always", "--idle=yes", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
 		} else {
-			cmd = exec.Command("mpv", "--cursor-autohide=always", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
+			cmd = exec.Command("mpv", "--sub-auto=all", "--cursor-autohide=always", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
 		}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
