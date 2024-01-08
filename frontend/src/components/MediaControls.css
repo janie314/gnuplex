@@ -12,6 +12,11 @@ div.mediacontrols {
 	padding: 2%;
 }
 
+span.nowplaying {
+  max-width: 60ch;
+  overflow: clip;
+}
+
 div.controlrow {
 display: flex;
 flex-direction: row;

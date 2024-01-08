@@ -15,6 +15,14 @@ import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { useDebounce } from "usehooks-ts";
 import { useEffect, useState } from "react";
 
+function clipText(str: string, max: number) {
+  if (str.length <= max) {
+    return str;
+  } else {
+    return str.slice(0, 50) + "...";
+  }
+}
+
 function MediaControls(props: {
   paused: boolean;
   setPaused: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,7 +49,12 @@ function MediaControls(props: {
   return (
     <div className="mediacontrols">
       <div className="controlrow">
-        Now Playing: {props.media.split("/").slice(-1).join("")}
+        <span className="nowplaying">
+          {clipText(
+            "Now Playing: " + props.media.split("/").slice(-1).join(""),
+            50,
+          )}
+        </span>
       </div>
       <div className="controlrow">
         <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
