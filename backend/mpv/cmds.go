@@ -92,6 +92,10 @@ func (mpv *MPV) SetPos(pos float64) error {
 	return err
 }
 
+func (mpv *MPV) GetTimeRemaining() (float64, error) {
+	return MPVCmd[float64](mpv, "time-remaining", 0, true, true)
+}
+
 func (mpv *MPV) IncPos(pos float64) error {
 	_, err := MPVCmd(mpv, "seek", pos, false, false)
 	return err
