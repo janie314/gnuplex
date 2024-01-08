@@ -1,17 +1,17 @@
 div.slider {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	width: 100%;
-	justify-content: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
 }
 
 .horizontal-slider {
-	width: 100%;
-	max-width: 20ch;
-	padding-left: 0.5%;
-	padding-right: 0.5%;
-	margin-left: 0.5%;
+  width: 100%;
+  max-width: 20ch;
+  padding-left: 0.5%;
+  padding-right: 0.5%;
+  margin-left: 0.5%;
 }
 
 .thumb {
@@ -25,7 +25,7 @@ div.slider {
 
 .track {
   background: black;
-	height: 5px; 
+  height: 5px; 
   transform: translate(0,-50%);
   z-index: 50;
 }

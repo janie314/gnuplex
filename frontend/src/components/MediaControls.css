@@ -1,15 +1,15 @@
 div.mediacontrols {
-	/* height: 40px; */
-	position: fixed;
-	bottom: 0;
-	background-color: hsl(198deg 76% 90%);
-	opacity: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	left: 0;
-	min-width: 300px;
-	padding: 2%;
+  /* height: 40px; */
+  position: fixed;
+  bottom: 0;
+  background-color: hsl(198deg 76% 90%);
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  left: 0;
+  min-width: 300px;
+  padding: 2%;
 }
 
 span.nowplaying {
@@ -18,37 +18,37 @@ span.nowplaying {
 }
 
 div.controlrow {
-display: flex;
-flex-direction: row;
-width: 100%;
-justify-content: center;
- font-family: sans-serif;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  font-family: sans-serif;
 }
 
 input.mediacontrol {
- background-color: hsl(198deg 76% 85%);
- border: 1px solid black;
- display: flex;
- align-items: center;
- font-size: medium;
- margin-left: 0.5%;
- margin-right: 0.5%;
+  background-color: hsl(198deg 76% 85%);
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  font-size: medium;
+  margin-left: 0.5%;
+  margin-right: 0.5%;
 }
 
 input.mediacontrol:hover {
- background-color: hsl(198deg 76% 80%);
- cursor: default;
+  background-color: hsl(198deg 76% 80%);
+  cursor: default;
 }
 
 div.mediacontrol.small {
-	height: 100%;
-	font-size: 1em;
+  height: 100%;
+  font-size: 1em;
 }
 
 div.nowplaying {
-	font-family: sans-serif;
+  font-family: sans-serif;
 }
 
 .rightjustify {
-	justify-self: end;
+  justify-self: end;
 }
