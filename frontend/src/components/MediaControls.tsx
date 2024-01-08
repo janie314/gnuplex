@@ -12,6 +12,7 @@ import "../App.css";
 import "./CRUDPopup.css";
 import "./MediaControls.css";
 import { VolSlider } from "./MediaControls/VolSlider.tsx";
+import { PosSlider } from "./MediaControls/PosSlider.tsx";
 import { useDebounce } from "usehooks-ts";
 import { useEffect, useState } from "react";
 
@@ -55,6 +56,9 @@ function MediaControls(props: {
             50,
           )}
         </span>
+      </div>
+      <div className="controlrow">
+        <PosSlider />
       </div>
       <div className="controlrow">
         <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
