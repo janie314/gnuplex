@@ -87,7 +87,7 @@ function TimeVolInput(props: {
           min={0}
           max={250}
           onClick={(e) => {
-            APICall.setPos(props.rawtime as number);
+            APICall.setPos(props.rawtime as number, false);
           }}
         />
       </div>

@@ -6,7 +6,6 @@ import (
 	"gnuplex-backend/mpv"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -90,7 +89,7 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		}
 	})
 	/*
-	 * GET /media
+	 * GET /vol
 	 * Response: number
 	 *   Current volume.
 	 */
@@ -109,56 +108,6 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		var vol volBody
 		c.BindJSON(&vol)
 		writeQueryResponse(c, srv.mpv.SetVolume(vol.Vol))
-	})
-	// TODO fold this into /pos
-	srv.Router.POST(api_url_base+"/incpos", func(c *gin.Context) {
-		param := c.Query("inc")
-		if param == "" {
-			c.String(http.StatusBadRequest, "empty inc string")
-		} else {
-			inc, err := strconv.Atoi(param)
-			if err != nil {
-				c.String(http.StatusBadRequest, "bad inc string")
-			}
-			writeQueryResponse(c, srv.mpv.IncPos(float64(inc)))
-		}
-	})
-	// TODO fold into new framework
-	srv.Router.GET(api_url_base+"/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, srv.DB.GetMediadirs(false))
-	})
-	srv.Router.POST(api_url_base+"/mediadirs", func(c *gin.Context) {
-		mediadirsJson := []byte(c.Query("mediadirs"))
-		var mediadirs []string
-		err := json.Unmarshal(mediadirsJson, &mediadirs)
-		if err != nil {
-			c.String(http.StatusBadRequest, "bad mediadirs string")
-		} else {
-			err = srv.DB.SetMediadirs(mediadirs, false)
-			if err == nil {
-				c.JSON(http.StatusOK, "ok")
-			} else {
-				c.JSON(http.StatusInternalServerError, "Couldn't add the mediadirs")
-			}
-		}
-	})
-	srv.Router.GET(api_url_base+"/file_exts", func(c *gin.Context) {
-		c.JSON(http.StatusOK, srv.DB.GetFileExts(false))
-	})
-	srv.Router.POST(api_url_base+"/file_exts", func(c *gin.Context) {
-		fileExtsJson := []byte(c.Query("file_exts"))
-		var fileExts []string
-		err := json.Unmarshal(fileExtsJson, &fileExts)
-		if err != nil {
-			c.String(http.StatusBadRequest, "bad mediadirs string")
-		} else {
-			err = srv.DB.SetFileExts(fileExts, false)
-			if err == nil {
-				c.JSON(http.StatusOK, "ok")
-			} else {
-				c.JSON(http.StatusInternalServerError, "Couldn't add the fileexts")
-			}
-		}
 	})
 	/*
 	 * GET /pos
@@ -206,6 +155,43 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		srv.DB.ScanLib(false)
 		c.String(http.StatusOK, "OK")
 	})
+	srv.Router.GET(api_url_base+"/mediadirs", func(c *gin.Context) {
+		c.JSON(http.StatusOK, srv.DB.GetMediadirs(false))
+	})
+	srv.Router.POST(api_url_base+"/mediadirs", func(c *gin.Context) {
+		mediadirsJson := []byte(c.Query("mediadirs"))
+		var mediadirs []string
+		err := json.Unmarshal(mediadirsJson, &mediadirs)
+		if err != nil {
+			c.String(http.StatusBadRequest, "bad mediadirs string")
+		} else {
+			err = srv.DB.SetMediadirs(mediadirs, false)
+			if err == nil {
+				c.JSON(http.StatusOK, "ok")
+			} else {
+				c.JSON(http.StatusInternalServerError, "Couldn't add the mediadirs")
+			}
+		}
+	})
+	srv.Router.GET(api_url_base+"/file_exts", func(c *gin.Context) {
+		c.JSON(http.StatusOK, srv.DB.GetFileExts(false))
+	})
+	srv.Router.POST(api_url_base+"/file_exts", func(c *gin.Context) {
+		fileExtsJson := []byte(c.Query("file_exts"))
+		var fileExts []string
+		err := json.Unmarshal(fileExtsJson, &fileExts)
+		if err != nil {
+			c.String(http.StatusBadRequest, "bad mediadirs string")
+		} else {
+			err = srv.DB.SetFileExts(fileExts, false)
+			if err == nil {
+				c.JSON(http.StatusOK, "ok")
+			} else {
+				c.JSON(http.StatusInternalServerError, "Couldn't add the fileexts")
+			}
+		}
+	})
+
 }
 
 // cast an mpvcmd read query into a Gin response

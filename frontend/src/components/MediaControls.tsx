@@ -61,7 +61,7 @@ function MediaControls(props: {
         <PosSlider />
       </div>
       <div className="controlrow">
-        <div className="mediacontrol" onClick={() => APICall.incPos(-30)}>
+        <div className="mediacontrol" onClick={() => APICall.setPos(-30, true)}>
           <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
             <LongArrowLeftUp />
           </IconoirProvider>
@@ -77,7 +77,7 @@ function MediaControls(props: {
         >
           {props.paused ? <PlaySolid /> : <PauseSolid />}
         </div>
-        <div className="mediacontrol" onClick={() => APICall.incPos(30)}>
+        <div className="mediacontrol" onClick={() => APICall.setPos(30, true)}>
           <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
             <LongArrowRightDown />
           </IconoirProvider>

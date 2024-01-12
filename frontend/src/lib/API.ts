@@ -4,13 +4,20 @@ interface IMPVRes {
   error: string;
 }
 
+const common_options = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+
 class APICall {
   /**
    * @returns GNUPlex version string.
    */
   public static async version(): Promise<string> {
     return await fetch(
-      `/api/version`,
+      "/api/version",
+      { ...common_options },
     ).then((res) => res.json());
   }
 
@@ -19,7 +26,8 @@ class APICall {
    */
   public static async paused(): Promise<boolean | null> {
     return await fetch(
-      `/api/paused`,
+      "/api/paused",
+      { ...common_options },
     ).then((res) => res.json());
   }
 
@@ -30,21 +38,8 @@ class APICall {
    */
   public static async toggle(): Promise<boolean> {
     return await fetch(
-      `/api/toggle`,
-      { method: "POST" },
-    ).then((res) => res.json());
-  }
-
-  /**
-   * Increments the video's position.
-   *
-   * @param inc How much to increment the position (seconds, can be positive or negative)
-   * @returns The video player's position (seconds) following the toggle inc operation.
-   */
-  public static async incPos(inc: number): Promise<number | null> {
-    return await fetch(
-      `/api/incpos?inc=${inc}`,
-      { method: "POST" },
+      "/api/toggle",
+      { method: "POST", ...common_options },
     ).then((res) => res.json());
   }
 
@@ -53,19 +48,25 @@ class APICall {
    */
   public static async pos(): Promise<number | null> {
     return await fetch(
-      `/api/pos`,
+      "/api/pos",
+      { ...common_options },
     ).then((res) => res.json());
   }
 
   /**
-   * Sets the video's position.
+   * Sets the video's position, either with an absolute position or an increment.
    *
-   * @param The position the video should seek to (seconds).
+   * @param pos Position to set, either an increment or an absolute position.
+   * @param inc Whether `pos` is an increment or absolute position.
+   * @returns The video player's position (seconds) following the toggle inc operation.
    */
-  public static async setPos(pos: number) {
+  public static async setPos(
+    pos: number,
+    inc: boolean,
+  ): Promise<number | null> {
     return await fetch(
-      `/api/pos?pos=${pos}`,
-      { method: "POST" },
+      "/api/pos",
+      { method: "POST", ...common_options, body: JSON.stringify({ inc, pos }) },
     ).then((res) => res.json());
   }
 
@@ -74,7 +75,8 @@ class APICall {
    */
   public static async vol(): Promise<number | null> {
     return await fetch(
-      `/api/vol`,
+      "/api/vol",
+      { ...common_options },
     ).then((res) => res.json());
   }
 
@@ -83,21 +85,26 @@ class APICall {
    */
   public static async setVol(vol: number) {
     return await fetch(
-      `/api/vol?vol=${vol}`,
-      { method: "POST" },
+      "/api/vol",
+      { method: "POST", ...common_options, body: JSON.stringify({ vol }) },
     ).then((res) => res.json());
   }
 
   public static async media(): Promise<string | null> {
     return await fetch(
-      `/api/media`,
+      "/api/media",
+      { ...common_options },
     ).then((res) => res.json());
   }
 
   public static async setMedia(mediafile: string) {
     return await fetch(
-      `/api/media?mediafile=${encodeURI(mediafile)}`,
-      { method: "POST" },
+      "/api/media",
+      {
+        method: "POST",
+        ...common_options,
+        body: JSON.stringify({ media: mediafile }),
+      },
     );
   }
 
