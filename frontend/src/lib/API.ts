@@ -1,7 +1,6 @@
-interface IMPVRes {
-  data?: number | string;
-  request_id: number;
-  error: string;
+interface PosResponse {
+  pos: number;
+  max_pos: number;
 }
 
 const common_options = {
@@ -46,7 +45,7 @@ class APICall {
   /**
    * @returns The video player's position (seconds).
    */
-  public static async pos(): Promise<number | null> {
+  public static async pos(): Promise<PosResponse | null> {
     return await fetch(
       "/api/pos",
       { ...common_options },
@@ -155,4 +154,5 @@ class APICall {
   }
 }
 
+export { type PosResponse };
 export { APICall };

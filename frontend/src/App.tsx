@@ -3,7 +3,6 @@ import { APICall } from "./lib/API.ts";
 import "./App.css";
 import { Medialist } from "./components/Medialist.tsx";
 import { MediaControls } from "./components/MediaControls.tsx";
-import { TimeVolInput } from "./components/TimeVolInput.tsx";
 import { CRUDPopup } from "./components/CRUDPopup.tsx";
 
 interface IMPVRes {
@@ -50,14 +49,6 @@ function App() {
     APICall.getOriginLast25().then((res: string[]) => setLast25(res));
   }, [mediaToggle]);
 
-  useEffect(() => {
-    APICall.pos().then((res: number | null) => {
-      if (res !== null) {
-        setPos(res);
-      }
-    });
-  }, [media]);
-
   return (
     <>
       <div
@@ -68,9 +59,6 @@ function App() {
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
-          </div>
-          <div className="controlgroup">
-            <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
           </div>
         </div>
 

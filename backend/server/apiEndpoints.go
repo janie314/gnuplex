@@ -110,13 +110,28 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		writeQueryResponse(c, srv.mpv.SetVolume(vol.Vol))
 	})
 	/*
-	 * GET /pos
-	 * Response: number
-	 *   Current position (seconds).
+	* GET /pos
+	* Response:
+	*   {
+	*     pos: number;     # both have units of seconds
+	*     max_pos: number;
+	*   }
 	 */
 	srv.Router.GET(api_url_base+"/pos", func(c *gin.Context) {
+		var res posResponse
 		pos, err := srv.mpv.GetPos()
-		readQueryResponse(c, pos, err)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, nil)
+		} else {
+			res.Pos = pos
+			remaining, err := srv.mpv.GetTimeRemaining()
+			if err != nil {
+				readQueryResponse(c, 0.0, err)
+			} else {
+				res.MaxPos = pos + remaining
+				c.JSON(http.StatusOK, res)
+			}
+		}
 	})
 	/*
 	 * POST /pos
@@ -132,17 +147,22 @@ func (srv *Server) initEndpoints(api_url_base string) {
 	 */
 	srv.Router.POST(api_url_base+"/pos", func(c *gin.Context) {
 		var pos posBody
-		var err error
-		if pos.Inc {
-			err = srv.mpv.IncPos(pos.Pos)
-		} else {
-			err = srv.mpv.SetPos(pos.Pos)
-		}
+		err := c.BindJSON(&pos)
 		if err != nil {
-			newPos, err := srv.mpv.GetPos()
-			readQueryResponse(c, newPos, err)
+			log.Println("err", err)
+			c.JSON(http.StatusBadRequest, nil)
 		} else {
-			c.Data(http.StatusOK, "application/json", nil)
+			if pos.Inc {
+				err = srv.mpv.IncPos(pos.Pos)
+			} else {
+				err = srv.mpv.SetPos(pos.Pos)
+			}
+			if err != nil {
+				newPos, err := srv.mpv.GetPos()
+				readQueryResponse(c, newPos, err)
+			} else {
+				c.Data(http.StatusOK, "application/json", nil)
+			}
 		}
 	})
 	srv.Router.GET(api_url_base+"/last25", func(c *gin.Context) {
