@@ -15,37 +15,39 @@ function fmtTime(rawtime: number): string {
 }
 
 function PosSlider() {
-  const [pos, setPos] = useState(0);
+  const [flush, setFlush] = useState(false);
+  const [truePos, setTruePos] = useState<number | null>(null);
+  const [pos, setPos] = useState<number | null>(null);
   const [maxPos, setMaxPos] = useState(0);
   const debouncedPos = useDebounce(pos, 500);
 
   useEffect(() => {
     APICall.pos().then((res: PosResponse | null) => {
       if (res !== null) {
-        setPos(res.pos);
+        setTruePos(res.pos);
         setMaxPos(res.max_pos);
       }
     });
-  }, []);
+  }, [flush]);
 
   useEffect(() => {
-    APICall.setPos(pos, false).then(() => APICall.pos()).then((res) => {
-      if (res !== null) {
-        setPos(res.pos);
-      }
-    });
+    if (pos !== null) {
+      APICall.setPos(pos, false);
+      setFlush(!flush);
+    }
   }, [debouncedPos]);
 
   return (
     <div className="slider">
-      <span>{fmtTime(pos)}</span>
+      <span>{truePos !== null ? fmtTime(truePos) : fmtTime(pos || 0)}</span>
       <ReactSlider
         className="horizontal-slider"
         thumbClassName="thumb"
         trackClassName="track"
-        value={pos}
+        value={truePos !== null ? truePos : pos || 0}
         max={maxPos}
         onChange={(val: number) => {
+          setTruePos(null);
           setPos(val);
         }}
       />
