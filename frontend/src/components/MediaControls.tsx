@@ -9,7 +9,6 @@ import {
   PlaySolid,
 } from "iconoir-react";
 import "../App.css";
-import "./CRUDPopup.css";
 import "./MediaControls.css";
 import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { PosSlider } from "./MediaControls/PosSlider.tsx";
@@ -42,7 +41,7 @@ function MediaControls(props: {
         </span>
       </div>
       <div className="controlrow">
-        <PosSlider flush={setFlushPos} />
+        <PosSlider flush={flushPos} />
       </div>
       <div className="controlrow">
         <div

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"gnuplex-backend/consts"
 	"gnuplex-backend/mpv"
 	"log"
