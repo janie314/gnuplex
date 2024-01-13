@@ -23,6 +23,8 @@ div.controlrow {
   width: 100%;
   justify-content: center;
   font-family: sans-serif;
+  margin-bottom: 3%;
+  margin-top: 3%;
 }
 
 input.mediacontrol {

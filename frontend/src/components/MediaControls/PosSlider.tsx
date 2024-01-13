@@ -18,21 +18,22 @@ function PosSlider() {
   const [pos, setPos] = useState(0);
   const [maxPos, setMaxPos] = useState(0);
   const debouncedPos = useDebounce(pos, 500);
-  const [updateNum, setUpdateNum] = useState(0); // increment to flush update
 
   useEffect(() => {
-    APICall.pos().then((pos: PosResponse | null) => {
-      if (pos !== null) {
-        setPos(pos.pos);
-        setMaxPos(pos.max_pos);
+    APICall.pos().then((res: PosResponse | null) => {
+      if (res !== null) {
+        setPos(res.pos);
+        setMaxPos(res.max_pos);
       }
     });
-  }, [updateNum]);
+  }, []);
 
   useEffect(() => {
-    if (updateNum !== 0) {
-      APICall.setPos(pos, false).then(() => setUpdateNum(updateNum + 1));
-    }
+    APICall.setPos(pos, false).then(() => APICall.pos()).then((res) => {
+      if (res !== null) {
+        setPos(res.pos);
+      }
+    });
   }, [debouncedPos]);
 
   return (
@@ -44,7 +45,9 @@ function PosSlider() {
         trackClassName="track"
         value={pos}
         max={maxPos}
-        onChange={(val: number) => setPos(pos)}
+        onChange={(val: number) => {
+          setPos(val);
+        }}
       />
     </div>
   );

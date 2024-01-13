@@ -62,11 +62,11 @@ class APICall {
   public static async setPos(
     pos: number,
     inc: boolean,
-  ): Promise<number | null> {
+  ) {
     return await fetch(
       "/api/pos",
       { method: "POST", ...common_options, body: JSON.stringify({ inc, pos }) },
-    ).then((res) => res.json());
+    );
   }
 
   /**
@@ -86,7 +86,7 @@ class APICall {
     return await fetch(
       "/api/vol",
       { method: "POST", ...common_options, body: JSON.stringify({ vol }) },
-    ).then((res) => res.json());
+    );
   }
 
   public static async media(): Promise<string | null> {
