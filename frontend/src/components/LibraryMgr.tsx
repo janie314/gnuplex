@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { APICall } from "../lib/API.ts";
 import "../App.css";
-import "./CRUDPopup.css";
+import "./LibraryMgr.css";
 import { WorkingSpinnerTSX } from "./WorkingSpinner.tsx";
 
-function CRUDPopup(props: {
+function LibraryMgr(props: {
   visible: boolean;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
   closeHook: () => void;
@@ -16,10 +16,10 @@ function CRUDPopup(props: {
   const [saveFileExtsWorking, setSaveFileExtsWorking] = useState(false);
 
   useEffect(() => {
-    APICall.getOriginMediadirs().then((res: string[]) => {
+    APICall.mediadirs().then((res) => {
       setMediadirs(res.join("\n"));
     });
-    APICall.getOriginFileExts().then((res: string[]) => {
+    APICall.fileExts().then((res) => {
       setFileExts(res.join("\n"));
     });
   }, [props.visible]);
@@ -58,10 +58,10 @@ function CRUDPopup(props: {
               const arr2 = file_exts.trim().split("\n").filter((line: string) =>
                 !/^\s*$/.test(line)
               ).map((line: string) => line.trim());
-              APICall.setOriginMediadirs(arr1).then(() =>
+              APICall.setMediadirs(arr1).then(() =>
                 setSaveMediadirsWorking(false)
               );
-              APICall.setOriginFileExts(arr2).then(() =>
+              APICall.setFileExts(arr2).then(() =>
                 setSaveFileExtsWorking(false)
               );
             }}
@@ -76,7 +76,7 @@ function CRUDPopup(props: {
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
-              APICall.refreshOriginMediafiles().then(() =>
+              APICall.setMediafiles().then(() =>
                 setRefreshLibraryWorking(false)
               );
             }}
@@ -100,4 +100,4 @@ function CRUDPopup(props: {
   return <></>;
 }
 
-export { CRUDPopup };
+export { LibraryMgr };

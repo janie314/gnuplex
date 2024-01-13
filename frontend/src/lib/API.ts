@@ -107,45 +107,43 @@ class APICall {
     );
   }
 
-  public static async getOriginMediadirs() {
-    return await fetch(
-      `/api/mediadirs`,
-    ).then((res) => res.json()).then((data: string[]) => {
-      return data.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
-    });
+  public static async mediadirs(): Promise<string[]> {
+    const res: string[] = await fetch(
+      "/api/mediadirs",
+    ).then((res) => res.json());
+    return res.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
   }
 
-  public static async setOriginMediadirs(mediadirs: string[]) {
+  public static async setMediadirs(mediadirs: string[]) {
     return await fetch(
-      `/api/mediadirs?mediadirs=${encodeURI(JSON.stringify(mediadirs))}`,
-      { method: "POST" },
+      "/api/mediadirs",
+      { method: "POST", ...common_options, body: JSON.stringify(mediadirs) },
     );
   }
 
-  public static async getOriginFileExts() {
-    return await fetch(
-      `/api/file_exts`,
-    ).then((res) => res.json()).then((data: string[]) => {
-      return data.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
-    });
+  public static async fileExts(): Promise<string[]> {
+    const res: string[] = await fetch(
+      "/api/file_exts",
+    ).then((res) => res.json());
+    return res.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
   }
 
-  public static async setOriginFileExts(file_exts: string[]) {
+  public static async setFileExts(file_exts: string[]) {
     return await fetch(
-      `/api/file_exts?file_exts=${encodeURI(JSON.stringify(file_exts))}`,
-      { method: "POST" },
+      "/api/file_exts",
+      { method: "POST", ...common_options, body: JSON.stringify(file_exts) },
     );
   }
 
-  public static async getOriginMediafiles() {
+  public static async mediafiles() {
     return await fetch(`/api/medialist`).then((res) => res.json());
   }
 
-  public static async refreshOriginMediafiles() {
+  public static async setMediafiles() {
     return await fetch(`/api/medialist`, { method: "POST" });
   }
 
-  public static async getOriginLast25() {
+  public static async last25() {
     return await fetch(`/api/last25`).then((res) => res.json());
   }
 

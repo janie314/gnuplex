@@ -31,6 +31,14 @@ type posResponse struct {
 	MaxPos float64 `json:"max_pos"`
 }
 
+type mediadirsBody struct {
+	Mediadirs []string `json:"mediadirs"`
+}
+
+type fileExtsBody struct {
+	FileExts []string `json:"file_exts"`
+}
+
 func (srv *Server) initEndpoints(api_url_base string) {
 	/*
 	 * GET /version
@@ -179,17 +187,17 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		c.JSON(http.StatusOK, srv.DB.GetMediadirs(false))
 	})
 	srv.Router.POST(api_url_base+"/mediadirs", func(c *gin.Context) {
-		mediadirsJson := []byte(c.Query("mediadirs"))
-		var mediadirs []string
-		err := json.Unmarshal(mediadirsJson, &mediadirs)
+		// TODO use this `body` naming convention
+		var body mediadirsBody
+		err := c.BindJSON(&body)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = srv.DB.SetMediadirs(mediadirs, false)
+			err = srv.DB.SetMediadirs(body.Mediadirs, false)
 			if err == nil {
-				c.JSON(http.StatusOK, "ok")
+				c.JSON(http.StatusOK, nil)
 			} else {
-				c.JSON(http.StatusInternalServerError, "Couldn't add the mediadirs")
+				c.JSON(http.StatusInternalServerError, nil)
 			}
 		}
 	})
@@ -197,13 +205,12 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		c.JSON(http.StatusOK, srv.DB.GetFileExts(false))
 	})
 	srv.Router.POST(api_url_base+"/file_exts", func(c *gin.Context) {
-		fileExtsJson := []byte(c.Query("file_exts"))
-		var fileExts []string
-		err := json.Unmarshal(fileExtsJson, &fileExts)
+		var body fileExtsBody
+		err := c.BindJSON(&body)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = srv.DB.SetFileExts(fileExts, false)
+			err = srv.DB.SetFileExts(body.FileExts, false)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {

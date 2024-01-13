@@ -3,7 +3,7 @@ import { APICall } from "./lib/API.ts";
 import "./App.css";
 import { Medialist } from "./components/Medialist.tsx";
 import { MediaControls } from "./components/MediaControls.tsx";
-import { CRUDPopup } from "./components/CRUDPopup.tsx";
+import { LibraryMgr } from "./components/LibraryMgr.tsx";
 
 interface IMPVRes {
   data?: number | string;
@@ -45,8 +45,8 @@ function App() {
         setMedia(media);
       }
     });
-    APICall.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
-    APICall.getOriginLast25().then((res: string[]) => setLast25(res));
+    APICall.mediafiles().then((res: string[]) => setMediafiles(res));
+    APICall.last25().then((res: string[]) => setLast25(res));
   }, [mediaToggle]);
 
   return (
@@ -76,7 +76,7 @@ function App() {
           />
         </div>
       </div>
-      <CRUDPopup
+      <LibraryMgr
         visible={mediadirInputPopup}
         setMediadirInputPopup={setMediadirInputPopup}
         closeHook={() => {
