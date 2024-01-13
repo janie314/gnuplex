@@ -14,7 +14,9 @@ function fmtTime(rawtime: number): string {
   return `${hrs_str}${mins_str}:${secs_str}`;
 }
 
-function PosSlider() {
+function PosSlider(props: {
+  flush: boolean;
+}) {
   const [flush, setFlush] = useState(false);
   const [truePos, setTruePos] = useState<number | null>(null);
   const [pos, setPos] = useState<number | null>(null);
@@ -28,7 +30,7 @@ function PosSlider() {
         setMaxPos(res.max_pos);
       }
     });
-  }, [flush]);
+  }, [props.flush, flush]);
 
   useEffect(() => {
     if (pos !== null) {

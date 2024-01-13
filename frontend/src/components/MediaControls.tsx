@@ -13,8 +13,7 @@ import "./CRUDPopup.css";
 import "./MediaControls.css";
 import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { PosSlider } from "./MediaControls/PosSlider.tsx";
-import { useDebounce } from "usehooks-ts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function clipText(str: string, max: number) {
   if (str.length <= max) {
@@ -30,22 +29,7 @@ function MediaControls(props: {
   media: string;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [vol, setVol] = useState<number | null>(null);
-  const debouncedVol = useDebounce(vol, 500);
-
-  useEffect(() => {
-    APICall.vol().then((vol) => {
-      if (vol !== null) {
-        setVol(vol);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (vol !== null) {
-      APICall.setVol(debouncedVol as number);
-    }
-  }, [debouncedVol]);
+  const [flushPos, setFlushPos] = useState(false);
 
   return (
     <div className="mediacontrols">
@@ -58,10 +42,14 @@ function MediaControls(props: {
         </span>
       </div>
       <div className="controlrow">
-        <PosSlider />
+        <PosSlider flush={setFlushPos} />
       </div>
       <div className="controlrow">
-        <div className="mediacontrol" onClick={() => APICall.setPos(-30, true)}>
+        <div
+          className="mediacontrol"
+          onClick={() =>
+            APICall.setPos(-30, true).then(() => setFlushPos(!flushPos))}
+        >
           <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
             <LongArrowLeftUp />
           </IconoirProvider>
@@ -77,7 +65,11 @@ function MediaControls(props: {
         >
           {props.paused ? <PlaySolid /> : <PauseSolid />}
         </div>
-        <div className="mediacontrol" onClick={() => APICall.setPos(30, true)}>
+        <div
+          className="mediacontrol"
+          onClick={() =>
+            APICall.setPos(30, true).then(() => setFlushPos(!flushPos))}
+        >
           <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
             <LongArrowRightDown />
           </IconoirProvider>
@@ -103,7 +95,7 @@ function MediaControls(props: {
         />
       </div>
       <div className="controlrow">
-        <VolSlider vol={vol} debouncedVol={debouncedVol} setVol={setVol} />
+        <VolSlider />
       </div>
     </div>
   );
