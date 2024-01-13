@@ -11,6 +11,8 @@
   },
   "imports": {
     "@babel/runtime": "https://esm.sh/@babel/runtime@^7.23.7",
+    "@nextui-org/react": "https://esm.sh/@nextui-org/react@^2.2.9",
+    "framer-motion": "https://esm.sh/framer-motion@^10.18.0",
     "iconoir-react": "https://esm.sh/iconoir-react@^7.2.0",
     "react": "https://esm.sh/react@^18.2.0",
     "react-dom": "https://esm.sh/react-dom@^18.2.0",
@@ -20,8 +22,10 @@
     "@types/react-dom": "https://esm.sh/@types/react-dom@^18.2.18",
     "@types/react-slider": "https://esm.sh/@types/react-slider@^1.3.6",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.2.1",
+    "autoprefixer": "https://esm.sh/autoprefixer@^10.4.16",
+    "postcss": "https://esm.sh/postcss@^8.4.33",
+    "tailwindcss": "https://esm.sh/tailwindcss@^3.4.1",
     "typescript": "https://esm.sh/typescript@^5.3.3",
     "vite": "https://esm.sh/vite@^5.0.10"
   }
 }
-

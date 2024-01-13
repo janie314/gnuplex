@@ -80,7 +80,7 @@ function App() {
         visible={mediadirInputPopup}
         setMediadirInputPopup={setMediadirInputPopup}
         closeHook={() => {
-          setMediaToggle(!mediaToggle);
+          setMediadirInputPopup(false);
         }}
       />
       <MediaControls
