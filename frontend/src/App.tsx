@@ -13,13 +13,9 @@ interface IMPVRes {
 
 function App() {
   const [version, setVersion] = useState("");
-  const [mediaToggle, setMediaToggle] = useState(false);
-  const [paused, setPaused] = useState(true);
-  const [media, setMedia] = useState("");
   const [mediafiles, setMediafiles] = useState<string[]>([]);
   const [last25, setLast25] = useState<string[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
-  const [pos, setPos] = useState(0);
 
   useEffect(() => {
     APICall.version().then((version: string | null) => {
@@ -27,27 +23,10 @@ function App() {
         setVersion(version);
       }
     });
-    APICall.paused().then((paused: boolean | null) => {
-      if (paused !== null) {
-        setPaused(paused);
-      }
-    });
-    APICall.media().then((media: string | null) => {
-      if (media !== null) {
-        setMedia(media);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    APICall.media().then((media: string | null) => {
-      if (media !== null) {
-        setMedia(media);
-      }
-    });
+    // TODO this should refresh when you refresh the library
     APICall.mediafiles().then((res: string[]) => setMediafiles(res));
     APICall.last25().then((res: string[]) => setLast25(res));
-  }, [mediaToggle]);
+  }, []);
 
   return (
     <>
@@ -61,19 +40,15 @@ function App() {
             <span className="version">{version}</span>
           </div>
           <MediaControls
-            paused={paused}
-            setPaused={setPaused}
-            media={media}
             setMediadirInputPopup={setMediadirInputPopup}
           />
         </div>
 
         <div className="panel rightpanel">
-          <Medialist medialist={last25} subtitle="Recent" setMedia={setMedia} />
+          <Medialist medialist={last25} subtitle="Recent" />
           <Medialist
             medialist={mediafiles}
             subtitle="Library"
-            setMedia={setMedia}
           />
         </div>
       </div>

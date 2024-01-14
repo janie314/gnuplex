@@ -2,7 +2,6 @@ package server
 
 import (
 	"gnuplex-backend/consts"
-	"gnuplex-backend/mpv"
 	"log"
 	"net/http"
 
@@ -38,6 +37,18 @@ type fileExtsBody struct {
 	FileExts []string `json:"file_exts"`
 }
 
+type mediaStateResponse struct {
+	Media  string  `json:"media"`
+	Vol    float64 `json:"vol"`
+	MaxPos float64 `json:"max_pos"`
+	Pos    float64 `json:"pos"`
+	Paused bool    `json:"paused"`
+}
+
+type ResponseBody interface {
+	mediaStateResponse | float64 | string | bool
+}
+
 func (srv *Server) initEndpoints(api_url_base string) {
 	/*
 	 * GET /version
@@ -56,6 +67,41 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		paused, err := srv.mpv.IsPaused()
 		readQueryResponse(c, paused, err)
 	})
+	/*
+	* GET /mediastate
+	* Response: {
+	*   pos: number;
+	*   paused: boolean;
+	*   media: string;
+	*   vol: number
+	*  }
+	*  Current media state (play/pause, vol, etc)
+	 */
+	srv.Router.GET(api_url_base+"/mediastate", func(c *gin.Context) {
+		paused, err := srv.mpv.IsPaused()
+		if err != nil {
+			readQueryResponse(c, false, err)
+		}
+		pos, err := srv.mpv.GetPos()
+		if err != nil {
+			readQueryResponse(c, false, err)
+		}
+		timeRemaining, err := srv.mpv.GetTimeRemaining()
+		if err != nil {
+			readQueryResponse(c, false, err)
+		}
+		media, err := srv.mpv.GetMedia()
+		if err != nil {
+			readQueryResponse(c, false, err)
+		}
+		vol, err := srv.mpv.GetVolume()
+		if err != nil {
+			readQueryResponse(c, false, err)
+		}
+		res := mediaStateResponse{Paused: paused, Pos: pos, MaxPos: pos + timeRemaining, Media: media, Vol: vol}
+		readQueryResponse(c, res, err)
+	})
+
 	/*
 	 * POST /paused
 	 * Toggles video's play/pause status.
@@ -221,7 +267,7 @@ func (srv *Server) initEndpoints(api_url_base string) {
 }
 
 // cast an mpvcmd read query into a Gin response
-func readQueryResponse[T mpv.ResponseDatum](c *gin.Context, val T, err error) {
+func readQueryResponse[T ResponseBody](c *gin.Context, val T, err error) {
 	if err != nil {
 		log.Println("Error", err)
 		c.JSON(http.StatusInternalServerError, nil)

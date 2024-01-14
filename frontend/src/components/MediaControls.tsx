@@ -12,7 +12,7 @@ import "../App.css";
 import "./MediaControls.css";
 import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { PosSlider } from "./MediaControls/PosSlider.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 
 function clipText(str: string, max: number) {
@@ -24,31 +24,47 @@ function clipText(str: string, max: number) {
 }
 
 function MediaControls(props: {
-  paused: boolean;
-  setPaused: React.Dispatch<React.SetStateAction<boolean>>;
-  media: string;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [flushPos, setFlushPos] = useState(false);
+  const [paused, setPaused] = useState(true);
+  const [media, setMedia] = useState("");
+  const [maxPos, setMaxPos] = useState<number>(0);
+  // for these two, null represents "state being adjusted"
+  // (true value not relevant for slider UI display)
+  const [trueVol, setTrueVol] = useState<number | null>(0);
+  const [truePos, setTruePos] = useState<number | null>(0);
+
+  useEffect(() => {
+    setInterval(() => {
+      APICall.mediastate().then((res) => {
+        if (res !== null) {
+          setPaused(res.paused);
+          setMedia(res.media);
+          setTrueVol(res.vol);
+          setTruePos(res.pos);
+          setMaxPos(res.max_pos);
+        }
+      });
+    }, 2000);
+  }, []);
 
   return (
     <div className="mediacontrols">
       <div className="controlrow">
         <span className="nowplaying">
-          {props.media.length === 0 ? "" : clipText(
-            "Now Playing: " + props.media.split("/").slice(-1).join(""),
+          {media.length === 0 ? "" : clipText(
+            "Now Playing: " + media.split("/").slice(-1).join(""),
             50,
           )}
         </span>
       </div>
       <div className="controlrow">
-        <PosSlider flush={flushPos} />
+        <PosSlider maxPos={maxPos} truePos={truePos} setTruePos={setTruePos} />
       </div>
       <div className="controlrow">
         <div
           className="mediacontrol"
-          onClick={() =>
-            APICall.setPos(-30, true).then(() => setFlushPos(!flushPos))}
+          onClick={() => APICall.setPos(-30, true)}
         >
           <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
             <LongArrowLeftUp />
@@ -59,16 +75,15 @@ function MediaControls(props: {
           onClick={() =>
             APICall.toggle().then((paused: boolean | null) => {
               if (paused !== null) {
-                props.setPaused(paused);
+                setPaused(paused);
               }
             })}
         >
-          {props.paused ? <PlaySolid /> : <PauseSolid />}
+          {paused ? <PlaySolid /> : <PauseSolid />}
         </div>
         <div
           className="mediacontrol"
-          onClick={() =>
-            APICall.setPos(30, true).then(() => setFlushPos(!flushPos))}
+          onClick={() => APICall.setPos(30, true)}
         >
           <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
             <LongArrowRightDown />
@@ -101,7 +116,7 @@ function MediaControls(props: {
         </Button>
       </div>
       <div className="controlrow">
-        <VolSlider />
+        <VolSlider trueVol={trueVol} setTrueVol={setTrueVol} />
       </div>
     </div>
   );

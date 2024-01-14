@@ -15,7 +15,6 @@ function Medialist(
   props: {
     medialist: string[];
     subtitle: string;
-    setMedia: React.Dispatch<React.SetStateAction<string>>;
   },
 ) {
   const tablelist = useMemo(

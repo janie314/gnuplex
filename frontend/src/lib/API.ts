@@ -3,6 +3,14 @@ interface PosResponse {
   max_pos: number;
 }
 
+interface MediaStateResponse {
+  pos: number;
+  max_pos: number;
+  vol: number;
+  paused: boolean;
+  media: string;
+}
+
 const common_options = {
   headers: {
     "Content-Type": "application/json",
@@ -26,6 +34,16 @@ class APICall {
   public static async paused(): Promise<boolean | null> {
     return await fetch(
       "/api/paused",
+      { ...common_options },
+    ).then((res) => res.json());
+  }
+
+  /**
+   * @returns Full current state of the media player.
+   */
+  public static async mediastate(): Promise<MediaStateResponse | null> {
+    return await fetch(
+      "/api/mediastate",
       { ...common_options },
     ).then((res) => res.json());
   }
