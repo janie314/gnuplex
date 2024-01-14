@@ -1,7 +1,6 @@
-#!/usr/bin/sh
+#!/bin/sh
 basedir=$(realpath $(dirname "$0"))
 cd "$basedir/frontend"
-npm i
-npm run build
+deno task build
 cd ../backend
 go run . --verbose

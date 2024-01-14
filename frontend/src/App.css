@@ -52,10 +52,7 @@ input[type=button]:hover {
 .subtitle {
   font: 16px sans-serif;
   font-weight: bold;
-}
-
-.moviegroup>a {
-  margin-top: 1ch;
+  margin-bottom: 1%;
 }
 
 .logo-panel {
@@ -76,29 +73,3 @@ input[type=button]:hover {
   margin-left: 1%;
 }
 
-.mediafile {
-  color: black;
-  font: 16px monospace;
-  word-wrap: break-word;
-}
-
-.mediafile:hover {
-  background-color: lightgrey;
-}
-
-#vol-label {
-  margin-right: 3px;
-}
-
-#vol-set {
-  margin-left: 3px;
-}
-
-input[type=button].play-button {
-  font: 20px monospace;
-  border-right: 0;
-}
-
-input[type=button].pause-button {
-  font: 20px monospace;
-}
