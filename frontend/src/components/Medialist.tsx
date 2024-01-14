@@ -41,7 +41,7 @@ function Medialist(
 
   return (
     <Card shadow="sm">
-      <CardHeader>{props.subtitle}</CardHeader>
+      <CardHeader className="font-bold">{props.subtitle}</CardHeader>
       <CardBody>
         <Table
           color="primary"
