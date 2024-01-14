@@ -2,7 +2,7 @@ import ReactSlider from "react-slider";
 import "./PosSlider.css";
 import { useDebounce } from "usehooks-ts";
 import { useEffect, useState } from "react";
-import { APICall, PosResponse } from "../../lib/API.ts";
+import { APICall } from "../../lib/API.ts";
 
 function fmtTime(rawtime: number): string {
   const secs = Math.floor(rawtime % 60);
