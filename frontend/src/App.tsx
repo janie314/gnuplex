@@ -60,14 +60,15 @@ function App() {
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
           </div>
+          <MediaControls
+            paused={paused}
+            setPaused={setPaused}
+            media={media}
+            setMediadirInputPopup={setMediadirInputPopup}
+          />
         </div>
 
         <div className="panel rightpanel">
-          <Medialist
-            medialist={[media]}
-            subtitle="Now Playing"
-            setMedia={setMedia}
-          />
           <Medialist medialist={last25} subtitle="Recent" setMedia={setMedia} />
           <Medialist
             medialist={mediafiles}
@@ -82,12 +83,6 @@ function App() {
         closeHook={() => {
           setMediadirInputPopup(false);
         }}
-      />
-      <MediaControls
-        paused={paused}
-        setPaused={setPaused}
-        media={media}
-        setMediadirInputPopup={setMediadirInputPopup}
       />
     </>
   );

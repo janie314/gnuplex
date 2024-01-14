@@ -13,6 +13,7 @@ import "./MediaControls.css";
 import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { PosSlider } from "./MediaControls/PosSlider.tsx";
 import { useState } from "react";
+import { Button } from "@nextui-org/react";
 
 function clipText(str: string, max: number) {
   if (str.length <= max) {
@@ -34,7 +35,7 @@ function MediaControls(props: {
     <div className="mediacontrols">
       <div className="controlrow">
         <span className="nowplaying">
-          {clipText(
+          {props.media.length === 0 ? "" : clipText(
             "Now Playing: " + props.media.split("/").slice(-1).join(""),
             50,
           )}
@@ -75,23 +76,29 @@ function MediaControls(props: {
         </div>
       </div>
       <div className="controlrow">
-        <input
-          type="button"
+        <Button
+          size="sm"
+          color="primary"
+          variant="flat"
           className="mediacontrol"
           onClick={() => {
             const url = window.prompt("URL (YouTube, etc.):", "") || "";
             APICall.setMedia(url);
           }}
-          value="Cast"
-        />
-        <input
-          type="button"
+        >
+          Cast
+        </Button>
+        <Button
+          size="sm"
+          color="primary"
+          variant="flat"
           className="mediacontrol"
           onClick={() => {
             props.setMediadirInputPopup(true);
           }}
-          value="Library"
-        />
+        >
+          Library
+        </Button>
       </div>
       <div className="controlrow">
         <VolSlider />

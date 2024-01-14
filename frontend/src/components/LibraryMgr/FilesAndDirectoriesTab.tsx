@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { APICall } from "../../lib/API.ts";
 import { WorkingSpinnerTSX } from "../WorkingSpinner.tsx";
 import { Textarea } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 
 function FilesAndDirectoriesTab(
   props: { selected: boolean; closeHook: () => void },
@@ -41,9 +42,10 @@ function FilesAndDirectoriesTab(
         >
         </Textarea>
         <div>
-          <input
-            type="button"
-            value="Save Settings"
+          <Button
+            size="sm"
+            color="primary"
+            variant="flat"
             onClick={() => {
               setSaveMediadirsWorking(true);
               setSaveFileExtsWorking(true);
@@ -60,31 +62,38 @@ function FilesAndDirectoriesTab(
                 setSaveFileExtsWorking(false)
               );
             }}
-          />
-          <input
-            type="button"
-            value="Refresh Library"
+          >
+            Save Settings
+          </Button>
+          <Button
+            size="sm"
+            color="primary"
+            variant="flat"
             onClick={() => {
               setRefreshLibraryWorking(true);
               APICall.setMediafiles().then(() =>
                 setRefreshLibraryWorking(false)
               );
             }}
-          />
+          >
+            Refresh Library
+          </Button>
           <WorkingSpinnerTSX
             visible={saveFileExtsWorking || saveMediadirsWorking ||
               refreshLibraryWorking}
           />
         </div>
         <div className="okcancel">
-          <input
-            type="button"
-            value="OK"
+          <Button
+            size="sm"
+            color="primary"
+            variant="flat"
             onClick={() => {
               props.closeHook();
             }}
           >
-          </input>
+            OK
+          </Button>
         </div>
       </>
     );

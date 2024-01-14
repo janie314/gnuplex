@@ -1,7 +1,5 @@
 div.mediacontrols {
   /* height: 40px; */
-  position: fixed;
-  bottom: 0;
   background-color: hsl(198deg 76% 90%);
   opacity: 1;
   display: flex;
