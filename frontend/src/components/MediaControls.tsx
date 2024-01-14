@@ -43,7 +43,7 @@ function MediaControls(props: {
           setMaxPos(res.max_pos);
         }
       });
-    }, 2000);
+    }, 1000);
   }, []);
 
   return (

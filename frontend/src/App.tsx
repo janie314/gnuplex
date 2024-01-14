@@ -43,7 +43,6 @@ function App() {
             setMediadirInputPopup={setMediadirInputPopup}
           />
         </div>
-
         <div className="flex-auto w-3/4">
           <Medialist medialist={last25} subtitle="Recent" />
           <Medialist

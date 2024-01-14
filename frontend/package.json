@@ -14,8 +14,7 @@
     "framer-motion": "^10.18.0",
     "iconoir-react": "^7.3.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "usehooks-ts": "^2.9.4"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.47",
