@@ -7,11 +7,10 @@ import {
   PlaySolid,
 } from "iconoir-react";
 import "../App.css";
-import "./MediaControls.css";
 import { VolSlider } from "./MediaControls/VolSlider.tsx";
 import { PosSlider } from "./MediaControls/PosSlider.tsx";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Card, CardBody } from "@nextui-org/react";
 
 function clipText(str: string, max: number) {
   if (str.length <= max) {
@@ -47,76 +46,93 @@ function MediaControls(props: {
   }, []);
 
   return (
-    <div className="mediacontrols">
-      <div className="controlrow">
-        <span className="nowplaying">
-          {media.length === 0 ? "" : clipText(
-            "Now Playing: " + media.split("/").slice(-1).join(""),
-            50,
-          )}
-        </span>
-      </div>
-      <div className="controlrow">
-        <PosSlider maxPos={maxPos} truePos={truePos} setTruePos={setTruePos} />
-      </div>
-      <div className="controlrow">
-        <div
-          className="mediacontrol"
-          onClick={() => APICall.setPos(-30, true)}
-        >
-          <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
-            <LongArrowLeftUp />
-          </IconoirProvider>
+    <Card isBlurred shadow="sm">
+      <CardBody>
+        <div className="flex flex-col justify-center">
+          <div className="flex flex-row justify-center">
+            <span className="nowplaying">
+              {media.length === 0 ? "" : clipText(
+                "Now Playing: " + media.split("/").slice(-1).join(""),
+                50,
+              )}
+            </span>
+          </div>
+          <div className="flex flex-row justify-center">
+            <PosSlider
+              maxPos={maxPos}
+              truePos={truePos}
+              setTruePos={setTruePos}
+            />
+          </div>
+          <div className="flex flex-row justify-center">
+            <Button
+              isIconOnly
+              size="sm"
+              color="primary"
+              variant="faded"
+              onClick={() => APICall.setPos(-30, true)}
+            >
+              <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
+                <LongArrowLeftUp />
+              </IconoirProvider>
+            </Button>
+            <Button
+              isIconOnly
+              size="sm"
+              color="primary"
+              variant="faded"
+              onClick={() =>
+                APICall.toggle().then((paused: boolean | null) => {
+                  if (paused !== null) {
+                    setPaused(paused);
+                  }
+                })}
+            >
+              {paused ? <PlaySolid /> : <PauseSolid />}
+            </Button>
+            <Button
+              isIconOnly
+              size="sm"
+              color="primary"
+              variant="faded"
+              onClick={() => APICall.setPos(30, true)}
+            >
+              <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
+                <LongArrowRightDown />
+              </IconoirProvider>
+            </Button>
+          </div>
+          <div className="flex flex-row justify-center">
+            <Button
+              size="sm"
+              color="primary"
+              variant="flat"
+              className="mediacontrol"
+              onClick={() => {
+                const url = window.prompt("URL (YouTube, etc.):", "") || "";
+                APICall.setMedia(url);
+              }}
+            >
+              Cast
+            </Button>
+            <Button
+              size="sm"
+              color="primary"
+              variant="flat"
+              className="mediacontrol"
+              onClick={() => {
+                props.setMediadirInputPopup(true);
+              }}
+            >
+              Library
+            </Button>
+          </div>
+          <div className="flex flex-row justify-center">
+            <VolSlider trueVol={trueVol} setTrueVol={setTrueVol} />
+          </div>
         </div>
-        <div
-          className="mediacontrol"
-          onClick={() =>
-            APICall.toggle().then((paused: boolean | null) => {
-              if (paused !== null) {
-                setPaused(paused);
-              }
-            })}
-        >
-          {paused ? <PlaySolid /> : <PauseSolid />}
-        </div>
-        <div
-          className="mediacontrol"
-          onClick={() => APICall.setPos(30, true)}
-        >
-          <IconoirProvider iconProps={{ transform: "rotate(-135)" }}>
-            <LongArrowRightDown />
-          </IconoirProvider>
-        </div>
-      </div>
-      <div className="controlrow">
-        <Button
-          size="sm"
-          color="primary"
-          variant="flat"
-          className="mediacontrol"
-          onClick={() => {
-            const url = window.prompt("URL (YouTube, etc.):", "") || "";
-            APICall.setMedia(url);
-          }}
-        >
-          Cast
-        </Button>
-        <Button
-          size="sm"
-          color="primary"
-          variant="flat"
-          className="mediacontrol"
-          onClick={() => {
-            props.setMediadirInputPopup(true);
-          }}
-        >
-          Library
-        </Button>
-      </div>
-      <div className="controlrow">
-        <VolSlider trueVol={trueVol} setTrueVol={setTrueVol} />
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }
 

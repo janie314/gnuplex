@@ -31,10 +31,10 @@ function App() {
   return (
     <>
       <div
-        className="App"
+        className="flex flex-row"
         style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
       >
-        <div className="panel leftpanel">
+        <div className="flex-auto w-1/4">
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
@@ -44,7 +44,7 @@ function App() {
           />
         </div>
 
-        <div className="panel rightpanel">
+        <div className="flex-auto w-3/4">
           <Medialist medialist={last25} subtitle="Recent" />
           <Medialist
             medialist={mediafiles}

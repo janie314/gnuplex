@@ -2,6 +2,9 @@ import { useMemo } from "react";
 import { APICall } from "../lib/API.ts";
 import "../App.css";
 import {
+  Card,
+  CardBody,
+  CardHeader,
   getKeyValue,
   Table,
   TableBody,
@@ -37,34 +40,36 @@ function Medialist(
   ];
 
   return (
-    <div className="moviegroup">
-      <span className="subtitle">{props.subtitle}</span>
-      <Table
-        color="primary"
-        isStriped
-        selectionMode="single"
-        onRowAction={(key: any) => APICall.setMedia(tablelist[key].path)}
-      >
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={tablelist}>
-          {(item) => (
-            <TableRow
-              key={item.key}
-            >
-              {(columnKey) => (
-                <TableCell>
-                  {getKeyValue(item, columnKey)}
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+    <Card shadow="sm">
+      <CardHeader>{props.subtitle}</CardHeader>
+      <CardBody>
+        <Table
+          color="primary"
+          isStriped
+          selectionMode="single"
+          onRowAction={(key: any) => APICall.setMedia(tablelist[key].path)}
+        >
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.key}>{column.label}</TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={tablelist}>
+            {(item) => (
+              <TableRow
+                key={item.key}
+              >
+                {(columnKey) => (
+                  <TableCell>
+                    {getKeyValue(item, columnKey)}
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardBody>
+    </Card>
   );
 }
 
