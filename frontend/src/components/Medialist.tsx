@@ -41,6 +41,7 @@ function Medialist(
     <div className="moviegroup">
       <span className="subtitle">{props.subtitle}</span>
       <Table
+        color="primary"
         isStriped
         selectionMode="single"
         onRowAction={(key: any) => APICall.setMedia(tablelist[key].path)}

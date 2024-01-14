@@ -10,6 +10,7 @@ export default {
   theme: {
     colors: {
       primary: "#93c5fd",
+      secondary: "#e6f1fe",
     },
     extend: {},
   },

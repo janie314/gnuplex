@@ -11,7 +11,7 @@ function LibraryMgr(props: {
   if (props.visible) {
     return (
       <div className="librarymgr">
-        <Tabs>
+        <Tabs color="primary">
           <Tab key="dirs" title="Directories" />
           <Tab key="tags" title="Tagging" />
         </Tabs>
