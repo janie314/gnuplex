@@ -1,5 +1,4 @@
 tmp/*
 .project.vim
 backend/gnuplex-backend
-backend/public/*
 gnuplex.sqlite3
