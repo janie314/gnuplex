@@ -1,8 +1,12 @@
 #!/bin/sh
 basedir=$(realpath "$(dirname "$0")")
-pnpm i -C "$basedir/frontend" build
+
+# frontend
+bun i --cwd "$basedir/frontend" 
 find "$basedir"/backend/public -mindepth 1 -delete
 mkdir -p "$basedir"/frontend/out/
-pnpm run -C "$basedir/frontend" build
+bun run --cwd "$basedir/frontend" build
 cp -rv "$basedir"/frontend/out/* "$basedir"/backend/public
+
+# backend
 go build -C "$basedir/backend"
