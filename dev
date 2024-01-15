@@ -1,6 +1,4 @@
 #!/bin/sh
-basedir=$(realpath $(dirname "$0"))
-cd "$basedir/frontend"
-deno task build
-cd ../backend
-go run . --verbose
+basedir=$(realpath "$(dirname "$0")")
+sh "$basedir/build"
+./backend/gnuplex-backend -static_dir ./backend/public -db ./backend/gnuplex.sqlite3

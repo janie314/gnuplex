@@ -1,4 +1,0 @@
-#!/bin/sh
-basedir=$(realpath $(dirname "$0"))
-find backend -type f -name '*go*' -exec go fmt {} \;
-find . -type f -not -path '*node_modules*' -exec deno fmt {} \;

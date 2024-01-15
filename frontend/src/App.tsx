@@ -34,7 +34,7 @@ function App() {
         className="flex flex-row"
         style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
       >
-        <div className="flex-auto w-1/4">
+        <div className="flex-auto w-1/4 min-w-96">
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>

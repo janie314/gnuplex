@@ -135,7 +135,11 @@ class APICall {
   public static async setMediadirs(mediadirs: string[]) {
     return await fetch(
       "/api/mediadirs",
-      { method: "POST", ...common_options, body: JSON.stringify(mediadirs) },
+      {
+        method: "POST",
+        ...common_options,
+        body: JSON.stringify({ mediadirs }),
+      },
     );
   }
 

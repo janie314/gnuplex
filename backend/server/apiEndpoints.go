@@ -81,22 +81,27 @@ func (srv *Server) initEndpoints(api_url_base string) {
 		paused, err := srv.mpv.IsPaused()
 		if err != nil {
 			readQueryResponse(c, false, err)
+			return
 		}
 		pos, err := srv.mpv.GetPos()
 		if err != nil {
 			readQueryResponse(c, false, err)
+			return
 		}
 		timeRemaining, err := srv.mpv.GetTimeRemaining()
 		if err != nil {
 			readQueryResponse(c, false, err)
+			return
 		}
 		media, err := srv.mpv.GetMedia()
 		if err != nil {
 			readQueryResponse(c, false, err)
+			return
 		}
 		vol, err := srv.mpv.GetVolume()
 		if err != nil {
 			readQueryResponse(c, false, err)
+			return
 		}
 		res := mediaStateResponse{Paused: paused, Pos: pos, MaxPos: pos + timeRemaining, Media: media, Vol: vol}
 		readQueryResponse(c, res, err)

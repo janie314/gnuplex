@@ -1,5 +1,8 @@
 #!/bin/sh
-basedir=$(realpath $(dirname "$0"))
-deno task --cwd "$basedir/frontend" build
+basedir=$(realpath "$(dirname "$0")")
+npm i -C "$basedir/frontend" build
+find "$basedir"/backend/public -mindepth 1 -delete
+mkdir -p "$basedir"/frontend/out/
+npm run -C "$basedir/frontend" build
+cp -rv "$basedir"/frontend/out/* "$basedir"/backend/public
 go build -C "$basedir/backend"
-

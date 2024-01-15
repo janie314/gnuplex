@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.23.8",
     "@nextui-org/react": "^2.2.9",
+    "build": "^0.1.4",
     "framer-motion": "^10.18.0",
     "iconoir-react": "^7.3.0",
     "react": "^18.2.0",
