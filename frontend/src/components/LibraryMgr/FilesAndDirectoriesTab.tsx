@@ -29,7 +29,7 @@ function FilesAndDirectoriesTab(
         <Textarea
           value={mediadirs}
           onValueChange={setMediadirs}
-          rows={10}
+          minRows={10}
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
         >
         </Textarea>
@@ -37,7 +37,7 @@ function FilesAndDirectoriesTab(
         <Textarea
           value={fileExts}
           onValueChange={setFileExts}
-          rows={10}
+          minRows={10}
           placeholder=".pdf"
         >
         </Textarea>

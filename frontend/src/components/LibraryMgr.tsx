@@ -10,12 +10,15 @@ function LibraryMgr(props: {
 }) {
   if (props.visible) {
     return (
-      <div className="librarymgr">
+      <div className="librarymgr flex flex-col shadow z-1 w-3/4 p-4 space-y-3 bg-med-blue">
         <Tabs color="primary">
           <Tab key="dirs" title="Directories" />
           <Tab key="tags" title="Tagging" />
         </Tabs>
-        <FilesAndDirectoriesTab selected={true} closeHook={props.closeHook} />
+        <FilesAndDirectoriesTab
+          selected={true}
+          closeHook={props.closeHook}
+        />
       </div>
     );
   }

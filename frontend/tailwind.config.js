@@ -12,7 +12,11 @@ export default {
       primary: "#93c5fd",
       secondary: "#e6f1fe",
     },
-    extend: {},
+    extend: {
+      colors: {
+        "med-blue": "#cbd5e1", // hsl(213, 27%, 84%)
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],

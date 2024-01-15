@@ -1,0 +1,3 @@
+#!/bin/sh
+basedir=$(realpath "$(dirname "$0")")
+bun run --cwd "$basedir"/frontend build -w
