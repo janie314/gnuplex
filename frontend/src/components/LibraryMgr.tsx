@@ -10,8 +10,8 @@ function LibraryMgr(props: {
 }) {
   if (props.visible) {
     return (
-      <div className="librarymgr flex flex-col shadow z-1 w-3/4 p-4 space-y-3 bg-med-blue">
-        <Tabs color="primary">
+      <div className="librarymgr flex flex-col shadow z-1 w-3/4 p-4 space-y-3 bg-slate-200">
+        <Tabs variant="bordered">
           <Tab key="dirs" title="Directories" />
           <Tab key="tags" title="Tagging" />
         </Tabs>

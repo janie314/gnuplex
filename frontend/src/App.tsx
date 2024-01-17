@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { APICall } from "./lib/API.ts";
 import "./App.css";
+import "./index.css";
 import { Medialist } from "./components/Medialist.tsx";
 import { MediaControls } from "./components/MediaControls.tsx";
 import { LibraryMgr } from "./components/LibraryMgr.tsx";

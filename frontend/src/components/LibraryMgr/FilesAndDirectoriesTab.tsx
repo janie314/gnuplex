@@ -25,7 +25,7 @@ function FilesAndDirectoriesTab(
   if (props.selected) {
     return (
       <>
-        <span className="subtitle">Media Directories</span>
+        <span className="text-lg font-bold">Media Directories</span>
         <Textarea
           value={mediadirs}
           onValueChange={setMediadirs}
@@ -33,7 +33,7 @@ function FilesAndDirectoriesTab(
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
         >
         </Textarea>
-        <span className="subtitle">Excluded File Extensions</span>
+        <span className="text-lg font-bold">Excluded File Extensions</span>
         <Textarea
           value={fileExts}
           onValueChange={setFileExts}
@@ -41,11 +41,10 @@ function FilesAndDirectoriesTab(
           placeholder=".pdf"
         >
         </Textarea>
-        <div>
+        <div className="flex flex-row space-x-2">
           <Button
             size="sm"
-            color="primary"
-            variant="flat"
+            className="bg-slate-500 text-white"
             onClick={() => {
               setSaveMediadirsWorking(true);
               setSaveFileExtsWorking(true);
@@ -67,8 +66,7 @@ function FilesAndDirectoriesTab(
           </Button>
           <Button
             size="sm"
-            color="primary"
-            variant="flat"
+            className="bg-slate-500 text-white"
             onClick={() => {
               setRefreshLibraryWorking(true);
               APICall.setMediafiles().then(() =>
@@ -86,8 +84,7 @@ function FilesAndDirectoriesTab(
         <div className="okcancel">
           <Button
             size="sm"
-            color="primary"
-            variant="flat"
+            className="bg-slate-500 text-white"
             onClick={() => {
               props.closeHook();
             }}

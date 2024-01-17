@@ -8,13 +8,12 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    colors: {
-      primary: "#93c5fd",
-      secondary: "#e6f1fe",
-    },
     extend: {
       colors: {
-        "med-blue": "#cbd5e1", // hsl(213, 27%, 84%)
+        steel: {
+          100: "#f1f5f9", // slate 100
+          500: "#64748b", // slate 500 https://tailwindcss.com/docs/customizing-colors
+        },
       },
     },
   },
