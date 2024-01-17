@@ -1,3 +1,5 @@
 #!/bin/sh
+set -e
+set -o pipefail
 basedir=$(realpath "$(dirname "$0")")
 bun run --cwd "$basedir"/frontend build -w

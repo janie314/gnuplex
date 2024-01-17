@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+set -o pipefail
 basedir=$(realpath "$(dirname "$0")")
 cd "$basedir"/backend
 go run . -static_dir ../frontend/out -db ./gnuplex.sqlite3
