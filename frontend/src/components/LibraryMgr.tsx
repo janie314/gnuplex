@@ -10,8 +10,14 @@ function LibraryMgr(props: {
 }) {
   if (props.visible) {
     return (
-      <div className="librarymgr flex flex-col shadow z-1 w-3/4 p-4 space-y-3 bg-slate-200">
-        <Tabs variant="bordered">
+      <div className="librarymgr flex flex-col shadow z-1 w-3/4 p-4 space-y-3 bg-slate-100">
+        <Tabs
+          classNames={{
+            tab: "group-data[selected=true]:bg-slate-500",
+            tabContent: "group-data[selected=true]:bg-slate-500",
+          }}
+          variant="bordered"
+        >
           <Tab key="dirs" title="Directories" />
           <Tab key="tags" title="Tagging" />
         </Tabs>

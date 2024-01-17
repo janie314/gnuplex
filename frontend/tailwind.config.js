@@ -7,16 +7,20 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
-    extend: {
-      colors: {
-        steel: {
-          100: "#f1f5f9", // slate 100
-          500: "#64748b", // slate 500 https://tailwindcss.com/docs/customizing-colors
+  darkMode: "class",
+  plugins: [
+    nextui({
+      themes: {
+        dark: {
+          colors: {
+            primary: {
+              DEFAULT: "#BEF264",
+              foreground: "#000000",
+            },
+            focus: "#BEF264",
+          },
         },
       },
-    },
-  },
-  darkMode: "class",
-  plugins: [nextui()],
+    }),
+  ],
 };
