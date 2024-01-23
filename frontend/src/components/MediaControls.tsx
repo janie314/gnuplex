@@ -64,7 +64,7 @@ function MediaControls(props: {
             maxValue={maxPos}
             value={pos}
             defaultValue={0}
-            disabled={media.length === 0}
+            isDisabled={media.length === 0}
             color="primary"
             onChange={(val: number | number[]) => {
               if (!Array.isArray(val)) {

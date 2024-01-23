@@ -14,7 +14,7 @@ interface IMPVRes {
 
 function App() {
   const [version, setVersion] = useState("");
-  const [mediafiles, setMediafiles] = useState<string[]>([]);
+  const [medialist, setMedialist] = useState<string[]>([]);
   const [last25, setLast25] = useState<string[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
 
@@ -25,7 +25,7 @@ function App() {
       }
     });
     // TODO this should refresh when you refresh the library
-    APICall.mediafiles().then((res: string[]) => setMediafiles(res));
+    APICall.mediafiles().then((res: string[]) => setMedialist(res));
     APICall.last25().then((res: string[]) => setLast25(res));
   }, []);
 
@@ -47,12 +47,13 @@ function App() {
         <div className="flex-auto w-3/4">
           <Medialist medialist={last25} subtitle="Recent" />
           <Medialist
-            medialist={mediafiles}
+            medialist={medialist}
             subtitle="Library"
           />
         </div>
       </div>
       <LibraryMgr
+        medialist={medialist}
         visible={mediadirInputPopup}
         setMediadirInputPopup={setMediadirInputPopup}
         closeHook={() => {
