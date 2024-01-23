@@ -1,6 +1,9 @@
 import { nextui } from "@nextui-org/react";
 
 /** @type {import('tailwindcss').Config} */
+
+const slate500 = "#64748B";
+
 export default {
   content: [
     "./index.html",
@@ -14,10 +17,19 @@ export default {
         dark: {
           colors: {
             primary: {
-              DEFAULT: "#BEF264",
-              foreground: "#000000",
+              DEFAULT: slate500,
+              // foreground: "#000000",
             },
-            focus: "#BEF264",
+            focus: slate500,
+          },
+        },
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: slate500,
+              // foreground: "#000000",
+            },
+            focus: slate500,
           },
         },
       },

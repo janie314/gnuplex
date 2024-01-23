@@ -44,7 +44,7 @@ function FilesAndDirectoriesTab(
         <div className="flex flex-row space-x-2">
           <Button
             size="sm"
-            className="bg-slate-500 text-white"
+            color="primary"
             onClick={() => {
               setSaveMediadirsWorking(true);
               setSaveFileExtsWorking(true);
@@ -66,7 +66,7 @@ function FilesAndDirectoriesTab(
           </Button>
           <Button
             size="sm"
-            className="bg-slate-500 text-white"
+            color="primary"
             onClick={() => {
               setRefreshLibraryWorking(true);
               APICall.setMediafiles().then(() =>
@@ -84,7 +84,7 @@ function FilesAndDirectoriesTab(
         <div className="okcancel">
           <Button
             size="sm"
-            className="bg-slate-500 text-white"
+            color="primary"
             onClick={() => {
               props.closeHook();
             }}
