@@ -40,7 +40,7 @@ function Medialist(
   ];
 
   return (
-    <Card shadow="sm">
+    <Card shadow="sm" radius="sm">
       <CardHeader className="font-bold">{props.subtitle}</CardHeader>
       <CardBody>
         <Table

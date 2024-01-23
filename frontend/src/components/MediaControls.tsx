@@ -47,7 +47,7 @@ function MediaControls(props: {
   }, []);
 
   return (
-    <Card isBlurred shadow="sm">
+    <Card isBlurred shadow="sm" radius="sm">
       <CardBody className="flex flex-col space-y-3 justify-center">
         <div className="flex flex-row justify-center space-x-1">
           <span className="nowplaying">
@@ -64,6 +64,7 @@ function MediaControls(props: {
             maxValue={maxPos}
             value={pos}
             defaultValue={0}
+            disabled={media.length === 0}
             color="primary"
             onChange={(val: number | number[]) => {
               if (!Array.isArray(val)) {
