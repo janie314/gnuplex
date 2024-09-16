@@ -1,7 +1,12 @@
-#!/usr/bin/sh
-basedir=$(realpath $(dirname "$0"))
-cd "$basedir/frontend"
-npm i
-npm run build
-cd ../backend
-go build 
+#!/bin/sh
+basedir=$(realpath "$(dirname "$0")")
+
+# frontend
+bun i --cwd "$basedir/frontend" 
+find "$basedir"/backend/public -mindepth 1 -delete
+mkdir -p "$basedir"/frontend/out/
+bun run --cwd "$basedir/frontend" build
+cp -rv "$basedir"/frontend/out/* "$basedir"/backend/public
+
+# backend
+go build -C "$basedir/backend"
