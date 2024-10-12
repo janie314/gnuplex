@@ -1,0 +1,140 @@
+<%
+require "open3"
+def gem_exists(gem)
+  res = Open3.popen3("bundle", "info", "^#{gem}$") do |i, o, e, t|
+    t.value.success?
+  end
+end
+%>
+---
+inherit_mode:
+  merge:
+    - Exclude
+
+require:
+  - standard
+  <%= "- standard-rails" if gem_exists "rails" %>
+  - standard-custom
+  - standard-performance
+  - rubocop-performance
+  - rubocop-rake
+  <%= "- rubocop-factory_bot" if gem_exists "factory_bot" %>
+  <%= "- rubocop-rspec" if gem_exists "rspec-core" %>
+  <%= "- rubocop-rails" if gem_exists "rails" %>
+  <%= "- rubocop-rspec_rails" if gem_exists "rails" %>
+  <%= "- rubocop-capybara" if gem_exists "capybara" %>
+
+inherit_gem:
+  standard: config/base.yml
+  <%= "standard-rails: config/base.yml" if gem_exists "rails" %>
+  standard-performance: config/base.yml
+  standard-custom: config/base.yml
+
+# custom enables/disables
+Layout/LineLength:
+  Enabled: false
+Layout/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+Layout/ExtraSpacing:
+  Enabled: false
+Layout/SpaceBeforeComma:
+  Enabled: false
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: true
+Rake/Desc:
+  Enabled: false
+<% if gem_exists "rails" %>
+Rails/ThreeStateBooleanColumn:
+  Enabled: false
+<% end %>
+<% if gem_exists "rspec-core" %>
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/ExampleLength:
+  Enabled: false
+<% end %>
+
+#
+# Ignore differences from Rails autogeneration
+#
+Style/GlobalStdStream:
+  Exclude:
+    - 'config/environments/*'
+Layout/SpaceInsideArrayLiteralBrackets:
+  Exclude:
+    - 'config/environments/*'
+
+#
+# Ignore differences from RSpec autogeneration
+#
+Style/StringLiterals:
+  Exclude:
+    - 'spec/rails_helper.rb'
+
+AllCops:
+  NewCops: enable
+  Include:
+    - '**/*.rb'
+    - '**/*.arb'
+    - '**/*.axlsx'
+    - '**/*.builder'
+    - '**/*.fcgi'
+    - '**/*.gemfile'
+    - '**/*.gemspec'
+    - '**/*.god'
+    - '**/*.jb'
+    - '**/*.jbuilder'
+    - '**/*.mspec'
+    - '**/*.opal'
+    - '**/*.pluginspec'
+    - '**/*.podspec'
+    - '**/*.rabl'
+    - '**/*.rake'
+    - '**/*.rbuild'
+    - '**/*.rbw'
+    - '**/*.rbx'
+    - '**/*.ru'
+    - '**/*.ruby'
+    - '**/*.schema'
+    - '**/*.spec'
+    - '**/*.thor'
+    - '**/*.watchr'
+    - '**/.irbrc'
+    - '**/.pryrc'
+    - '**/.simplecov'
+    - '**/buildfile'
+    - '**/Appraisals'
+    - '**/Berksfile'
+    - '**/Brewfile'
+    - '**/Buildfile'
+    - '**/Capfile'
+    - '**/Cheffile'
+    - '**/Dangerfile'
+    - '**/Deliverfile'
+    - '**/Fastfile'
+    - '**/*Fastfile'
+    - '**/Gemfile'
+    - '**/Guardfile'
+    - '**/Jarfile'
+    - '**/Mavenfile'
+    - '**/Podfile'
+    - '**/Puppetfile'
+    - '**/Rakefile'
+    - '**/rakefile'
+    - '**/Schemafile'
+    - '**/Snapfile'
+    - '**/Steepfile'
+    - '**/Thorfile'
+    - '**/Vagabondfile'
+    - '**/Vagrantfile'
+  Exclude:
+    - 'target/**/*'
+    - 'node_modules/**/*'
+    - 'src/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    - '.git/**/*'
+    - 'db/migrate/*.active_storage.rb'
+    - 'db/migrate/*.acts_as_taggable_on_engine.rb'

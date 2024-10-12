@@ -13,9 +13,9 @@ func Run(wg *sync.WaitGroup, verbose bool) {
 	for {
 		var cmd *exec.Cmd
 		if !verbose {
-			cmd = exec.Command("mpv", "--idle=yes", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
+			cmd = exec.Command("mpv", "--idle=yes", "--input-ipc-server=/tmp/mpvsocketalt", "--fs", "--save-position-on-quit")
 		} else {
-			cmd = exec.Command("mpv", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocket", "--fs", "--save-position-on-quit")
+			cmd = exec.Command("mpv", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocketalt", "--fs", "--save-position-on-quit")
 		}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

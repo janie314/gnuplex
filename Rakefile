@@ -1,0 +1,1 @@
+require "peppermint/rake"
