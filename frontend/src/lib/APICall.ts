@@ -6,89 +6,80 @@ interface IMPVRes {
 
 class APICall {
   public static async play() {
-    return await fetch(
-      `/api/play`,
-      { method: "POST" },
-    );
+    return await fetch(`/api/play`, { method: "POST" });
   }
 
   public static async pause() {
-    return await fetch(
-      `/api/pause`,
-      { method: "POST" },
-    );
+    return await fetch(`/api/pause`, { method: "POST" });
   }
 
   public static async getOriginPos() {
-    return await fetch(
-      `/api/pos`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        // @ts-ignore
-        return Math.floor(res.data);
-      } else {
-        return 0;
-      }
-    });
+    return await fetch(`/api/pos`)
+      .then((res) => res.json())
+      .then((res: IMPVRes) => {
+        if (res.data !== undefined) {
+          // @ts-ignore
+          return Math.floor(res.data);
+        } else {
+          return 0;
+        }
+      });
   }
 
   public static async getOriginVersion() {
-    return await fetch(
-      `/api/version`,
-    ).then((res) => res.json()) as string;
+    return (await fetch(`/api/version`).then((res) => res.json())) as string;
   }
 
   public static async setOriginPos(pos: number) {
-    return await fetch(
-      `/api/pos?pos=${pos}`,
-      { method: "POST" },
-    ).then((res) => res.json());
-  }
-
-  public static async getOriginVol() {
-    return await fetch(
-      `/api/vol`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        // @ts-ignore
-        return Math.floor(res.data);
-      } else {
-        return 0;
-      }
-    });
-  }
-  public static async setOriginVol(vol: number) {
-    return await fetch(
-      `/api/vol?vol=${vol}`,
-      { method: "POST" },
-    ).then((res) => res.json());
-  }
-
-  public static async getOriginMedia() {
-    return await fetch(
-      `/api/media`,
-    ).then((res) => res.json()).then((res: IMPVRes) => {
-      if (res.data !== undefined) {
-        return res.data as string;
-      } else {
-        return "";
-      }
-    });
-  }
-
-  public static async setOriginMedia(mediafile: string) {
-    return await fetch(
-      `/api/media?mediafile=${encodeURI(mediafile)}`,
-      { method: "POST" },
+    return await fetch(`/api/pos?pos=${pos}`, { method: "POST" }).then((res) =>
+      res.json(),
     );
   }
 
-  public static async getOriginMediadirs() {
-    return await fetch(
-      `/api/mediadirs`,
-    ).then((res) => res.json()).then((data: string[]) => {
-      return data.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
+  public static async getOriginVol() {
+    return await fetch(`/api/vol`)
+      .then((res) => res.json())
+      .then((res: IMPVRes) => {
+        if (res.data !== undefined) {
+          // @ts-ignore
+          return Math.floor(res.data);
+        } else {
+          return 0;
+        }
+      });
+  }
+  public static async setOriginVol(vol: number) {
+    return await fetch(`/api/vol?vol=${vol}`, { method: "POST" }).then((res) =>
+      res.json(),
+    );
+  }
+
+  public static async getOriginMedia() {
+    return await fetch(`/api/media`)
+      .then((res) => res.json())
+      .then((res: IMPVRes) => {
+        if (res.data !== undefined) {
+          return res.data as string;
+        } else {
+          return "";
+        }
+      });
+  }
+
+  public static async setOriginMedia(mediafile: string) {
+    return await fetch(`/api/media?mediafile=${encodeURI(mediafile)}`, {
+      method: "POST",
     });
+  }
+
+  public static async getOriginMediadirs() {
+    return await fetch(`/api/mediadirs`)
+      .then((res) => res.json())
+      .then((data: string[]) => {
+        return data.sort((a, b) =>
+          a.toLowerCase() < b.toLowerCase() ? -1 : 1,
+        );
+      });
   }
 
   public static async setOriginMediadirs(mediadirs: string[]) {
@@ -99,11 +90,13 @@ class APICall {
   }
 
   public static async getOriginFileExts() {
-    return await fetch(
-      `/api/file_exts`,
-    ).then((res) => res.json()).then((data: string[]) => {
-      return data.sort((a, b) => a.toLowerCase() < b.toLowerCase() ? -1 : 1);
-    });
+    return await fetch(`/api/file_exts`)
+      .then((res) => res.json())
+      .then((data: string[]) => {
+        return data.sort((a, b) =>
+          a.toLowerCase() < b.toLowerCase() ? -1 : 1,
+        );
+      });
   }
 
   public static async setOriginFileExts(file_exts: string[]) {
