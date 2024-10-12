@@ -20,6 +20,8 @@ func main() {
 	 */
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
+	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
+	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	flag.Parse()
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -31,12 +33,12 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	oc, err := ocracoke.Init(&wg, *prod)
+	oc, err := ocracoke.Init(&wg, *prod, *mpvSocket)
 	if err != nil {
 		log.Fatal(err)
 	}
 	go oc.Run(&wg)
-	go mpvdaemon.Run(&wg, *verbose)
+	go mpvdaemon.Run(&wg, *verbose, !*noCreateMpvDaemon, *mpvSocket)
 	/*
 	 * Scheduler process
 	 */

@@ -1,0 +1,42 @@
+{
+  "linter": {
+    "ignore": [
+      "app/assets/builds/**",
+      "app/assets/stylesheets/application.tailwind.css",
+      "config/provision/production.json",
+      "node_modules",
+      "frontend/node_modules",
+      "dist",
+      "doc",
+      ".yardoc"
+    ]
+  },
+  "formatter": {
+    "ignore": [
+      "app/assets/builds/**",
+      "app/assets/stylesheets/application.tailwind.css",
+      "dist",
+      "doc",
+      "package.json",
+      "node_modules",
+      "frontend/node_modules",
+      ".yardoc",
+      "config/provision/production.json"
+    ]
+  },
+  "css": {
+    "formatter": {
+      "indentStyle": "space"
+    }
+  },
+  "json": {
+    "formatter": {
+      "indentStyle": "space"
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "indentStyle": "space"
+    }
+  }
+}

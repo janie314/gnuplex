@@ -54,18 +54,20 @@ function App() {
               type="button"
               value="⏵"
               onClick={() =>
-                APICall.play().then(() => APICall.sleep(2000)).then(() =>
-                  setVolPosToggle(!volPosToggle)
-                )}
+                APICall.play()
+                  .then(() => APICall.sleep(2000))
+                  .then(() => setVolPosToggle(!volPosToggle))
+              }
             />
             <input
               className="pause-button"
               type="button"
               value="⏸"
               onClick={() =>
-                APICall.pause().then(() => APICall.sleep(2000)).then(() =>
-                  setVolPosToggle(!volPosToggle)
-                )}
+                APICall.pause()
+                  .then(() => APICall.sleep(2000))
+                  .then(() => setVolPosToggle(!volPosToggle))
+              }
             />
           </div>
           <div className="controlgroup">
