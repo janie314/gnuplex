@@ -1,6 +1,7 @@
 package mpvdaemon
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -8,14 +9,17 @@ import (
 	"time"
 )
 
-func Run(wg *sync.WaitGroup, verbose bool) {
+func Run(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocketPath string) {
+	if !createMpvDaemon {
+		return
+	}
 	defer wg.Done()
 	for {
 		var cmd *exec.Cmd
 		if !verbose {
-			cmd = exec.Command("mpv", "--idle=yes", "--input-ipc-server=/tmp/mpvsocketalt", "--fs", "--save-position-on-quit")
+			cmd = exec.Command("mpv", "--idle=yes", fmt.Sprintf("--input-ipc-server=%s", mpvSocketPath), "--fs", "--save-position-on-quit")
 		} else {
-			cmd = exec.Command("mpv", "--idle=yes", "-v", "--input-ipc-server=/tmp/mpvsocketalt", "--fs", "--save-position-on-quit")
+			cmd = exec.Command("mpv", "--idle=yes", "-v", fmt.Sprintf("--input-ipc-server=%s", mpvSocketPath), "--fs", "--save-position-on-quit")
 		}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

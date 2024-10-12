@@ -42,9 +42,9 @@ type IMPVResponseInt struct {
 var mu sync.Mutex
 var mpvConn *net.UnixConn
 
-func InitUnixConn(wg *sync.WaitGroup) {
+func InitUnixConn(wg *sync.WaitGroup, mpvSocket string) {
 	var mpvUnixAddr *net.UnixAddr
-	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocketalt")
+	mpvUnixAddr, err := net.ResolveUnixAddr("unix", mpvSocket)
 	if err != nil {
 		log.Fatal(err)
 	}

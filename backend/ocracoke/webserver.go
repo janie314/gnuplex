@@ -19,11 +19,11 @@ type Ocracoke struct {
 	Router *gin.Engine
 }
 
-func Init(wg *sync.WaitGroup, prod bool) (*Ocracoke, error) {
+func Init(wg *sync.WaitGroup, prod bool, mpvSocket string) (*Ocracoke, error) {
 	oc := new(Ocracoke)
 	oc.Router = gin.Default()
 	oc.Router.SetTrustedProxies(nil)
-	go mpvcmd.InitUnixConn(wg)
+	go mpvcmd.InitUnixConn(wg, mpvSocket)
 	db, err := liteDB.Init(prod)
 	if err != nil {
 		return nil, err
