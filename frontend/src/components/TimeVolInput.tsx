@@ -16,7 +16,8 @@ function TimeVolInput(props: {
   type: string;
 }) {
   if (
-    props.type === "time" && props.rawtime !== undefined &&
+    props.type === "time" &&
+    props.rawtime !== undefined &&
     props.setRawtime !== undefined
   ) {
     const secs = props.rawtime % 60;
@@ -25,7 +26,7 @@ function TimeVolInput(props: {
 
     function numFmt(num: number, min: number, max: number) {
       const n = Number(num);
-      if ((n < min) || (n > max) || (Number.isNaN(n))) {
+      if (n < min || n > max || Number.isNaN(n)) {
         return "00";
       }
       return n.toString().slice(-2).padStart(2, "0");
@@ -43,13 +44,13 @@ function TimeVolInput(props: {
           props.setRawtime(3600 * n + 60 * mins + secs);
         }
       } else if (unit === TimeUnit.mins) {
-        if ((n < 0) || (n > 59)) {
+        if (n < 0 || n > 59) {
           props.setRawtime(3600 * hrs + secs);
         } else {
           props.setRawtime(3600 * hrs + 60 * n + secs);
         }
       } else {
-        if ((n < 0) || (n > 59)) {
+        if (n < 0 || n > 59) {
           props.setRawtime(3600 * hrs + 60 * mins);
         } else {
           props.setRawtime(3600 * hrs + 60 * mins + n);
@@ -93,7 +94,8 @@ function TimeVolInput(props: {
       </div>
     );
   } else if (
-    props.type === "vol" && props.vol !== undefined &&
+    props.type === "vol" &&
+    props.vol !== undefined &&
     props.setVol !== undefined
   ) {
     return (
@@ -107,7 +109,8 @@ function TimeVolInput(props: {
           max={250}
           onChange={(e) =>
             // @ts-ignore
-            props.setVol(Math.min(250, Math.max(e.target.valueAsNumber, 0)))}
+            props.setVol(Math.min(250, Math.max(e.target.valueAsNumber, 0)))
+          }
         />
         <input
           type="button"

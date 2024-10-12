@@ -4,4 +4,4 @@ source "https://rubygems.org"
 
 # gem "rails"
 
-gem "peppermint", "~> 0.1.17", :group => :development
+gem "peppermint", "~> 0.1.17", group: :development
