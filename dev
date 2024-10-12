@@ -1,5 +1,0 @@
-#!/bin/sh
-basedir=$(realpath $(dirname "$0"))
-sh "$basedir/build"
-cd "$basedir/backend"
-go run . --verbose
