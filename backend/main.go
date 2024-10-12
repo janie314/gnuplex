@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"gnuplex-backend/consts"
@@ -10,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/reugn/go-quartz/job"
 	"github.com/reugn/go-quartz/quartz"
 )
 
@@ -42,16 +44,18 @@ func main() {
 	/*
 	 * Scheduler process
 	 */
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	sched := quartz.NewStdScheduler()
-	sched.Start()
+	sched.Start(ctx)
 	scanLibTrigger, err := quartz.NewCronTrigger("0 15 10 * * ?")
 	if err != nil {
 		log.Fatal("CronTrigger init failure", err)
 	}
-	scanLibJob := quartz.NewFunctionJob(func() (int, error) {
+	scanLibJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
 		return 0, oc.ScanLib()
 	})
-	err = sched.ScheduleJob(scanLibJob, scanLibTrigger)
+	err = sched.ScheduleJob(quartz.NewJobDetail(scanLibJob, quartz.NewJobKey("scanlib")), scanLibTrigger)
 	if err != nil {
 		log.Fatal("Scheduler init failure", err)
 	}

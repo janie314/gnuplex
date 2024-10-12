@@ -4,13 +4,14 @@ require "fileutils"
 desc "start development server"
 task :dev do
   FileUtils.mkdir_p "tmp"
+  caddy = Process.spawn "caddy run"
   frontend = Process.spawn "bun run --cwd frontend dev"
   backend = Process.spawn "go run -C backend ."
   Signal.trap("TERM") {
-    [frontend, backend].each { |p| Process.kill "HUP", p }
+    [caddy, frontend, backend].each { |p| Process.kill "HUP", p }
     exit
   }
-  [frontend, backend].each { |p| Process.waitpid p }
+  [caddy, frontend, backend].each { |p| Process.waitpid p }
 end
 
 desc "build gnuplex"
