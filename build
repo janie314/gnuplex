@@ -1,4 +1,5 @@
-#!/usr/bin/sh
+#!/bin/sh
 basedir=$(realpath $(dirname "$0"))
+mkdir -p "$basedir/tmp"
 bun run --cwd "$basedir/frontend" build
 go build -C "$basedir/backend"
