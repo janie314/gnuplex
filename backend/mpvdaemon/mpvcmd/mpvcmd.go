@@ -44,7 +44,7 @@ var mpvConn *net.UnixConn
 
 func InitUnixConn(wg *sync.WaitGroup) {
 	var mpvUnixAddr *net.UnixAddr
-	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocket")
+	mpvUnixAddr, err := net.ResolveUnixAddr("unix", "/tmp/mpvsocketalt")
 	if err != nil {
 		log.Fatal(err)
 	}
