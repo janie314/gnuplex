@@ -1,7 +1,4 @@
 #!/usr/bin/sh
 basedir=$(realpath $(dirname "$0"))
-cd "$basedir/frontend"
-npm i
-npm run build
-cd ../backend
-go build 
+bun run --cwd "$basedir/frontend" build
+go build -C "$basedir/backend"
