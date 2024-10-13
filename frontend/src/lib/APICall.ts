@@ -21,7 +21,7 @@ class APICall {
           // @ts-ignore
           return Math.floor(res.data);
         }
-          return 0;
+        return 0;
       });
   }
 
@@ -43,7 +43,7 @@ class APICall {
           // @ts-ignore
           return Math.floor(res.data);
         }
-          return 0;
+        return 0;
       });
   }
   public static async setOriginVol(vol: number) {
@@ -59,7 +59,7 @@ class APICall {
         if (res.data !== undefined) {
           return res.data as string;
         }
-          return "";
+        return "";
       });
   }
 
