@@ -1,25 +1,3 @@
-.App {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  font: 16px sans-serif;
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
-  padding: 1%;
-}
-
-.leftpanel {
-  flex: 1;
-  margin-bottom: 2%;
-}
-
-.rightpanel {
-  flex: 5;
-}
-
 a {
   color: black;
 }

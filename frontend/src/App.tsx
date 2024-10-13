@@ -40,10 +40,10 @@ function App() {
   return (
     <>
       <div
-        className="App"
+        className="flex flex-row text-base font-sans pb-2/100"
         style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
       >
-        <div className="panel leftpanel">
+        <div className="flex-none flex-col w-1/4 p-1/100">
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
@@ -97,13 +97,14 @@ function App() {
             <a
               href="https://gitlab.com/jane314/gnuplex/-/issues"
               target="_blank"
+              rel="noreferrer"
             >
               Bug?
             </a>
           </div>
         </div>
 
-        <div className="panel rightpanel">
+        <div className="flex-col flex-none w-3/4 p-1/100">
           <Medialist
             medialist={[media]}
             subtitle="Now Playing"

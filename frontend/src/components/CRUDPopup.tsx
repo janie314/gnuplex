@@ -34,7 +34,7 @@ function CRUDPopup(props: {
           className="crudpopup-textarea"
           rows={10}
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
-        ></textarea>
+        />
         <span className="subtitle">Excluded File Extensions</span>
         <textarea
           value={file_exts}
@@ -42,7 +42,7 @@ function CRUDPopup(props: {
           className="crudpopup-textarea"
           rows={10}
           placeholder=".pdf"
-        ></textarea>
+        />
         <div>
           <input
             type="button"
@@ -93,7 +93,7 @@ function CRUDPopup(props: {
               props.closeHook();
               props.setMediadirInputPopup(false);
             }}
-          ></input>
+          />
         </div>
       </div>
     );
