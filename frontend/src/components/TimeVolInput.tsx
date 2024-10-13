@@ -1,4 +1,3 @@
-import { SyntheticEvent, useEffect, useState } from "react";
 import { APICall } from "../lib/APICall";
 import "./TimeVolInput.css";
 
@@ -23,14 +22,6 @@ function TimeVolInput(props: {
     const secs = props.rawtime % 60;
     const mins = ((props.rawtime - secs) % 3600) / 60;
     const hrs = (props.rawtime - 60 * mins - secs) / 3600;
-
-    function numFmt(num: number, min: number, max: number) {
-      const n = Number(num);
-      if (n < min || n > max || Number.isNaN(n)) {
-        return "00";
-      }
-      return n.toString().slice(-2).padStart(2, "0");
-    }
 
     function setTime(val: string, unit: TimeUnit) {
       const n = Number(val) || 0;
@@ -83,7 +74,7 @@ function TimeVolInput(props: {
         />
         <input
           type="button"
-          className="timevol-input-button"
+          className="mediacontrol-button"
           value="Set"
           min={0}
           max={250}
@@ -103,7 +94,7 @@ function TimeVolInput(props: {
       <div className="timevol-input">
         <span className="timevol-input-label">Vol</span>
         <input
-          className="timevol-input-timenum"
+          className="w-[6ch]"
           type="number"
           value={props.vol}
           min={0}
@@ -115,7 +106,7 @@ function TimeVolInput(props: {
         />
         <input
           type="button"
-          className="timevol-input-button"
+          className="mediacontrol-button"
           value="Set"
           onClick={(e) => {
             APICall.setOriginVol(props.vol as number);

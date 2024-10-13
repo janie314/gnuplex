@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { APICall } from "../lib/APICall";
-import "../App.css";
 
 function Medialist(props: {
   medialist: string[];
@@ -8,12 +6,12 @@ function Medialist(props: {
   setMedia: React.Dispatch<React.SetStateAction<string>>;
 }) {
   return (
-    <div className="moviegroup">
-      <span className="subtitle">{props.subtitle}</span>
+    <div className="flex flex-col mb-2 pl-2 whitespace-pre=wrap">
+      <h1 className="m-y-2/100 text-lg font-bold">{props.subtitle}</h1>
       {props.medialist.map((mediafile: string, i: number) => (
         <input
           type="button"
-          className="mediafile"
+          className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2"
           key={mediafile}
           onClick={(e) => {
             APICall.setOriginMedia(mediafile)

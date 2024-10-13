@@ -1,7 +1,7 @@
 package consts
 
 const (
-	GNUPlexVersion      = "0.93 Bayfield"
+	GNUPlexVersion      = "0.94 Herbster"
 	DBVersion           = 1
 	DevDBFilepath       = "../tmp/gnuplex.sqlite3"
 	ProdDBFilepath      = "/var/gnuplex/gnuplex.sqlite3"

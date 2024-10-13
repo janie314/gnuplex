@@ -1,5 +1,6 @@
 import { APICall } from "../lib/APICall";
 import { TimeVolInput } from "./TimeVolInput";
+import "./MediaControls.css";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;
@@ -12,10 +13,10 @@ function MediaControls(props: {
   setVolPosToggle: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
-    <div className="flex flex-col">
-      <div className="controlgroup">
+    <div className="flex flex-col justify-center">
+      <div className="flex flex-row justify-center mt-1">
         <input
-          className="play-button"
+          className="mediacontrol-button"
           type="button"
           value="⏵"
           onClick={() =>
@@ -25,7 +26,7 @@ function MediaControls(props: {
           }
         />
         <input
-          className="pause-button"
+          className="mediacontrol-button"
           type="button"
           value="⏸"
           onClick={() =>
@@ -35,9 +36,10 @@ function MediaControls(props: {
           }
         />
       </div>
-      <div className="controlgroup">
+      <div className="flex flex-row justify-center mt-1">
         <input
           type="button"
+          className="mediacontrol-button"
           value="Manage Library"
           onClick={() => {
             props.setMediadirInputPopup(true);
@@ -45,6 +47,7 @@ function MediaControls(props: {
         />
         <input
           type="button"
+          className="mediacontrol-button"
           value="Cast YouTube"
           onClick={() => {
             const url = window.prompt("YouTube URL:", "") || "";
@@ -52,14 +55,14 @@ function MediaControls(props: {
           }}
         />
       </div>
-      <div className="controlgroup">
+      <div className="flex flex-row justify-center mt-1">
         <TimeVolInput
           rawtime={props.pos}
           setRawtime={props.setPos}
           type="time"
         />
       </div>
-      <div className="controlgroup">
+      <div className="flex flex-row justify-center mt-1">
         <TimeVolInput vol={props.vol} setVol={props.setVol} type="vol" />
       </div>
     </div>
