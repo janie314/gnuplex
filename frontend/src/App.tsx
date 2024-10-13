@@ -4,6 +4,7 @@ import "./App.css";
 import { Medialist } from "./components/Medialist";
 import { TimeVolInput } from "./components/TimeVolInput";
 import { CRUDPopup } from "./components/CRUDPopup";
+import { MediaControls } from "./components/MediaControls";
 
 interface IMPVRes {
   data?: number | string;
@@ -48,60 +49,16 @@ function App() {
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
           </div>
-          <div className="controlgroup">
-            <input
-              className="play-button"
-              type="button"
-              value="⏵"
-              onClick={() =>
-                APICall.play()
-                  .then(() => APICall.sleep(2000))
-                  .then(() => setVolPosToggle(!volPosToggle))
-              }
-            />
-            <input
-              className="pause-button"
-              type="button"
-              value="⏸"
-              onClick={() =>
-                APICall.pause()
-                  .then(() => APICall.sleep(2000))
-                  .then(() => setVolPosToggle(!volPosToggle))
-              }
-            />
-          </div>
-          <div className="controlgroup">
-            <input
-              type="button"
-              value="Manage Library"
-              onClick={() => {
-                setMediadirInputPopup(true);
-              }}
-            />
-            <input
-              type="button"
-              value="Cast YouTube"
-              onClick={() => {
-                const url = window.prompt("YouTube URL:", "") || "";
-                APICall.setOriginMedia(url);
-              }}
-            />
-          </div>
-          <div className="controlgroup">
-            <TimeVolInput rawtime={pos} setRawtime={setPos} type="time" />
-          </div>
-          <div className="controlgroup">
-            <TimeVolInput vol={vol} setVol={setVol} type="vol" />
-          </div>
-          <div className="controlgroup">
-            <a
-              href="https://gitlab.com/jane314/gnuplex/-/issues"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Bug?
-            </a>
-          </div>
+          <MediaControls
+            mediadirInputPopup={mediadirInputPopup}
+            setMediadirInputPopup={setMediadirInputPopup}
+            vol={vol}
+            setVol={setVol}
+            pos={pos}
+            setPos={setPos}
+            volPosToggle={volPosToggle}
+            setVolPosToggle={setVolPosToggle}
+          />
         </div>
 
         <div className="flex-col flex-none w-3/4 p-1/100">

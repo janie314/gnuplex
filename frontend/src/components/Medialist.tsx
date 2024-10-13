@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { APICall } from "../lib/APICall";
 import "../App.css";
 
@@ -11,22 +11,19 @@ function Medialist(props: {
     <div className="moviegroup">
       <span className="subtitle">{props.subtitle}</span>
       {props.medialist.map((mediafile: string, i: number) => (
-        <a
+        <input
+          type="button"
           className="mediafile"
-          key={i}
-          href="#"
-          onClick={(e: SyntheticEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
+          key={mediafile}
+          onClick={(e) => {
             APICall.setOriginMedia(mediafile)
               .then(() => APICall.sleep(2000))
               .then(() => {
                 props.setMedia(mediafile);
               });
           }}
-        >
-          {mediafile}
-        </a>
+          value={mediafile}
+        />
       ))}
     </div>
   );

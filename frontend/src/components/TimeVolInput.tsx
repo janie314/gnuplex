@@ -2,10 +2,10 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { APICall } from "../lib/APICall";
 import "./TimeVolInput.css";
 
-const enum TimeUnit {
+enum TimeUnit {
   secs = 0,
-  mins,
-  hrs,
+  mins = 1,
+  hrs = 2,
 }
 
 function TimeVolInput(props: {
@@ -93,7 +93,8 @@ function TimeVolInput(props: {
         />
       </div>
     );
-  } else if (
+  }
+  if (
     props.type === "vol" &&
     props.vol !== undefined &&
     props.setVol !== undefined
@@ -122,9 +123,8 @@ function TimeVolInput(props: {
         />
       </div>
     );
-  } else {
-    return <></>;
   }
+  return <></>;
 }
 
 export { TimeVolInput };
