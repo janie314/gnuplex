@@ -1,6 +1,5 @@
 import { APICall } from "../lib/APICall";
 import { TimeVolInput } from "./TimeVolInput";
-import "./MediaControls.css";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;
@@ -16,7 +15,7 @@ function MediaControls(props: {
     <div className="flex flex-col justify-center">
       <div className="flex flex-row justify-center mt-1">
         <input
-          className="mediacontrol-button"
+          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
           type="button"
           value="⏵"
           onClick={() =>
@@ -26,7 +25,7 @@ function MediaControls(props: {
           }
         />
         <input
-          className="mediacontrol-button"
+          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
           type="button"
           value="⏸"
           onClick={() =>
@@ -39,7 +38,7 @@ function MediaControls(props: {
       <div className="flex flex-row justify-center mt-1">
         <input
           type="button"
-          className="mediacontrol-button"
+          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
           value="Manage Library"
           onClick={() => {
             props.setMediadirInputPopup(true);
@@ -47,7 +46,7 @@ function MediaControls(props: {
         />
         <input
           type="button"
-          className="mediacontrol-button"
+          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
           value="Cast YouTube"
           onClick={() => {
             const url = window.prompt("YouTube URL:", "") || "";

@@ -1,5 +1,4 @@
 import { APICall } from "../lib/APICall";
-import "./TimeVolInput.css";
 
 enum TimeUnit {
   secs = 0,
@@ -50,31 +49,31 @@ function TimeVolInput(props: {
     }
 
     return (
-      <div className="timevol-input">
-        <span className="timevol-input-label">Pos</span>
+      <div className="flex flex-row">
+        <span className="flex items-center mr-2">Pos</span>
         <input
-          className="timevol-input-timenum"
+          className="w-[3ch] border border-black p-1"
           type="text"
           value={Number(hrs).toString().padStart(2, "0")}
           onChange={(e) => setTime(e.target.value, TimeUnit.hrs)}
         />
-        <span className="timevol-input-timesep">:</span>
+        <span className="flex items-center mx-1">:</span>
         <input
-          className="timevol-input-timenum"
+          className="w-[3ch] border border-black p-1"
           type="text"
           value={Number(mins).toString().padStart(2, "0")}
           onChange={(e) => setTime(e.target.value, TimeUnit.mins)}
         />
-        <span className="timevol-input-timesep">:</span>
+        <span className="flex items-center mx-1">:</span>
         <input
-          className="timevol-input-timenum"
+          className="w-[3ch] border border-black p-1 mr-3"
           type="text"
           value={Number(secs).toString().padStart(2, "0")}
           onChange={(e) => setTime(e.target.value, TimeUnit.secs)}
         />
         <input
           type="button"
-          className="mediacontrol-button"
+          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
           value="Set"
           min={0}
           max={250}
@@ -91,10 +90,10 @@ function TimeVolInput(props: {
     props.setVol !== undefined
   ) {
     return (
-      <div className="timevol-input">
-        <span className="timevol-input-label">Vol</span>
+      <div className="flex flex-row">
+        <span className="flex items-center mr-2">Vol</span>
         <input
-          className="w-[6ch]"
+          className="w-[6ch] border border-black p-1 mr-3"
           type="number"
           value={props.vol}
           min={0}
@@ -106,7 +105,7 @@ function TimeVolInput(props: {
         />
         <input
           type="button"
-          className="mediacontrol-button"
+          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
           value="Set"
           onClick={(e) => {
             APICall.setOriginVol(props.vol as number);
