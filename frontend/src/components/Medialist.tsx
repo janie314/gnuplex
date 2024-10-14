@@ -11,7 +11,7 @@ function Medialist(props: {
       {props.medialist.map((mediafile: string, i: number) => (
         <input
           type="button"
-          className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2"
+          className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-normal break-words"
           key={mediafile}
           onClick={(e) => {
             APICall.setOriginMedia(mediafile)
