@@ -9,8 +9,6 @@ enum TimeUnit {
 function TimeVolInput(props: {
   rawtime?: number;
   setRawtime?: React.Dispatch<React.SetStateAction<number>>;
-  vol?: number;
-  setVol?: React.Dispatch<React.SetStateAction<number>>;
   type: string;
 }) {
   if (
@@ -79,36 +77,6 @@ function TimeVolInput(props: {
           max={250}
           onClick={(e) => {
             APICall.setOriginPos(props.rawtime as number);
-          }}
-        />
-      </div>
-    );
-  }
-  if (
-    props.type === "vol" &&
-    props.vol !== undefined &&
-    props.setVol !== undefined
-  ) {
-    return (
-      <div className="flex flex-row">
-        <span className="flex items-center mr-2">Vol</span>
-        <input
-          className="w-[6ch] border border-black p-1 mr-3"
-          type="number"
-          value={props.vol}
-          min={0}
-          max={250}
-          onChange={(e) =>
-            // @ts-ignore
-            props.setVol(Math.min(250, Math.max(e.target.valueAsNumber, 0)))
-          }
-        />
-        <input
-          type="button"
-          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
-          value="Set"
-          onClick={(e) => {
-            APICall.setOriginVol(props.vol as number);
           }}
         />
       </div>

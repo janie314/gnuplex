@@ -61,8 +61,19 @@ function MediaControls(props: {
           type="time"
         />
       </div>
-      <div className="flex flex-row justify-center mt-1">
-        <TimeVolInput vol={props.vol} setVol={props.setVol} type="vol" />
+      <div className="flex flex-row justify-center items-center mt-1">
+        <span className="mx-1">Vol</span>
+        <input
+          type="range"
+          min={0}
+          max="100"
+          value={props.vol}
+          className="range range-xs"
+          // @ts-ignore
+          onChange={(e) => props.setVol(e.target.value)}
+          onMouseUp={() => APICall.setOriginVol(props.vol)}
+        />
+        <span className="mx-1">{props.vol}</span>
       </div>
     </div>
   );
