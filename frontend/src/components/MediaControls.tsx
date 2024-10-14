@@ -66,7 +66,7 @@ function MediaControls(props: {
         <input
           type="range"
           min={0}
-          max="100"
+          max={120}
           value={props.vol}
           className="range range-xs"
           // @ts-ignore
