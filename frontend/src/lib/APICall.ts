@@ -24,6 +24,19 @@ class APICall {
         return 0;
       });
   }
+  
+  public static async getOriginTimeRemaining() {
+    return await fetch("/api/timeremaining")
+      .then((res) => res.json())
+      .then((res: IMPVRes) => {
+        if (res.data !== undefined) {
+          // @ts-ignore
+          return Math.floor(res.data);
+        }
+        return 0;
+      });
+  }
+
 
   public static async getOriginVersion() {
     return (await fetch("/api/version").then((res) => res.json())) as string;

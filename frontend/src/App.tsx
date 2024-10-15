@@ -16,6 +16,8 @@ function App() {
   const [volPosToggle, setVolPosToggle] = useState(false);
   const [mediaToggle, setMediaToggle] = useState(false);
   const [pos, setPos] = useState(0);
+  const [startPos, setStartPos] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
   const [media, setMedia] = useState("");
   const [mediafiles, setMediafiles] = useState<string[]>([]);
@@ -33,7 +35,13 @@ function App() {
   }, [mediaToggle]);
 
   useEffect(() => {
-    APICall.getOriginPos().then((res: number) => setPos(res));
+    APICall.getOriginPos().then((res: number) => {
+      setPos(res);
+      setStartPos(res);
+    });
+    APICall.getOriginTimeRemaining().then((res: number) =>
+      setTimeRemaining(res),
+    );
     APICall.getOriginVol().then((res: number) => setVol(res));
   }, [media, volPosToggle]);
 
@@ -54,6 +62,8 @@ function App() {
             vol={vol}
             setVol={setVol}
             pos={pos}
+            startPos={startPos}
+            timeRemaining={timeRemaining}
             setPos={setPos}
             volPosToggle={volPosToggle}
             setVolPosToggle={setVolPosToggle}
