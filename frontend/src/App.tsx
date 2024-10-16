@@ -51,7 +51,7 @@ function App() {
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100"
         style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
       >
-        <div className="basis-1 md:basis-1/4 grow flex-col p-1/100">
+        <div className="sm:basis-1 md:basis-1/4 max-w-sm grow flex-col px-1/100 py-2 mb-1">
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
@@ -70,7 +70,7 @@ function App() {
           />
         </div>
 
-        <div className="basis-1 md:basis-3/4 shrink flex-col p-1/100">
+        <div className="sm:basis-1 md:basis-3/4 max-w-3xl shrink flex-col p-1/100">
           <Medialist
             medialist={[media]}
             subtitle="Now Playing"
