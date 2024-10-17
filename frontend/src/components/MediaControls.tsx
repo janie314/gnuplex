@@ -71,6 +71,7 @@ function MediaControls(props: {
             onChange={(e) => props.setVol(e.target.value)}
             onMouseUp={() => APICall.setOriginVol(props.vol)}
             onTouchEnd={() => APICall.setOriginVol(props.vol)}
+            onTouchCancel={() => APICall.setOriginVol(props.vol)}
           />
           <span className="mx-1">{props.vol}</span>
         </div>
