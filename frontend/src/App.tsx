@@ -51,7 +51,7 @@ function App() {
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100"
         style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
       >
-        <div className="sm:basis-1 md:basis-1/4 max-w-sm grow flex-col px-1/100 pb-2 mb-1">
+        <div className="sm:basis-1 md:basis-1/4 sm:max-w-full lg:max-w-sm grow flex-col px-1/100 pb-2 mb-1">
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
             <span className="version">{version}</span>
