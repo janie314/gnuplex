@@ -124,6 +124,9 @@ func Init(wg *sync.WaitGroup, prod bool, mpvSocket string) (*Ocracoke, error) {
 	oc.Router.GET("/api/pos", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos())
 	})
+	oc.Router.GET("/api/timeremaining", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpvcmd.GetTimeRemaining())
+	})
 	oc.Router.POST("/api/pos", func(c *gin.Context) {
 		param := c.Query("pos")
 		if param == "" {

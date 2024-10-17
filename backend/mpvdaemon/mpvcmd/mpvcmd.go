@@ -127,6 +127,10 @@ func GetPos() []byte {
 	return mpvGetCmd([]string{"get_property", "time-pos"})
 }
 
+func GetTimeRemaining() []byte {
+	return mpvGetCmd([]string{"get_property", "time-remaining"})
+}
+
 func SetPos(pos int) []byte {
 	return mpvSetCmd([]interface{}{"set_property", "time-pos", pos})
 }
