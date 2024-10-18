@@ -55,6 +55,7 @@ function MediaControls(props: {
             // @ts-ignore
             onChange={(e) => props.setPos(e.target.value)}
             onMouseUp={() => APICall.setOriginPos(props.pos)}
+            onTouchCancel={() => APICall.setOriginPos(props.pos)}
           />
           <span className="mx-1">{timeFormat(props.pos)}</span>
         </div>
@@ -70,7 +71,6 @@ function MediaControls(props: {
             // @ts-ignore
             onChange={(e) => props.setVol(e.target.value)}
             onMouseUp={() => APICall.setOriginVol(props.vol)}
-            onTouchEnd={() => APICall.setOriginVol(props.vol)}
             onTouchCancel={() => APICall.setOriginVol(props.vol)}
           />
           <span className="mx-1">{props.vol}</span>

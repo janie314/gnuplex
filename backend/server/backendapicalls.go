@@ -1,4 +1,4 @@
-package ocracoke
+package server
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type dBFSDiff struct {
 	inFS bool
 }
 
-func (oc *Ocracoke) ScanLib() error {
+func (oc *Server) ScanLib() error {
 	oc.DB.Mu.Lock()
 	log.Println("Got ScanLib lock")
 	defer oc.DB.Mu.Unlock()
@@ -76,7 +76,7 @@ func (oc *Ocracoke) ScanLib() error {
 	return reterr
 }
 
-func (oc *Ocracoke) AddHist(mediafile string) error {
+func (oc *Server) AddHist(mediafile string) error {
 	oc.DB.Mu.Lock()
 	log.Println("Got AddHist lock")
 	defer oc.DB.Mu.Unlock()
@@ -88,7 +88,7 @@ func (oc *Ocracoke) AddHist(mediafile string) error {
 	return err
 }
 
-func (oc *Ocracoke) AddMedia(mediafile string, ignorelock bool) error {
+func (oc *Server) AddMedia(mediafile string, ignorelock bool) error {
 	if !ignorelock {
 		oc.DB.Mu.Lock()
 		log.Println("Got AddMedia lock")
@@ -104,7 +104,7 @@ func (oc *Ocracoke) AddMedia(mediafile string, ignorelock bool) error {
 	return err
 }
 
-func (oc *Ocracoke) GetMediadirs(ignorelock bool) []string {
+func (oc *Server) GetMediadirs(ignorelock bool) []string {
 	if !ignorelock {
 		oc.DB.Mu.Lock()
 		log.Println("Got GetMediadirs lock")
@@ -135,7 +135,7 @@ func (oc *Ocracoke) GetMediadirs(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (oc *Ocracoke) SetMediadirs(mediadirs []string) error {
+func (oc *Server) SetMediadirs(mediadirs []string) error {
 	oc.DB.Mu.Lock()
 	log.Println("Got SetMediadirs lock")
 	defer oc.DB.Mu.Unlock()
@@ -151,7 +151,7 @@ func (oc *Ocracoke) SetMediadirs(mediadirs []string) error {
 	return err
 }
 
-func (oc *Ocracoke) GetFileExts(ignorelock bool) []string {
+func (oc *Server) GetFileExts(ignorelock bool) []string {
 	if !ignorelock {
 		oc.DB.Mu.Lock()
 		log.Println("Got GetFileExts lock")
@@ -182,7 +182,7 @@ func (oc *Ocracoke) GetFileExts(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (oc *Ocracoke) SetFileExts(file_exts []string) error {
+func (oc *Server) SetFileExts(file_exts []string) error {
 	oc.DB.Mu.Lock()
 	log.Println("Got SetFileExtslock")
 	defer oc.DB.Mu.Unlock()
@@ -198,7 +198,7 @@ func (oc *Ocracoke) SetFileExts(file_exts []string) error {
 	return err
 }
 
-func (oc *Ocracoke) GetMedialib(ignorelock bool) []string {
+func (oc *Server) GetMedialib(ignorelock bool) []string {
 	if !ignorelock {
 		oc.DB.Mu.Lock()
 		log.Println("Got GetMedialib lock")
@@ -229,7 +229,7 @@ func (oc *Ocracoke) GetMedialib(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (oc *Ocracoke) Last25() []string {
+func (oc *Server) Last25() []string {
 	oc.DB.Mu.Lock()
 	log.Println("Got Last25 lock")
 	defer oc.DB.Mu.Unlock()

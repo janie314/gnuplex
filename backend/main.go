@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"gnuplex-backend/consts"
 	"gnuplex-backend/mpvdaemon"
-	"gnuplex-backend/ocracoke"
+	"gnuplex-backend/server"
 	"log"
 	"sync"
 
@@ -24,6 +24,7 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
 	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
+	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
 	flag.Parse()
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -35,7 +36,7 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	oc, err := ocracoke.Init(&wg, *prod, *mpvSocket)
+	oc, err := server.Init(&wg, *prod, *mpvSocket, *dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
