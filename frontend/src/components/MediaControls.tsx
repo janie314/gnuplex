@@ -44,7 +44,7 @@ function MediaControls(props: {
       </div>
 
       <div className="flex flex-col max-w-sm grow p-1">
-        <div className="flex flex-row">
+        <div className="flex flex-row items-center">
           <span className="mx-1">Pos</span>
           <input
             type="range"
