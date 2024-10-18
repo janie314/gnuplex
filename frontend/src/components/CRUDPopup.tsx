@@ -26,25 +26,28 @@ function CRUDPopup(props: {
   if (props.visible) {
     return (
       <div className="crudpopup">
-        <span className="subtitle">Media Directories</span>
+        <h1 className="m-y-2/100 text-lg font-bold">Media Directories</h1>
         <textarea
           value={mediadirs}
           onChange={(e) => setMediadirs(e.target.value)}
-          className="crudpopup-textarea"
+          className="border border-solid border-black p-1"
           rows={10}
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
         />
-        <span className="subtitle">Excluded File Extensions</span>
+        <h1 className="m-y-2/100 text-lg font-bold">
+          Excluded File Extensions
+        </h1>
         <textarea
           value={file_exts}
           onChange={(e) => setFileExts(e.target.value)}
-          className="crudpopup-textarea"
+          className="border border-solid border-black p-1"
           rows={10}
           placeholder=".pdf"
         />
         <div>
           <input
             type="button"
+            className="p-1 border border-solid border-black hover:bg-cyan-300"
             value="Save Settings"
             onClick={() => {
               setSaveMediadirsWorking(true);
@@ -74,6 +77,7 @@ function CRUDPopup(props: {
         <div>
           <input
             type="button"
+            className="p-1 border border-solid border-black hover:bg-cyan-300"
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
@@ -87,6 +91,7 @@ function CRUDPopup(props: {
         <div className="okcancel">
           <input
             type="button"
+            className="p-1 border border-solid border-black hover:bg-cyan-300"
             value="OK"
             onClick={() => {
               props.closeHook();

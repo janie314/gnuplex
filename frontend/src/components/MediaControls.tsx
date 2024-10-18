@@ -76,10 +76,10 @@ function MediaControls(props: {
           <span className="mx-1">{props.vol}</span>
         </div>
       </div>
-      <div className="flex flex-row justify-center mt-3">
+      <div className="flex flex-row justify-center mt-3 p-1">
         <input
           type="button"
-          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
+          className="mr-1 p-1 border border-solid border-black hover:bg-cyan-300"
           value="Manage Library"
           onClick={() => {
             props.setMediadirInputPopup(true);
@@ -87,10 +87,10 @@ function MediaControls(props: {
         />
         <input
           type="button"
-          className="m-1 p-1 border border-solid border-black hover:bg-cyan-300"
-          value="Cast YouTube"
+          className="p-1 border border-solid border-black hover:bg-cyan-300"
+          value="Cast URL"
           onClick={() => {
-            const url = window.prompt("YouTube URL:", "") || "";
+            const url = window.prompt("URL to cast:", "") || "";
             APICall.setOriginMedia(url);
           }}
         />
