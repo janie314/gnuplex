@@ -14,15 +14,15 @@ type dBFSDiff struct {
 	inFS bool
 }
 
-func (oc *Server) ScanLib() error {
-	oc.DB.Mu.Lock()
+func (server *Server) ScanLib() error {
+	server.DB.Mu.Lock()
 	log.Println("Got ScanLib lock")
-	defer oc.DB.Mu.Unlock()
+	defer server.DB.Mu.Unlock()
 	defer log.Println("Rem ScanLib lock")
 	var reterr error
-	mediadirsFromDB := oc.GetMediadirs(true)
-	medialistFromDB := oc.GetMedialib(true)
-	fileExts := oc.GetFileExts(true)
+	mediadirsFromDB := server.GetMediadirs(true)
+	medialistFromDB := server.GetMedialib(true)
+	fileExts := server.GetFileExts(true)
 	fileExtHash := make(map[string]bool)
 	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
 	for _, path := range medialistFromDB {
@@ -48,13 +48,13 @@ func (oc *Server) ScanLib() error {
 						return nil
 					} else if medialist[path] == nil {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return oc.AddMedia(path, true)
+						return server.AddMedia(path, true)
 					} else if medialist[path].inDB {
 						medialist[path].inFS = true
 						return nil
 					} else {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return oc.AddMedia(path, true)
+						return server.AddMedia(path, true)
 					}
 				} else {
 					return nil
@@ -70,50 +70,50 @@ func (oc *Server) ScanLib() error {
 	}
 	for _, path := range medialistFromDB {
 		if !medialist[path].inFS {
-			oc.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
+			server.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
 		}
 	}
 	return reterr
 }
 
-func (oc *Server) AddHist(mediafile string) error {
-	oc.DB.Mu.Lock()
+func (server *Server) AddHist(mediafile string) error {
+	server.DB.Mu.Lock()
 	log.Println("Got AddHist lock")
-	defer oc.DB.Mu.Unlock()
+	defer server.DB.Mu.Unlock()
 	defer log.Println("Rem AddHist lock")
-	_, err := oc.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
+	_, err := server.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddHist err", err)
 	}
 	return err
 }
 
-func (oc *Server) AddMedia(mediafile string, ignorelock bool) error {
+func (server *Server) AddMedia(mediafile string, ignorelock bool) error {
 	if !ignorelock {
-		oc.DB.Mu.Lock()
+		server.DB.Mu.Lock()
 		log.Println("Got AddMedia lock")
-		defer oc.DB.Mu.Unlock()
+		defer server.DB.Mu.Unlock()
 		defer log.Println("Rem AddMedia lock")
 	} else {
 		log.Println("Ignoring AddMedia lock")
 	}
-	_, err := oc.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
+	_, err := server.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddMedia err", err)
 	}
 	return err
 }
 
-func (oc *Server) GetMediadirs(ignorelock bool) []string {
+func (server *Server) GetMediadirs(ignorelock bool) []string {
 	if !ignorelock {
-		oc.DB.Mu.Lock()
+		server.DB.Mu.Lock()
 		log.Println("Got GetMediadirs lock")
-		defer oc.DB.Mu.Unlock()
+		defer server.DB.Mu.Unlock()
 		defer log.Println("Rem GetMediadirs lock")
 	} else {
 		log.Println("Ignoring GetMediadirs lock")
 	}
-	rows, err := oc.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
+	rows, err := server.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMediadirs: ", err)
 		return []string{}
@@ -135,15 +135,15 @@ func (oc *Server) GetMediadirs(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (oc *Server) SetMediadirs(mediadirs []string) error {
-	oc.DB.Mu.Lock()
+func (server *Server) SetMediadirs(mediadirs []string) error {
+	server.DB.Mu.Lock()
 	log.Println("Got SetMediadirs lock")
-	defer oc.DB.Mu.Unlock()
+	defer server.DB.Mu.Unlock()
 	defer log.Println("Rem SetMediadirs lock")
 	var err error
-	oc.DB.SqliteConn.Exec("delete from mediadirs;")
+	server.DB.SqliteConn.Exec("delete from mediadirs;")
 	for _, mediafile := range mediadirs {
-		_, err := oc.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
+		_, err := server.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
 		if err != nil {
 			log.Println("Error: AddMediadir", err)
 		}
@@ -151,16 +151,16 @@ func (oc *Server) SetMediadirs(mediadirs []string) error {
 	return err
 }
 
-func (oc *Server) GetFileExts(ignorelock bool) []string {
+func (server *Server) GetFileExts(ignorelock bool) []string {
 	if !ignorelock {
-		oc.DB.Mu.Lock()
+		server.DB.Mu.Lock()
 		log.Println("Got GetFileExts lock")
-		defer oc.DB.Mu.Unlock()
+		defer server.DB.Mu.Unlock()
 		defer log.Println("Rem GetFileExtslock")
 	} else {
 		log.Println("Ignoring GetFileExts lock")
 	}
-	rows, err := oc.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
+	rows, err := server.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
 	if err != nil {
 		log.Println("Error: GetFileExts: ", err)
 		return []string{}
@@ -182,15 +182,15 @@ func (oc *Server) GetFileExts(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (oc *Server) SetFileExts(file_exts []string) error {
-	oc.DB.Mu.Lock()
+func (server *Server) SetFileExts(file_exts []string) error {
+	server.DB.Mu.Lock()
 	log.Println("Got SetFileExtslock")
-	defer oc.DB.Mu.Unlock()
+	defer server.DB.Mu.Unlock()
 	defer log.Println("Rem SetFileExtslock")
 	var err error
-	oc.DB.SqliteConn.Exec("delete from file_exts;")
+	server.DB.SqliteConn.Exec("delete from file_exts;")
 	for _, ext := range file_exts {
-		_, err := oc.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
+		_, err := server.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
 		if err != nil {
 			log.Println("Error: SetFileExts", err)
 		}
@@ -198,16 +198,16 @@ func (oc *Server) SetFileExts(file_exts []string) error {
 	return err
 }
 
-func (oc *Server) GetMedialib(ignorelock bool) []string {
+func (server *Server) GetMedialib(ignorelock bool) []string {
 	if !ignorelock {
-		oc.DB.Mu.Lock()
+		server.DB.Mu.Lock()
 		log.Println("Got GetMedialib lock")
-		defer oc.DB.Mu.Unlock()
+		defer server.DB.Mu.Unlock()
 		defer log.Println("Rem GetMedialib lock")
 	} else {
 		log.Println("Ignoring GetMedialib lock")
 	}
-	rows, err := oc.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
+	rows, err := server.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMedialib: ", err)
 		return []string{}
@@ -229,12 +229,12 @@ func (oc *Server) GetMedialib(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (oc *Server) Last25() []string {
-	oc.DB.Mu.Lock()
+func (server *Server) Last25() []string {
+	server.DB.Mu.Lock()
 	log.Println("Got Last25 lock")
-	defer oc.DB.Mu.Unlock()
+	defer server.DB.Mu.Unlock()
 	defer fmt.Println("Rem Last25 lock")
-	rows, err := oc.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
+	rows, err := server.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return []string{}

@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"gnuplex-backend/consts"
+	"gnuplex-backend/db"
 	"gnuplex-backend/mpvdaemon/mpvcmd"
 	"gnuplex-backend/server/liteDB"
 
@@ -16,12 +17,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type MediaItem struct {
-	gorm.Model
-	Path  string
-	Price uint
-}
-
 type Server struct {
 	DB     *liteDB.LiteDB
 	NewDB  *gorm.DB
@@ -29,23 +24,41 @@ type Server struct {
 }
 
 func Init(wg *sync.WaitGroup, prod bool, mpvSocket, dbPath string) (*Server, error) {
+	/*
+	 * HTTP backend
+	 */
 	server := new(Server)
 	server.Router = gin.Default()
 	server.Router.SetTrustedProxies(nil)
+	server.initEndpoints(prod)
+	/*
+	 * mpv unix socket
+	 */
 	go mpvcmd.InitUnixConn(wg, mpvSocket)
-	db, err := liteDB.Init(prod)
+	/*
+	 * old sqlite DB
+	 */
+	oldDb, err := liteDB.Init(prod)
 	if err != nil {
 		return nil, err
 	}
-	server.DB = db
+	server.DB = oldDb
+	/*
+	 * new sqlite DB
+	 */
 	newDB, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 	server.NewDB = newDB
-	/*
-	 * Serve static files
-	 */
+	if err = db.Init(server.NewDB); err != nil {
+		return nil, err
+	}
+	return server, nil
+}
+
+// Initialize the web server's HTTP Endpoints
+func (server *Server) initEndpoints(prod bool) {
 	server.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
@@ -57,9 +70,6 @@ func Init(wg *sync.WaitGroup, prod bool, mpvSocket, dbPath string) (*Server, err
 	} else {
 		server.Router.Static("/home", consts.DevStaticFilespath)
 	}
-	/*
-	 * API endpoints
-	 */
 	server.Router.GET("/api/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})
@@ -163,7 +173,7 @@ func Init(wg *sync.WaitGroup, prod bool, mpvSocket, dbPath string) (*Server, err
 		server.ScanLib()
 		c.String(http.StatusOK, "OK")
 	})
-	return server, nil
+
 }
 
 func (server *Server) Run(wg *sync.WaitGroup) error {
