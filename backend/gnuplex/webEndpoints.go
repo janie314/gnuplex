@@ -47,7 +47,6 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			gnuplex.AddHist(mediafile)
 			c.Data(http.StatusOK, "application/json", gnuplex.MPV.SetMedia(mediafile))
 		}
 	})
@@ -105,7 +104,12 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 		}
 	})
 	gnuplex.Router.GET("/api/file_exts", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gnuplex.GetFileExts(false))
+		res, err := gnuplex.NewDB.GetFileExts()
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
 	})
 	gnuplex.Router.POST("/api/file_exts", func(c *gin.Context) {
 		fileExtsJson := []byte(c.Query("file_exts"))

@@ -17,10 +17,6 @@ type dBFSDiff struct {
 }
 
 func (gnuplex *GNUPlex) ScanLib() error {
-	gnuplex.DB.Mu.Lock()
-	log.Println("Got ScanLib lock")
-	defer gnuplex.DB.Mu.Unlock()
-	defer log.Println("Rem ScanLib lock")
 	var reterr error
 	mediadirsFromDB, err := gnuplex.NewDB.GetMediaDirs()
 	if err != nil {
@@ -30,7 +26,10 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	if err != nil {
 		return err
 	}
-	fileExts := gnuplex.GetFileExts(true)
+	fileExts, err := gnuplex.NewDB.GetFileExts()
+	if err != nil {
+		return err
+	}
 	fileExtHash := make(map[string]bool)
 	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
 	for _, mediaItem := range mediaItemsFromDB {
@@ -40,7 +39,7 @@ func (gnuplex *GNUPlex) ScanLib() error {
 		}
 	}
 	for _, ext := range fileExts {
-		fileExtHash[ext] = true
+		fileExtHash[ext.Extension] = true
 	}
 	for _, mediadirFromDB := range mediadirsFromDB {
 		dir, err := os.Stat(mediadirFromDB.Path)
@@ -56,13 +55,13 @@ func (gnuplex *GNUPlex) ScanLib() error {
 						return nil
 					} else if medialist[path] == nil {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return gnuplex.AddMedia(path, true)
+						return gnuplex.NewDB.AddMediaItem(path)
 					} else if medialist[path].inDB {
 						medialist[path].inFS = true
 						return nil
 					} else {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return gnuplex.AddMedia(path, true)
+						return gnuplex.NewDB.AddMediaItem(path)
 					}
 				} else {
 					return nil
@@ -84,34 +83,6 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	return reterr
 }
 
-func (gnuplex *GNUPlex) AddHist(mediafile string) error {
-	gnuplex.DB.Mu.Lock()
-	log.Println("Got AddHist lock")
-	defer gnuplex.DB.Mu.Unlock()
-	defer log.Println("Rem AddHist lock")
-	_, err := gnuplex.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
-	if err != nil {
-		log.Println("Error: AddHist err", err)
-	}
-	return err
-}
-
-func (gnuplex *GNUPlex) AddMedia(mediafile string, ignorelock bool) error {
-	if !ignorelock {
-		gnuplex.DB.Mu.Lock()
-		log.Println("Got AddMedia lock")
-		defer gnuplex.DB.Mu.Unlock()
-		defer log.Println("Rem AddMedia lock")
-	} else {
-		log.Println("Ignoring AddMedia lock")
-	}
-	_, err := gnuplex.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
-	if err != nil {
-		log.Println("Error: AddMedia err", err)
-	}
-	return err
-}
-
 func (gnuplex *GNUPlex) SetMediadirs(mediadirs []string) error {
 	gnuplex.DB.Mu.Lock()
 	log.Println("Got SetMediadirs lock")
@@ -126,37 +97,6 @@ func (gnuplex *GNUPlex) SetMediadirs(mediadirs []string) error {
 		}
 	}
 	return err
-}
-
-func (gnuplex *GNUPlex) GetFileExts(ignorelock bool) []string {
-	if !ignorelock {
-		gnuplex.DB.Mu.Lock()
-		log.Println("Got GetFileExts lock")
-		defer gnuplex.DB.Mu.Unlock()
-		defer log.Println("Rem GetFileExtslock")
-	} else {
-		log.Println("Ignoring GetFileExts lock")
-	}
-	rows, err := gnuplex.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
-	if err != nil {
-		log.Println("Error: GetFileExts: ", err)
-		return []string{}
-	}
-	res := make([]string, 10000)
-	str := ""
-	i := 0
-	for rows.Next() {
-		err = rows.Scan(&str)
-		if err != nil {
-			fmt.Println("Error: GetFileExts:", err)
-		} else if i < len(res) {
-			res[i] = str
-			i++
-		} else {
-			res = append(res, str)
-		}
-	}
-	return res[:i]
 }
 
 func (gnuplex *GNUPlex) SetFileExts(file_exts []string) error {

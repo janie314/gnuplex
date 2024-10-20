@@ -35,6 +35,12 @@ func (db *DB) UpdateLastPlayed(mediaItem *models.MediaItem) error {
 	return db.ORM.Model(mediaItem).Update("LastPlayed", time.Now().UTC().Format(time.RFC3339)).Error
 }
 
+func (db *DB) GetFileExts() ([]models.FileExtension, error) {
+	var exts []models.FileExtension
+	err := db.ORM.Find(&exts).Error
+	return exts, err
+}
+
 func (db *DB) GetMediaDirs() ([]models.MediaDir, error) {
 	var mediaDirs []models.MediaDir
 	err := db.ORM.Order("path").Find(&mediaDirs).Error
@@ -49,4 +55,8 @@ func (db *DB) GetMediaItems() ([]models.MediaItem, error) {
 
 func (db *DB) DeleteMediaItem(mediaItem *models.MediaItem) error {
 	return db.ORM.Delete(mediaItem).Error
+}
+
+func (db *DB) AddMediaItem(path string) error {
+	return db.ORM.Create(models.MediaItem{Path: path}).Error
 }
