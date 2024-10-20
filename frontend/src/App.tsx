@@ -32,7 +32,7 @@ function App() {
   useEffect(() => {
     API.getMedia().then((res) => setMedia(res));
     API.getMediaItems().then((res) => setMediaItems(res));
-    API.getLast25().then((res) => setLast25(res));
+    API.getLast25Played().then((res) => setLast25(res));
   }, [mediaToggle]);
 
   useEffect(() => {

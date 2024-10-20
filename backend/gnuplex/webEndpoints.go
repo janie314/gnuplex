@@ -1,7 +1,6 @@
 package gnuplex
 
 import (
-	"encoding/json"
 	"gnuplex-backend/consts"
 	"gnuplex-backend/models"
 	"log"
@@ -16,6 +15,8 @@ type MediaActionBody struct {
 }
 
 type MediaDirsBody []string
+
+type FileExtsBody []string
 
 // Initialize the web server's HTTP Endpoints
 func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
@@ -93,7 +94,6 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 			c.Status(http.StatusOK)
 		}
 	})
-
 	gnuplex.Router.GET("/api/file_exts", func(c *gin.Context) {
 		res, err := gnuplex.NewDB.GetFileExts()
 		if err != nil {
@@ -103,20 +103,16 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 		}
 	})
 	gnuplex.Router.POST("/api/file_exts", func(c *gin.Context) {
-		fileExtsJson := []byte(c.Query("file_exts"))
-		var fileExts []string
-		err := json.Unmarshal(fileExtsJson, &fileExts)
-		if err != nil {
-			c.String(http.StatusBadRequest, "bad mediadirs string")
+		body := FileExtsBody{}
+		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
+			c.String(http.StatusBadRequest, "bad body format")
+		} else if err = gnuplex.NewDB.SetFileExts(body); err != nil {
+			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {
-			err = gnuplex.SetFileExts(fileExts)
-			if err == nil {
-				c.JSON(http.StatusOK, "ok")
-			} else {
-				c.JSON(http.StatusInternalServerError, "Couldn't add the fileexts")
-			}
+			c.Status(http.StatusOK)
 		}
 	})
+
 	gnuplex.Router.GET("/api/pos", func(c *gin.Context) {
 		vol, err := gnuplex.MPV.GetPos()
 		if err != nil {
@@ -142,7 +138,14 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 		}
 	})
 	gnuplex.Router.GET("/api/last25", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gnuplex.Last25())
+		res, err := gnuplex.NewDB.GetLast25Played()
+		if err != nil {
+			log.Println(err)
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
+
 	})
 	gnuplex.Router.GET("/api/mediaitems", func(c *gin.Context) {
 		res, err := gnuplex.NewDB.GetMediaItems()

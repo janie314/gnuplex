@@ -42,6 +42,17 @@ func (db *DB) GetFileExts() ([]models.FileExtension, error) {
 	return exts, err
 }
 
+func (db *DB) SetFileExts(mediadirs []string) error {
+	err := db.ORM.Where("1 = 1").Delete(&models.FileExtension{}).Error
+	if err != nil {
+		return err
+	}
+	for _, dir := range mediadirs {
+		db.ORM.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.FileExtension{Extension: dir})
+	}
+	return err
+}
+
 func (db *DB) GetMediaDirs() ([]models.MediaDir, error) {
 	var mediaDirs []models.MediaDir
 	err := db.ORM.Order("path").Find(&mediaDirs).Error
@@ -57,6 +68,12 @@ func (db *DB) SetMediadirs(mediadirs []string) error {
 		db.ORM.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.MediaDir{Path: dir})
 	}
 	return err
+}
+
+func (db *DB) GetLast25Played() ([]models.MediaItem, error) {
+	var mediaItems []models.MediaItem
+	err := db.ORM.Order("last_played desc").Limit(25).Where("last_played != ''").Find(&mediaItems).Error
+	return mediaItems, err
 }
 
 func (db *DB) GetMediaItems() ([]models.MediaItem, error) {

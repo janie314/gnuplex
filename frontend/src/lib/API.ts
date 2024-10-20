@@ -125,10 +125,13 @@ class API {
   }
 
   public static async setFileExts(file_exts: string[]) {
-    return await fetch(
-      `/api/file_exts?file_exts=${encodeURI(JSON.stringify(file_exts))}`,
-      { method: "POST" },
-    );
+    return await fetch("/api/file_exts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(file_exts),
+    });
   }
 
   public static async getMediaItems() {
@@ -141,7 +144,7 @@ class API {
     return await fetch("/api/scanlib", { method: "POST" });
   }
 
-  public static async getLast25() {
+  public static async getLast25Played() {
     return (await fetch("/api/last25").then((res) =>
       res.json(),
     )) as MediaItem[];
