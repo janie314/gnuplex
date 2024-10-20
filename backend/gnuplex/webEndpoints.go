@@ -82,7 +82,12 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 		}
 	})
 	gnuplex.Router.GET("/api/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gnuplex.GetMediadirs(false))
+		res, err := gnuplex.NewDB.GetMediaDirs()
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
 	})
 	gnuplex.Router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))
@@ -144,12 +149,21 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
 	gnuplex.Router.GET("/api/last25", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gnuplex.Last25())
 	})
-	gnuplex.Router.GET("/api/medialist", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gnuplex.GetMedialib(false))
+	gnuplex.Router.GET("/api/mediaitems", func(c *gin.Context) {
+		res, err := gnuplex.NewDB.GetMediaItems()
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
 	})
-	gnuplex.Router.POST("/api/medialist", func(c *gin.Context) {
-		gnuplex.ScanLib()
-		c.String(http.StatusOK, "OK")
+	gnuplex.Router.POST("/api/scanlib", func(c *gin.Context) {
+		err := gnuplex.ScanLib()
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.Status(http.StatusOK)
+		}
 	})
 
 }

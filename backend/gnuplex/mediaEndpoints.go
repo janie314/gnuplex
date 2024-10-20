@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 type dBFSDiff struct {
@@ -23,13 +22,19 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	defer gnuplex.DB.Mu.Unlock()
 	defer log.Println("Rem ScanLib lock")
 	var reterr error
-	mediadirsFromDB := gnuplex.GetMediadirs(true)
-	medialistFromDB := gnuplex.GetMedialib(true)
+	mediadirsFromDB, err := gnuplex.NewDB.GetMediaDirs()
+	if err != nil {
+		return err
+	}
+	mediaItemsFromDB, err := gnuplex.NewDB.GetMediaItems()
+	if err != nil {
+		return err
+	}
 	fileExts := gnuplex.GetFileExts(true)
 	fileExtHash := make(map[string]bool)
 	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
-	for _, path := range medialistFromDB {
-		medialist[path] = &dBFSDiff{
+	for _, mediaItem := range mediaItemsFromDB {
+		medialist[mediaItem.Path] = &dBFSDiff{
 			inDB: true,
 			inFS: false,
 		}
@@ -38,9 +43,9 @@ func (gnuplex *GNUPlex) ScanLib() error {
 		fileExtHash[ext] = true
 	}
 	for _, mediadirFromDB := range mediadirsFromDB {
-		dir, err := os.Stat(mediadirFromDB)
+		dir, err := os.Stat(mediadirFromDB.Path)
 		if (err == nil) && dir.IsDir() {
-			err = filepath.WalkDir(mediadirFromDB, func(path string, entry fs.DirEntry, err error) error {
+			err = filepath.WalkDir(mediadirFromDB.Path, func(path string, entry fs.DirEntry, err error) error {
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadirFromDB)
 					return err
@@ -71,9 +76,9 @@ func (gnuplex *GNUPlex) ScanLib() error {
 			reterr = err
 		}
 	}
-	for _, path := range medialistFromDB {
-		if !medialist[path].inFS {
-			gnuplex.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
+	for _, mediaItem := range mediaItemsFromDB {
+		if !medialist[mediaItem.Path].inFS {
+			gnuplex.NewDB.DeleteMediaItem(&mediaItem)
 		}
 	}
 	return reterr
@@ -105,37 +110,6 @@ func (gnuplex *GNUPlex) AddMedia(mediafile string, ignorelock bool) error {
 		log.Println("Error: AddMedia err", err)
 	}
 	return err
-}
-
-func (gnuplex *GNUPlex) GetMediadirs(ignorelock bool) []string {
-	if !ignorelock {
-		gnuplex.DB.Mu.Lock()
-		log.Println("Got GetMediadirs lock")
-		defer gnuplex.DB.Mu.Unlock()
-		defer log.Println("Rem GetMediadirs lock")
-	} else {
-		log.Println("Ignoring GetMediadirs lock")
-	}
-	rows, err := gnuplex.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
-	if err != nil {
-		log.Println("Error: GetMediadirs: ", err)
-		return []string{}
-	}
-	res := make([]string, 10000)
-	str := ""
-	i := 0
-	for rows.Next() {
-		err = rows.Scan(&str)
-		if err != nil {
-			fmt.Println("Error: GetMediadirs:", err)
-		} else if i < len(res) {
-			res[i] = str
-			i++
-		} else {
-			res = append(res, str)
-		}
-	}
-	return res[:i]
 }
 
 func (gnuplex *GNUPlex) SetMediadirs(mediadirs []string) error {
@@ -201,37 +175,6 @@ func (gnuplex *GNUPlex) SetFileExts(file_exts []string) error {
 	return err
 }
 
-func (gnuplex *GNUPlex) GetMedialib(ignorelock bool) []string {
-	if !ignorelock {
-		gnuplex.DB.Mu.Lock()
-		log.Println("Got GetMedialib lock")
-		defer gnuplex.DB.Mu.Unlock()
-		defer log.Println("Rem GetMedialib lock")
-	} else {
-		log.Println("Ignoring GetMedialib lock")
-	}
-	rows, err := gnuplex.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
-	if err != nil {
-		log.Println("Error: GetMedialib: ", err)
-		return []string{}
-	}
-	res := make([]string, 131072)
-	str := ""
-	i := 0
-	for rows.Next() {
-		err = rows.Scan(&str)
-		if err != nil {
-			fmt.Println("Error: GetMedialib:", err)
-		} else if i < len(res) {
-			res[i] = str
-			i++
-		} else {
-			res = append(res, str)
-		}
-	}
-	return res[:i]
-}
-
 func (gnuplex *GNUPlex) Last25() []string {
 	gnuplex.DB.Mu.Lock()
 	log.Println("Got Last25 lock")
@@ -268,7 +211,7 @@ func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
 
 func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	var mediaItem *models.MediaItem
-	if err := gnuplex.NewDB.First(&mediaItem, id).Error; err != nil {
+	if err := gnuplex.NewDB.ORM.First(&mediaItem, id).Error; err != nil {
 		return err
 	}
 	if mediaItem != nil {
@@ -277,7 +220,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
 		return err
 	}
-	if err := gnuplex.NewDB.Model(&mediaItem).Update("LastPlayed", time.Now().UTC().Format(time.RFC3339)).Error; err != nil {
+	if err := gnuplex.NewDB.UpdateLastPlayed(mediaItem); err != nil {
 		return err
 	}
 	return nil
@@ -285,7 +228,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 
 func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
-	gnuplex.NewDB.First(&mediaItem, id)
+	gnuplex.NewDB.ORM.First(&mediaItem, id)
 	if mediaItem != nil {
 		gnuplex.PlayQueue = append(gnuplex.PlayQueue, mediaItem)
 	}
