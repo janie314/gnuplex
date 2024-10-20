@@ -3,3 +3,4 @@ tmp/*
 backend/gnuplex-backend
 backend/public/*
 backend/gnuplex.sqlite3node_modules
+node_modules
