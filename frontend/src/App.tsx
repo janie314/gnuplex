@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API } from "./lib/API";
+import { API, type MediaItem } from "./lib/API";
 import "./App.css";
 import { CRUDPopup } from "./components/CRUDPopup";
 import { MediaControls } from "./components/MediaControls";
@@ -19,27 +19,28 @@ function App() {
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
-  const [media, setMedia] = useState("");
-  const [mediafiles, setMediafiles] = useState<string[]>([]);
-  const [last25, setLast25] = useState<string[]>([]);
+  const m: MediaItem = { ID: -1, Path: "", LastPlayed: "" };
+  const [media, setMedia] = useState<MediaItem>(m);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [last25, setLast25] = useState<MediaItem[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
 
   useEffect(() => {
-    API.getOriginVersion().then((version: string) => setVersion(version));
+    API.getVersion().then((version: string) => setVersion(version));
   }, []);
 
   useEffect(() => {
-    API.getOriginMedia().then((res: string) => setMedia(res));
-    API.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
-    API.getOriginLast25().then((res: string[]) => setLast25(res));
+    API.getMedia().then((res) => setMedia(res));
+    API.getMediaItems().then((res) => setMediaItems(res));
+    API.getLast25().then((res) => setLast25(res));
   }, [mediaToggle]);
 
   useEffect(() => {
-    API.getOriginPos().then((res: number) => {
+    API.getPos().then((res: number) => {
       setPos(res);
       setStartPos(res);
     });
-    API.getOriginTimeRemaining().then((res: number) => setTimeRemaining(res));
+    API.getTimeRemaining().then((res: number) => setTimeRemaining(res));
     API.getVol().then((res: number) => setVol(res));
   }, [media, volPosToggle]);
 
@@ -70,13 +71,17 @@ function App() {
 
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1/100">
           <Medialist
-            medialist={[media]}
+            mediaItems={[media]}
             subtitle="Now Playing"
             setMedia={setMedia}
           />
-          <Medialist medialist={last25} subtitle="Recent" setMedia={setMedia} />
           <Medialist
-            medialist={mediafiles}
+            mediaItems={last25}
+            subtitle="Recent"
+            setMedia={setMedia}
+          />
+          <Medialist
+            mediaItems={mediaItems}
             subtitle="Library"
             setMedia={setMedia}
           />

@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"gnuplex-backend/db"
-	"gnuplex-backend/liteDB"
 	"gnuplex-backend/models"
 	"gnuplex-backend/mpv"
 
@@ -13,7 +12,6 @@ import (
 )
 
 type GNUPlex struct {
-	DB        *liteDB.LiteDB
 	NewDB     *db.DB
 	Router    *gin.Engine
 	PlayQueue [](*models.MediaItem)
@@ -36,14 +34,6 @@ func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath s
 		return nil, err
 	}
 	gnuplex.MPV = mpv
-	/*
-	 * old sqlite DB
-	 */
-	oldDb, err := liteDB.Init(verbose)
-	if err != nil {
-		return nil, err
-	}
-	gnuplex.DB = oldDb
 	/*
 	 * new sqlite DB
 	 */

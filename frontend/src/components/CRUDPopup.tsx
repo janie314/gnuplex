@@ -15,10 +15,10 @@ function CRUDPopup(props: {
   const [saveFileExtsWorking, setSaveFileExtsWorking] = useState(false);
 
   useEffect(() => {
-    API.getOriginMediadirs().then((res: string[]) => {
-      setMediadirs(res.join("\n"));
+    API.getMediadirs().then((res) => {
+      setMediadirs(res.map((item) => item.Path).join("\n"));
     });
-    API.getOriginFileExts().then((res: string[]) => {
+    API.getFileExts().then((res: string[]) => {
       setFileExts(res.join("\n"));
     });
   }, [props.visible]);
@@ -62,12 +62,8 @@ function CRUDPopup(props: {
                 .split("\n")
                 .filter((line) => !/^\s*$/.test(line))
                 .map((line) => line.trim());
-              API.setOriginMediadirs(arr1).then(() =>
-                setSaveMediadirsWorking(false),
-              );
-              API.setOriginFileExts(arr2).then(() =>
-                setSaveFileExtsWorking(false),
-              );
+              API.setMediadirs(arr1).then(() => setSaveMediadirsWorking(false));
+              API.setFileExts(arr2).then(() => setSaveFileExtsWorking(false));
             }}
           />
           <WorkingSpinnerTSX
@@ -81,9 +77,7 @@ function CRUDPopup(props: {
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
-              API.refreshOriginMediafiles().then(() =>
-                setRefreshLibraryWorking(false),
-              );
+              API.scanLib().then(() => setRefreshLibraryWorking(false));
             }}
           />
           <WorkingSpinnerTSX visible={refreshLibraryWorking} />

@@ -54,8 +54,8 @@ function MediaControls(props: {
             className="range range-xs"
             // @ts-ignore
             onChange={(e) => props.setPos(e.target.value)}
-            onMouseUp={() => API.setOriginPos(props.pos)}
-            onTouchCancel={() => API.setOriginPos(props.pos)}
+            onMouseUp={() => API.setPos(props.pos)}
+            onTouchCancel={() => API.setPos(props.pos)}
           />
           <span className="mx-1">{timeFormat(props.pos)}</span>
         </div>
@@ -70,8 +70,8 @@ function MediaControls(props: {
             className="range range-xs"
             // @ts-ignore
             onChange={(e) => props.setVol(e.target.value)}
-            onMouseUp={() => API.setOriginVol(props.vol)}
-            onTouchCancel={() => API.setOriginVol(props.vol)}
+            onMouseUp={() => API.setVol(props.vol)}
+            onTouchCancel={() => API.setVol(props.vol)}
           />
           <span className="mx-1">{props.vol}</span>
         </div>
@@ -91,7 +91,7 @@ function MediaControls(props: {
           value="Cast URL"
           onClick={() => {
             const url = window.prompt("URL to cast:", "") || "";
-            API.setOriginMedia(url);
+            API.castMedia(url);
           }}
         />
       </div>

@@ -2,7 +2,6 @@ package gnuplex
 
 import (
 	"errors"
-	"fmt"
 	"gnuplex-backend/models"
 	"io/fs"
 	"log"
@@ -46,7 +45,7 @@ func (gnuplex *GNUPlex) ScanLib() error {
 		if (err == nil) && dir.IsDir() {
 			err = filepath.WalkDir(mediadirFromDB.Path, func(path string, entry fs.DirEntry, err error) error {
 				if err != nil {
-					fmt.Fprintln(os.Stderr, "Walkdir prob: ", mediadirFromDB)
+					log.Println("Walkdir prob: ", mediadirFromDB)
 					return err
 				} else if !entry.IsDir() {
 					pathLC := strings.ToLower(path)
@@ -83,63 +82,14 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	return reterr
 }
 
-func (gnuplex *GNUPlex) SetMediadirs(mediadirs []string) error {
-	gnuplex.DB.Mu.Lock()
-	log.Println("Got SetMediadirs lock")
-	defer gnuplex.DB.Mu.Unlock()
-	defer log.Println("Rem SetMediadirs lock")
-	var err error
-	gnuplex.DB.SqliteConn.Exec("delete from mediadirs;")
-	for _, mediafile := range mediadirs {
-		_, err := gnuplex.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
-		if err != nil {
-			log.Println("Error: AddMediadir", err)
-		}
-	}
-	return err
-}
-
 func (gnuplex *GNUPlex) SetFileExts(file_exts []string) error {
-	gnuplex.DB.Mu.Lock()
-	log.Println("Got SetFileExtslock")
-	defer gnuplex.DB.Mu.Unlock()
-	defer log.Println("Rem SetFileExtslock")
-	var err error
-	gnuplex.DB.SqliteConn.Exec("delete from file_exts;")
-	for _, ext := range file_exts {
-		_, err := gnuplex.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
-		if err != nil {
-			log.Println("Error: SetFileExts", err)
-		}
-	}
-	return err
+	// TODO
+	return nil
 }
 
 func (gnuplex *GNUPlex) Last25() []string {
-	gnuplex.DB.Mu.Lock()
-	log.Println("Got Last25 lock")
-	defer gnuplex.DB.Mu.Unlock()
-	defer fmt.Println("Rem Last25 lock")
-	rows, err := gnuplex.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return []string{}
-	}
-	res := make([]string, 16384)
-	str := ""
-	i := 0
-	for rows.Next() {
-		err = rows.Scan(&str)
-		if err != nil {
-			fmt.Println("Error: Last25:", err)
-		} else if i < len(res) {
-			res[i] = str
-			i++
-		} else {
-			res = append(res, str)
-		}
-	}
-	return res[:i]
+	// TODO return nil
+	return nil
 }
 
 func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {

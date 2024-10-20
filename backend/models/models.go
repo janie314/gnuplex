@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type MediaItem struct {
 	gorm.Model
-	Path       string `gorm:"index"`
+	Path       string `gorm:"uniqueIndex"`
 	LastPlayed string `gorm:"index:,sort:desc"`
 }
 
@@ -12,7 +12,7 @@ type MediaItemId uint
 
 type MediaDir struct {
 	gorm.Model
-	Path        string `gorm:"index"`
+	Path        string `gorm:"uniqueIndex"`
 	LastScanned string `gorm:"index:,sort:desc"`
 }
 

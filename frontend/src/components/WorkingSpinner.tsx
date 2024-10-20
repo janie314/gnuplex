@@ -1,8 +1,7 @@
 function WorkingSpinnerTSX(props: { visible: boolean }) {
-  if (props.visible) {
-    return <span style={{ font: "16px monospace;", margin: "2px" }}>↺</span>;
-  }
-  return <span style={{ font: "16px monospace;", margin: "2px" }} />;
+  return (
+    <span className="font-mono text-base m-2">{props.visible ? "↺" : " "}</span>
+  );
 }
 
 export { WorkingSpinnerTSX };
