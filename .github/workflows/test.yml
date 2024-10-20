@@ -7,15 +7,23 @@ jobs:
     steps:
     - name: check out this repo
       uses: actions/checkout@v4
-    - uses: ruby/setup-ruby@v1
+    - name: setup ruby
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.3'
+    - name: setup ruby
+      uses: oven-sh/setup-bun@v2
     - name: setup go
       uses: actions/setup-go@v5
       with:
         go-version: '^1.23.2'
     - name: compile the go backend
-      run: go build -C backend .
+      run: |
+        go build -C backend .
     - name: check go formatting
       run: |
         gofmt -s -d . | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
+    - name: lint frontend code
+      run: |
+        bun i
+        bun run biome ci

@@ -1,6 +1,6 @@
-import { API } from "../lib/API";
-import play from "../assets/play.svg";
 import pause from "../assets/pause.svg";
+import play from "../assets/play.svg";
+import { API } from "../lib/API";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;

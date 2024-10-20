@@ -19,9 +19,9 @@ class API {
       .catch((e) => {
         console.error("failed to get pos", e);
         return 0;
-      })
+      });
   }
-  
+
   public static async getOriginTimeRemaining() {
     return await fetch("/api/timeremaining")
       .then((res) => res.json())
@@ -33,7 +33,6 @@ class API {
         return 0;
       });
   }
-
 
   public static async getOriginVersion() {
     return (await fetch("/api/version").then((res) => res.json())) as string;
@@ -51,7 +50,7 @@ class API {
       .catch((e) => {
         console.error("failed to get vol", e);
         return 0;
-      })
+      });
   }
 
   public static async setOriginVol(vol: number) {
