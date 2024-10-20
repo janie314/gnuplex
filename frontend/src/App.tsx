@@ -36,6 +36,7 @@ function App() {
 
   useEffect(() => {
     APICall.getOriginPos().then((res: number) => {
+      console.log("VOLLY", res);
       setPos(res);
       setStartPos(res);
     });

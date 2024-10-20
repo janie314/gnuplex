@@ -13,16 +13,13 @@ class APICall {
     return await fetch("/api/pause", { method: "POST" });
   }
 
-  public static async getOriginPos() {
+  public static async getOriginPos(): Promise<number> {
     return await fetch("/api/pos")
       .then((res) => res.json())
-      .then((res: IMPVRes) => {
-        if (res.data !== undefined) {
-          // @ts-ignore
-          return Math.floor(res.data);
-        }
+      .catch((e) => {
+        console.error("failed to get pos", e);
         return 0;
-      });
+      })
   }
   
   public static async getOriginTimeRemaining() {
@@ -48,17 +45,15 @@ class APICall {
     );
   }
 
-  public static async getOriginVol() {
+  public static async getOriginVol(): Promise<number> {
     return await fetch("/api/vol")
       .then((res) => res.json())
-      .then((res: IMPVRes) => {
-        if (res.data !== undefined) {
-          // @ts-ignore
-          return Math.floor(res.data);
-        }
+      .catch((e) => {
+        console.error("failed to get vol", e);
         return 0;
-      });
+      })
   }
+
   public static async setOriginVol(vol: number) {
     return await fetch(`/api/vol?vol=${vol}`, { method: "POST" }).then((res) =>
       res.json(),
