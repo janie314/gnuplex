@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { APICall } from "../lib/APICall";
+import { API } from "../lib/API";
 import "./CRUDPopup.css";
 import { WorkingSpinnerTSX } from "./WorkingSpinner";
 
@@ -15,10 +15,10 @@ function CRUDPopup(props: {
   const [saveFileExtsWorking, setSaveFileExtsWorking] = useState(false);
 
   useEffect(() => {
-    APICall.getOriginMediadirs().then((res: string[]) => {
+    API.getOriginMediadirs().then((res: string[]) => {
       setMediadirs(res.join("\n"));
     });
-    APICall.getOriginFileExts().then((res: string[]) => {
+    API.getOriginFileExts().then((res: string[]) => {
       setFileExts(res.join("\n"));
     });
   }, [props.visible]);
@@ -62,10 +62,10 @@ function CRUDPopup(props: {
                 .split("\n")
                 .filter((line) => !/^\s*$/.test(line))
                 .map((line) => line.trim());
-              APICall.setOriginMediadirs(arr1).then(() =>
+              API.setOriginMediadirs(arr1).then(() =>
                 setSaveMediadirsWorking(false),
               );
-              APICall.setOriginFileExts(arr2).then(() =>
+              API.setOriginFileExts(arr2).then(() =>
                 setSaveFileExtsWorking(false),
               );
             }}
@@ -81,7 +81,7 @@ function CRUDPopup(props: {
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
-              APICall.refreshOriginMediafiles().then(() =>
+              API.refreshOriginMediafiles().then(() =>
                 setRefreshLibraryWorking(false),
               );
             }}

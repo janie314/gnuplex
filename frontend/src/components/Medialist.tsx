@@ -1,4 +1,4 @@
-import { APICall } from "../lib/APICall";
+import { API } from "../lib/API";
 
 function Medialist(props: {
   medialist: string[];
@@ -14,8 +14,8 @@ function Medialist(props: {
           className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-normal break-words"
           key={mediafile}
           onClick={(e) => {
-            APICall.setOriginMedia(mediafile)
-              .then(() => APICall.sleep(2000))
+            API.setOriginMedia(mediafile)
+              .then(() => API.sleep(2000))
               .then(() => {
                 props.setMedia(mediafile);
               });

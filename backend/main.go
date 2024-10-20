@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"gnuplex-backend/consts"
-	"gnuplex-backend/server"
+	server "gnuplex-backend/gnuplex"
 	"log"
 	"sync"
 

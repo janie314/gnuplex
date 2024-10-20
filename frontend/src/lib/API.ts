@@ -4,7 +4,7 @@ interface IMPVRes {
   error: string;
 }
 
-class APICall {
+class API {
   public static async play() {
     return await fetch("/api/play", { method: "POST" });
   }
@@ -45,7 +45,7 @@ class APICall {
     );
   }
 
-  public static async getOriginVol(): Promise<number> {
+  public static async getVol(): Promise<number> {
     return await fetch("/api/vol")
       .then((res) => res.json())
       .catch((e) => {
@@ -128,4 +128,4 @@ class APICall {
   }
 }
 
-export { APICall };
+export { API };

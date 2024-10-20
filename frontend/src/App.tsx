@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { APICall } from "./lib/APICall";
+import { API } from "./lib/API";
 import "./App.css";
 import { CRUDPopup } from "./components/CRUDPopup";
 import { MediaControls } from "./components/MediaControls";
@@ -25,25 +25,22 @@ function App() {
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
 
   useEffect(() => {
-    APICall.getOriginVersion().then((version: string) => setVersion(version));
+    API.getOriginVersion().then((version: string) => setVersion(version));
   }, []);
 
   useEffect(() => {
-    APICall.getOriginMedia().then((res: string) => setMedia(res));
-    APICall.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
-    APICall.getOriginLast25().then((res: string[]) => setLast25(res));
+    API.getOriginMedia().then((res: string) => setMedia(res));
+    API.getOriginMediafiles().then((res: string[]) => setMediafiles(res));
+    API.getOriginLast25().then((res: string[]) => setLast25(res));
   }, [mediaToggle]);
 
   useEffect(() => {
-    APICall.getOriginPos().then((res: number) => {
-      console.log("VOLLY", res);
+    API.getOriginPos().then((res: number) => {
       setPos(res);
       setStartPos(res);
     });
-    APICall.getOriginTimeRemaining().then((res: number) =>
-      setTimeRemaining(res),
-    );
-    APICall.getOriginVol().then((res: number) => setVol(res));
+    API.getOriginTimeRemaining().then((res: number) => setTimeRemaining(res));
+    API.getVol().then((res: number) => setVol(res));
   }, [media, volPosToggle]);
 
   return (

@@ -1,4 +1,4 @@
-import { APICall } from "../lib/APICall";
+import { API } from "../lib/API";
 import play from "../assets/play.svg";
 import pause from "../assets/pause.svg";
 
@@ -21,8 +21,8 @@ function MediaControls(props: {
           type="button"
           className="p-2 w-8 border border-solid border-black hover:bg-cyan-300"
           onClick={() =>
-            APICall.play()
-              .then(() => APICall.sleep(2000))
+            API.play()
+              .then(() => API.sleep(2000))
               .then(() => props.setVolPosToggle(!props.volPosToggle))
           }
         >
@@ -34,8 +34,8 @@ function MediaControls(props: {
           type="button"
           className="p-2 w-8 border border-solid border-black hover:bg-cyan-300"
           onClick={() =>
-            APICall.pause()
-              .then(() => APICall.sleep(2000))
+            API.pause()
+              .then(() => API.sleep(2000))
               .then(() => props.setVolPosToggle(!props.volPosToggle))
           }
         >
@@ -54,8 +54,8 @@ function MediaControls(props: {
             className="range range-xs"
             // @ts-ignore
             onChange={(e) => props.setPos(e.target.value)}
-            onMouseUp={() => APICall.setOriginPos(props.pos)}
-            onTouchCancel={() => APICall.setOriginPos(props.pos)}
+            onMouseUp={() => API.setOriginPos(props.pos)}
+            onTouchCancel={() => API.setOriginPos(props.pos)}
           />
           <span className="mx-1">{timeFormat(props.pos)}</span>
         </div>
@@ -70,8 +70,8 @@ function MediaControls(props: {
             className="range range-xs"
             // @ts-ignore
             onChange={(e) => props.setVol(e.target.value)}
-            onMouseUp={() => APICall.setOriginVol(props.vol)}
-            onTouchCancel={() => APICall.setOriginVol(props.vol)}
+            onMouseUp={() => API.setOriginVol(props.vol)}
+            onTouchCancel={() => API.setOriginVol(props.vol)}
           />
           <span className="mx-1">{props.vol}</span>
         </div>
@@ -91,7 +91,7 @@ function MediaControls(props: {
           value="Cast URL"
           onClick={() => {
             const url = window.prompt("URL to cast:", "") || "";
-            APICall.setOriginMedia(url);
+            API.setOriginMedia(url);
           }}
         />
       </div>

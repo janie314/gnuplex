@@ -16,15 +16,15 @@ type dBFSDiff struct {
 	inFS bool
 }
 
-func (server *Server) ScanLib() error {
-	server.DB.Mu.Lock()
+func (gnuplex *GNUPlex) ScanLib() error {
+	gnuplex.DB.Mu.Lock()
 	log.Println("Got ScanLib lock")
-	defer server.DB.Mu.Unlock()
+	defer gnuplex.DB.Mu.Unlock()
 	defer log.Println("Rem ScanLib lock")
 	var reterr error
-	mediadirsFromDB := server.GetMediadirs(true)
-	medialistFromDB := server.GetMedialib(true)
-	fileExts := server.GetFileExts(true)
+	mediadirsFromDB := gnuplex.GetMediadirs(true)
+	medialistFromDB := gnuplex.GetMedialib(true)
+	fileExts := gnuplex.GetFileExts(true)
 	fileExtHash := make(map[string]bool)
 	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
 	for _, path := range medialistFromDB {
@@ -50,13 +50,13 @@ func (server *Server) ScanLib() error {
 						return nil
 					} else if medialist[path] == nil {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return server.AddMedia(path, true)
+						return gnuplex.AddMedia(path, true)
 					} else if medialist[path].inDB {
 						medialist[path].inFS = true
 						return nil
 					} else {
 						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return server.AddMedia(path, true)
+						return gnuplex.AddMedia(path, true)
 					}
 				} else {
 					return nil
@@ -72,50 +72,50 @@ func (server *Server) ScanLib() error {
 	}
 	for _, path := range medialistFromDB {
 		if !medialist[path].inFS {
-			server.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
+			gnuplex.DB.SqliteConn.Exec(`delete from medialist where filepath = ?;`, path)
 		}
 	}
 	return reterr
 }
 
-func (server *Server) AddHist(mediafile string) error {
-	server.DB.Mu.Lock()
+func (gnuplex *GNUPlex) AddHist(mediafile string) error {
+	gnuplex.DB.Mu.Lock()
 	log.Println("Got AddHist lock")
-	defer server.DB.Mu.Unlock()
+	defer gnuplex.DB.Mu.Unlock()
 	defer log.Println("Rem AddHist lock")
-	_, err := server.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
+	_, err := gnuplex.DB.SqliteConn.Exec("insert into history (mediafile) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddHist err", err)
 	}
 	return err
 }
 
-func (server *Server) AddMedia(mediafile string, ignorelock bool) error {
+func (gnuplex *GNUPlex) AddMedia(mediafile string, ignorelock bool) error {
 	if !ignorelock {
-		server.DB.Mu.Lock()
+		gnuplex.DB.Mu.Lock()
 		log.Println("Got AddMedia lock")
-		defer server.DB.Mu.Unlock()
+		defer gnuplex.DB.Mu.Unlock()
 		defer log.Println("Rem AddMedia lock")
 	} else {
 		log.Println("Ignoring AddMedia lock")
 	}
-	_, err := server.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
+	_, err := gnuplex.DB.SqliteConn.Exec("insert or replace into medialist (filepath) values (?);", mediafile)
 	if err != nil {
 		log.Println("Error: AddMedia err", err)
 	}
 	return err
 }
 
-func (server *Server) GetMediadirs(ignorelock bool) []string {
+func (gnuplex *GNUPlex) GetMediadirs(ignorelock bool) []string {
 	if !ignorelock {
-		server.DB.Mu.Lock()
+		gnuplex.DB.Mu.Lock()
 		log.Println("Got GetMediadirs lock")
-		defer server.DB.Mu.Unlock()
+		defer gnuplex.DB.Mu.Unlock()
 		defer log.Println("Rem GetMediadirs lock")
 	} else {
 		log.Println("Ignoring GetMediadirs lock")
 	}
-	rows, err := server.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
+	rows, err := gnuplex.DB.SqliteConn.Query("select filepath from mediadirs order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMediadirs: ", err)
 		return []string{}
@@ -137,15 +137,15 @@ func (server *Server) GetMediadirs(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (server *Server) SetMediadirs(mediadirs []string) error {
-	server.DB.Mu.Lock()
+func (gnuplex *GNUPlex) SetMediadirs(mediadirs []string) error {
+	gnuplex.DB.Mu.Lock()
 	log.Println("Got SetMediadirs lock")
-	defer server.DB.Mu.Unlock()
+	defer gnuplex.DB.Mu.Unlock()
 	defer log.Println("Rem SetMediadirs lock")
 	var err error
-	server.DB.SqliteConn.Exec("delete from mediadirs;")
+	gnuplex.DB.SqliteConn.Exec("delete from mediadirs;")
 	for _, mediafile := range mediadirs {
-		_, err := server.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
+		_, err := gnuplex.DB.SqliteConn.Exec("insert or ignore into mediadirs (filepath) values (?);", mediafile)
 		if err != nil {
 			log.Println("Error: AddMediadir", err)
 		}
@@ -153,16 +153,16 @@ func (server *Server) SetMediadirs(mediadirs []string) error {
 	return err
 }
 
-func (server *Server) GetFileExts(ignorelock bool) []string {
+func (gnuplex *GNUPlex) GetFileExts(ignorelock bool) []string {
 	if !ignorelock {
-		server.DB.Mu.Lock()
+		gnuplex.DB.Mu.Lock()
 		log.Println("Got GetFileExts lock")
-		defer server.DB.Mu.Unlock()
+		defer gnuplex.DB.Mu.Unlock()
 		defer log.Println("Rem GetFileExtslock")
 	} else {
 		log.Println("Ignoring GetFileExts lock")
 	}
-	rows, err := server.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
+	rows, err := gnuplex.DB.SqliteConn.Query("select (ext) from file_exts order by ext ;")
 	if err != nil {
 		log.Println("Error: GetFileExts: ", err)
 		return []string{}
@@ -184,15 +184,15 @@ func (server *Server) GetFileExts(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (server *Server) SetFileExts(file_exts []string) error {
-	server.DB.Mu.Lock()
+func (gnuplex *GNUPlex) SetFileExts(file_exts []string) error {
+	gnuplex.DB.Mu.Lock()
 	log.Println("Got SetFileExtslock")
-	defer server.DB.Mu.Unlock()
+	defer gnuplex.DB.Mu.Unlock()
 	defer log.Println("Rem SetFileExtslock")
 	var err error
-	server.DB.SqliteConn.Exec("delete from file_exts;")
+	gnuplex.DB.SqliteConn.Exec("delete from file_exts;")
 	for _, ext := range file_exts {
-		_, err := server.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
+		_, err := gnuplex.DB.SqliteConn.Exec("insert or ignore into file_exts (ext, exclude) values (?, 1);", strings.ToLower(ext))
 		if err != nil {
 			log.Println("Error: SetFileExts", err)
 		}
@@ -200,16 +200,16 @@ func (server *Server) SetFileExts(file_exts []string) error {
 	return err
 }
 
-func (server *Server) GetMedialib(ignorelock bool) []string {
+func (gnuplex *GNUPlex) GetMedialib(ignorelock bool) []string {
 	if !ignorelock {
-		server.DB.Mu.Lock()
+		gnuplex.DB.Mu.Lock()
 		log.Println("Got GetMedialib lock")
-		defer server.DB.Mu.Unlock()
+		defer gnuplex.DB.Mu.Unlock()
 		defer log.Println("Rem GetMedialib lock")
 	} else {
 		log.Println("Ignoring GetMedialib lock")
 	}
-	rows, err := server.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
+	rows, err := gnuplex.DB.SqliteConn.Query("select filepath from medialist order by filepath;")
 	if err != nil {
 		log.Println("Error: GetMedialib: ", err)
 		return []string{}
@@ -231,12 +231,12 @@ func (server *Server) GetMedialib(ignorelock bool) []string {
 	return res[:i]
 }
 
-func (server *Server) Last25() []string {
-	server.DB.Mu.Lock()
+func (gnuplex *GNUPlex) Last25() []string {
+	gnuplex.DB.Mu.Lock()
 	log.Println("Got Last25 lock")
-	defer server.DB.Mu.Unlock()
+	defer gnuplex.DB.Mu.Unlock()
 	defer fmt.Println("Rem Last25 lock")
-	rows, err := server.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
+	rows, err := gnuplex.DB.SqliteConn.Query("select distinct mediafile from history order by id desc limit 25;")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return []string{}
@@ -258,18 +258,18 @@ func (server *Server) Last25() []string {
 	return res[:i]
 }
 
-func (server *Server) NowPlaying() (*models.MediaItem, error) {
-	if len(server.PlayQueue) == 0 {
+func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
+	if len(gnuplex.PlayQueue) == 0 {
 		return nil, errors.New("PlayQueue is empty at the moment")
 	}
-	return server.PlayQueue[0], nil
+	return gnuplex.PlayQueue[0], nil
 }
 
-func (server *Server) Queue(id models.MediaItemId) *models.MediaItem {
+func (gnuplex *GNUPlex) Queue(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
-	server.NewDB.First(&mediaItem, id)
+	gnuplex.NewDB.First(&mediaItem, id)
 	if mediaItem != nil {
-		server.PlayQueue = append(server.PlayQueue, mediaItem)
+		gnuplex.PlayQueue = append(gnuplex.PlayQueue, mediaItem)
 	}
 	return mediaItem
 }

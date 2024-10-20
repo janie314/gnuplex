@@ -10,16 +10,16 @@ import (
 
 	"gnuplex-backend/consts"
 	"gnuplex-backend/db"
+	"gnuplex-backend/liteDB"
 	"gnuplex-backend/models"
 	"gnuplex-backend/mpv"
-	"gnuplex-backend/server/liteDB"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-type Server struct {
+type GNUPlex struct {
 	DB        *liteDB.LiteDB
 	NewDB     *gorm.DB
 	Router    *gin.Engine
@@ -28,11 +28,11 @@ type Server struct {
 	MPVMutex  *sync.Mutex
 }
 
-func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath string) (*Server, error) {
+func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath string) (*GNUPlex, error) {
 	/*
 	 * HTTP backend
 	 */
-	server := new(Server)
+	server := new(GNUPlex)
 	server.Router = gin.Default()
 	server.Router.SetTrustedProxies(nil)
 	server.initEndpoints(verbose)
@@ -45,6 +45,8 @@ func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath s
 		return nil, err
 	}
 	server.MPV = mpvConn
+	mu := &sync.Mutex{}
+	server.MPVMutex = mu
 	/*
 	 * old sqlite DB
 	 */
@@ -68,51 +70,51 @@ func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath s
 }
 
 // Initialize the web server's HTTP Endpoints
-func (server *Server) initEndpoints(prod bool) {
-	server.Router.GET("/", func(c *gin.Context) {
+func (gnuplex *GNUPlex) initEndpoints(prod bool) {
+	gnuplex.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	server.Router.GET("/gnuplex", func(c *gin.Context) {
+	gnuplex.Router.GET("/gnuplex", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
 	if prod {
-		server.Router.Static("/home", consts.ProdStaticFilespath)
+		gnuplex.Router.Static("/home", consts.ProdStaticFilespath)
 	} else {
-		server.Router.Static("/home", consts.DevStaticFilespath)
+		gnuplex.Router.Static("/home", consts.DevStaticFilespath)
 	}
-	server.Router.GET("/api/version", func(c *gin.Context) {
+	gnuplex.Router.GET("/api/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})
-	server.Router.POST("/api/play", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.Play(server.MPV, server.MPVMutex))
+	gnuplex.Router.POST("/api/play", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpv.Play(gnuplex.MPV, gnuplex.MPVMutex))
 	})
-	server.Router.POST("/api/pause", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.Pause(server.MPV, server.MPVMutex))
+	gnuplex.Router.POST("/api/pause", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpv.Pause(gnuplex.MPV, gnuplex.MPVMutex))
 	})
-	server.Router.GET("/api/paused", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.IsPaused(server.MPV, server.MPVMutex))
+	gnuplex.Router.GET("/api/paused", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpv.IsPaused(gnuplex.MPV, gnuplex.MPVMutex))
 	})
-	server.Router.GET("/api/media", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.GetMedia(server.MPV, server.MPVMutex))
+	gnuplex.Router.GET("/api/media", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpv.GetMedia(gnuplex.MPV, gnuplex.MPVMutex))
 	})
-	server.Router.POST("/api/media", func(c *gin.Context) {
+	gnuplex.Router.POST("/api/media", func(c *gin.Context) {
 		mediafile := c.Query("mediafile")
 		if mediafile == "" {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
-			server.AddHist(mediafile)
-			c.Data(http.StatusOK, "application/json", mpv.SetMedia(server.MPV, server.MPVMutex, mediafile))
+			gnuplex.AddHist(mediafile)
+			c.Data(http.StatusOK, "application/json", mpv.SetMedia(gnuplex.MPV, gnuplex.MPVMutex, mediafile))
 		}
 	})
-	server.Router.GET("/api/vol", func(c *gin.Context) {
-		vol, err := mpv.GetVol(server.MPV, server.MPVMutex)
+	gnuplex.Router.GET("/api/vol", func(c *gin.Context) {
+		vol, err := mpv.GetVol(gnuplex.MPV, gnuplex.MPVMutex)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, 0)
 		} else {
 			c.JSON(http.StatusOK, vol)
 		}
 	})
-	server.Router.POST("/api/vol", func(c *gin.Context) {
+	gnuplex.Router.POST("/api/vol", func(c *gin.Context) {
 		param := c.Query("vol")
 		if param == "" {
 			c.String(http.StatusBadRequest, "empty vol string")
@@ -121,20 +123,20 @@ func (server *Server) initEndpoints(prod bool) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad vol string")
 			}
-			c.Data(http.StatusOK, "application/json", mpv.SetVolume(server.MPV, server.MPVMutex, vol))
+			c.Data(http.StatusOK, "application/json", mpv.SetVolume(gnuplex.MPV, gnuplex.MPVMutex, vol))
 		}
 	})
-	server.Router.GET("/api/mediadirs", func(c *gin.Context) {
-		c.JSON(http.StatusOK, server.GetMediadirs(false))
+	gnuplex.Router.GET("/api/mediadirs", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gnuplex.GetMediadirs(false))
 	})
-	server.Router.POST("/api/mediadirs", func(c *gin.Context) {
+	gnuplex.Router.POST("/api/mediadirs", func(c *gin.Context) {
 		mediadirsJson := []byte(c.Query("mediadirs"))
 		var mediadirs []string
 		err := json.Unmarshal(mediadirsJson, &mediadirs)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = server.SetMediadirs(mediadirs)
+			err = gnuplex.SetMediadirs(mediadirs)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -142,17 +144,17 @@ func (server *Server) initEndpoints(prod bool) {
 			}
 		}
 	})
-	server.Router.GET("/api/file_exts", func(c *gin.Context) {
-		c.JSON(http.StatusOK, server.GetFileExts(false))
+	gnuplex.Router.GET("/api/file_exts", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gnuplex.GetFileExts(false))
 	})
-	server.Router.POST("/api/file_exts", func(c *gin.Context) {
+	gnuplex.Router.POST("/api/file_exts", func(c *gin.Context) {
 		fileExtsJson := []byte(c.Query("file_exts"))
 		var fileExts []string
 		err := json.Unmarshal(fileExtsJson, &fileExts)
 		if err != nil {
 			c.String(http.StatusBadRequest, "bad mediadirs string")
 		} else {
-			err = server.SetFileExts(fileExts)
+			err = gnuplex.SetFileExts(fileExts)
 			if err == nil {
 				c.JSON(http.StatusOK, "ok")
 			} else {
@@ -160,8 +162,8 @@ func (server *Server) initEndpoints(prod bool) {
 			}
 		}
 	})
-	server.Router.GET("/api/pos", func(c *gin.Context) {
-		vol, err := mpv.GetPos(server.MPV, server.MPVMutex)
+	gnuplex.Router.GET("/api/pos", func(c *gin.Context) {
+		vol, err := mpv.GetPos(gnuplex.MPV, gnuplex.MPVMutex)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, 0)
 		} else {
@@ -169,10 +171,10 @@ func (server *Server) initEndpoints(prod bool) {
 		}
 	})
 
-	server.Router.GET("/api/timeremaining", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpv.GetTimeRemaining(server.MPV, server.MPVMutex))
+	gnuplex.Router.GET("/api/timeremaining", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/json", mpv.GetTimeRemaining(gnuplex.MPV, gnuplex.MPVMutex))
 	})
-	server.Router.POST("/api/pos", func(c *gin.Context) {
+	gnuplex.Router.POST("/api/pos", func(c *gin.Context) {
 		param := c.Query("pos")
 		if param == "" {
 			c.String(http.StatusBadRequest, "empty pos string")
@@ -181,23 +183,23 @@ func (server *Server) initEndpoints(prod bool) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad pos string")
 			}
-			c.Data(http.StatusOK, "application/json", mpv.SetPos(server.MPV, server.MPVMutex, pos))
+			c.Data(http.StatusOK, "application/json", mpv.SetPos(gnuplex.MPV, gnuplex.MPVMutex, pos))
 		}
 	})
-	server.Router.GET("/api/last25", func(c *gin.Context) {
-		c.JSON(http.StatusOK, server.Last25())
+	gnuplex.Router.GET("/api/last25", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gnuplex.Last25())
 	})
-	server.Router.GET("/api/medialist", func(c *gin.Context) {
-		c.JSON(http.StatusOK, server.GetMedialib(false))
+	gnuplex.Router.GET("/api/medialist", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gnuplex.GetMedialib(false))
 	})
-	server.Router.POST("/api/medialist", func(c *gin.Context) {
-		server.ScanLib()
+	gnuplex.Router.POST("/api/medialist", func(c *gin.Context) {
+		gnuplex.ScanLib()
 		c.String(http.StatusOK, "OK")
 	})
 
 }
 
-func (server *Server) Run(wg *sync.WaitGroup) error {
+func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 	defer wg.Done()
 	err := server.Router.Run(":40000")
 	if err != nil {
