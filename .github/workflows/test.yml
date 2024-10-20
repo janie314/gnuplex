@@ -15,9 +15,9 @@ jobs:
       uses: oven-sh/setup-bun@v2
     - name: setup go
       uses: actions/setup-go@v5
-      cache-dependency-path: backend/go.sum
       with:
         go-version: '^1.23.2'
+        cache-dependency-path: backend/go.sum
     - name: compile the go backend
       working-directory: backend
       run: |
