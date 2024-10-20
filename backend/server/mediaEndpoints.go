@@ -1,7 +1,9 @@
 package server
 
 import (
+	"errors"
 	"fmt"
+	"gnuplex-backend/models"
 	"io/fs"
 	"log"
 	"os"
@@ -254,4 +256,20 @@ func (server *Server) Last25() []string {
 		}
 	}
 	return res[:i]
+}
+
+func (server *Server) NowPlaying() (*models.MediaItem, error) {
+	if len(server.PlayQueue) == 0 {
+		return nil, errors.New("PlayQueue is empty at the moment")
+	}
+	return server.PlayQueue[0], nil
+}
+
+func (server *Server) Queue(id models.MediaItemId) *models.MediaItem {
+	var mediaItem *models.MediaItem
+	server.NewDB.First(&mediaItem, id)
+	if mediaItem != nil {
+		server.PlayQueue = append(server.PlayQueue, mediaItem)
+	}
+	return mediaItem
 }

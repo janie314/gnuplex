@@ -3,13 +3,15 @@ package server
 import (
 	"encoding/json"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 	"sync"
 
 	"gnuplex-backend/consts"
 	"gnuplex-backend/db"
-	"gnuplex-backend/mpvdaemon/mpvcmd"
+	"gnuplex-backend/models"
+	"gnuplex-backend/mpv"
 	"gnuplex-backend/server/liteDB"
 
 	"github.com/gin-gonic/gin"
@@ -18,27 +20,35 @@ import (
 )
 
 type Server struct {
-	DB     *liteDB.LiteDB
-	NewDB  *gorm.DB
-	Router *gin.Engine
+	DB        *liteDB.LiteDB
+	NewDB     *gorm.DB
+	Router    *gin.Engine
+	PlayQueue [](*models.MediaItem)
+	MPV       *net.UnixConn
+	MPVMutex  *sync.Mutex
 }
 
-func Init(wg *sync.WaitGroup, prod bool, mpvSocket, dbPath string) (*Server, error) {
+func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath string) (*Server, error) {
 	/*
 	 * HTTP backend
 	 */
 	server := new(Server)
 	server.Router = gin.Default()
 	server.Router.SetTrustedProxies(nil)
-	server.initEndpoints(prod)
+	server.initEndpoints(verbose)
 	/*
 	 * mpv unix socket
 	 */
-	go mpvcmd.InitUnixConn(wg, mpvSocket)
+	var mpvConn *net.UnixConn
+	mpvConn, err := mpv.Init(wg, verbose, createMpvDaemon, mpvSocket)
+	if err != nil {
+		return nil, err
+	}
+	server.MPV = mpvConn
 	/*
 	 * old sqlite DB
 	 */
-	oldDb, err := liteDB.Init(prod)
+	oldDb, err := liteDB.Init(verbose)
 	if err != nil {
 		return nil, err
 	}
@@ -74,16 +84,16 @@ func (server *Server) initEndpoints(prod bool) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})
 	server.Router.POST("/api/play", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.Play())
+		c.Data(http.StatusOK, "application/json", mpv.Play(server.MPV, server.MPVMutex))
 	})
 	server.Router.POST("/api/pause", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.Pause())
+		c.Data(http.StatusOK, "application/json", mpv.Pause(server.MPV, server.MPVMutex))
 	})
 	server.Router.GET("/api/paused", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.IsPaused())
+		c.Data(http.StatusOK, "application/json", mpv.IsPaused(server.MPV, server.MPVMutex))
 	})
 	server.Router.GET("/api/media", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetMedia())
+		c.Data(http.StatusOK, "application/json", mpv.GetMedia(server.MPV, server.MPVMutex))
 	})
 	server.Router.POST("/api/media", func(c *gin.Context) {
 		mediafile := c.Query("mediafile")
@@ -91,11 +101,16 @@ func (server *Server) initEndpoints(prod bool) {
 			c.String(http.StatusBadRequest, "empty mediafile string")
 		} else {
 			server.AddHist(mediafile)
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetMedia(mediafile))
+			c.Data(http.StatusOK, "application/json", mpv.SetMedia(server.MPV, server.MPVMutex, mediafile))
 		}
 	})
 	server.Router.GET("/api/vol", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetVolume())
+		vol, err := mpv.GetVol(server.MPV, server.MPVMutex)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 0)
+		} else {
+			c.JSON(http.StatusOK, vol)
+		}
 	})
 	server.Router.POST("/api/vol", func(c *gin.Context) {
 		param := c.Query("vol")
@@ -106,7 +121,7 @@ func (server *Server) initEndpoints(prod bool) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad vol string")
 			}
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetVolume(vol))
+			c.Data(http.StatusOK, "application/json", mpv.SetVolume(server.MPV, server.MPVMutex, vol))
 		}
 	})
 	server.Router.GET("/api/mediadirs", func(c *gin.Context) {
@@ -146,10 +161,16 @@ func (server *Server) initEndpoints(prod bool) {
 		}
 	})
 	server.Router.GET("/api/pos", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetPos())
+		vol, err := mpv.GetPos(server.MPV, server.MPVMutex)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 0)
+		} else {
+			c.JSON(http.StatusOK, vol)
+		}
 	})
+
 	server.Router.GET("/api/timeremaining", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", mpvcmd.GetTimeRemaining())
+		c.Data(http.StatusOK, "application/json", mpv.GetTimeRemaining(server.MPV, server.MPVMutex))
 	})
 	server.Router.POST("/api/pos", func(c *gin.Context) {
 		param := c.Query("pos")
@@ -160,7 +181,7 @@ func (server *Server) initEndpoints(prod bool) {
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad pos string")
 			}
-			c.Data(http.StatusOK, "application/json", mpvcmd.SetPos(pos))
+			c.Data(http.StatusOK, "application/json", mpv.SetPos(server.MPV, server.MPVMutex, pos))
 		}
 	})
 	server.Router.GET("/api/last25", func(c *gin.Context) {

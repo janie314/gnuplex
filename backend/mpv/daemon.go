@@ -1,4 +1,4 @@
-package mpvdaemon
+package mpv
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func Run(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocketPath string) {
+func RunDaemon(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocketPath string) {
 	if !createMpvDaemon {
 		return
 	}

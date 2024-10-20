@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"gnuplex-backend/consts"
-	"gnuplex-backend/mpvdaemon"
 	"gnuplex-backend/server"
 	"log"
 	"sync"
@@ -36,12 +35,11 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	oc, err := server.Init(&wg, *prod, *mpvSocket, *dbPath)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), !*noCreateMpvDaemon, *mpvSocket, *dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	go oc.Run(&wg)
-	go mpvdaemon.Run(&wg, *verbose, !*noCreateMpvDaemon, *mpvSocket)
+	go server.Run(&wg)
 	/*
 	 * Scheduler process
 	 */
@@ -54,7 +52,7 @@ func main() {
 		log.Fatal("CronTrigger init failure", err)
 	}
 	scanLibJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
-		return 0, oc.ScanLib()
+		return 0, server.ScanLib()
 	})
 	err = sched.ScheduleJob(quartz.NewJobDetail(scanLibJob, quartz.NewJobKey("scanlib")), scanLibTrigger)
 	if err != nil {

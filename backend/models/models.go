@@ -7,3 +7,5 @@ type MediaItem struct {
 	Path       string
 	LastPlayed string
 }
+
+type MediaItemId uint

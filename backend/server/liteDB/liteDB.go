@@ -24,14 +24,15 @@ func Init(prod bool) (*LiteDB, error) {
 	log.Println("Got Init LiteDB lock")
 	defer db.Mu.Unlock()
 	defer log.Println("Rem Init LiteDB lock")
-	if prod {
-		conn, err = sql.Open("sqlite", consts.ProdDBFilepath)
-	} else {
-		conn, err = sql.Open("sqlite", consts.DevDBFilepath)
-	}
-	db.SqliteConn = conn
+	conn, err = sql.Open("sqlite", consts.DevDBFilepath)
 	if err != nil {
 		log.Println("Init LiteDB fatal error:", err)
+		return nil, err
+	}
+	db.SqliteConn = conn
+	err = db.SqliteConn.Ping()
+	if err != nil {
+		log.Println("Init LiteDB ping error:", err)
 		return nil, err
 	}
 	_, err = db.SqliteConn.Exec("create table if not exists pos_cache (filepath string not null primary key, pos int);")
