@@ -1,4 +1,4 @@
-package server
+package gnuplex
 
 import (
 	"errors"
@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type dBFSDiff struct {
@@ -265,11 +266,29 @@ func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
 	return gnuplex.PlayQueue[0], nil
 }
 
-func (gnuplex *GNUPlex) Queue(id models.MediaItemId) *models.MediaItem {
+func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
+	var mediaItem *models.MediaItem
+	if err := gnuplex.NewDB.First(&mediaItem, id).Error; err != nil {
+		return err
+	}
+	if mediaItem != nil {
+		gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
+	}
+	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
+		return err
+	}
+	if err := gnuplex.NewDB.Model(&mediaItem).Update("LastPlayed", time.Now().UTC().Format(time.RFC3339)).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
 	gnuplex.NewDB.First(&mediaItem, id)
 	if mediaItem != nil {
 		gnuplex.PlayQueue = append(gnuplex.PlayQueue, mediaItem)
 	}
+	gnuplex.MPV.QueueMedia(mediaItem.Path)
 	return mediaItem
 }

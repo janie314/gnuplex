@@ -6,11 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"strings"
-	"sync"
-	"time"
 )
 
 /*
@@ -36,14 +33,19 @@ type IMPVResponseInt struct {
 	Data int `json:"data"`
 }
 
-type MPVResult[T string | int | float64] struct {
+type MPVGetResult[T string | int | float64] struct {
 	Data      T      `json:"data"`
 	RequestId int    `json:"request_id"`
 	Error     string `json:"error"`
 }
 
-func processMpvResult[T string | int | float64](resBytes []byte) (T, error) {
-	var res MPVResult[T]
+type MPVSetResult struct {
+	RequestId int    `json:"request_id"`
+	Error     string `json:"error"`
+}
+
+func processMPVGetResult[T string | int | float64](resBytes []byte) (T, error) {
+	var res MPVGetResult[T]
 	var defaultVal T
 	err := json.Unmarshal(resBytes, &res)
 	if err != nil {
@@ -57,33 +59,28 @@ func processMpvResult[T string | int | float64](resBytes []byte) (T, error) {
 
 }
 
-func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket string) (*net.UnixConn, error) {
-	go RunDaemon(wg, verbose, createMpvDaemon, mpvSocket)
-	var mpvUnixAddr *net.UnixAddr
-	mpvUnixAddr, err := net.ResolveUnixAddr("unix", mpvSocket)
+func processMPVSetResult(resBytes []byte) error {
+	var res MPVSetResult
+	err := json.Unmarshal(resBytes, &res)
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		log.Println("mpv result error", err)
+		return err
+	} else if res.Error != "success" {
+		log.Println("mpv result error", err)
+		return errors.New(res.Error)
 	}
-	var mpvConn *net.UnixConn
-	for i := 10; mpvConn == nil || i >= 0; i-- {
-		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
-		if err != nil {
-			log.Println("Warning: InitUnixConn:", err)
-			time.Sleep(3 * time.Second)
-		}
-	}
-	return mpvConn, nil
+	return nil
+
 }
 
-func unixMsg(mpvConn *net.UnixConn, mu *sync.Mutex, msg []byte) []byte {
-	mu.Lock()
-	defer mu.Unlock()
-	_, err := mpvConn.Write(append(msg, '\n'))
+func (mpv *MPV) unixMsg(msg []byte) []byte {
+	mpv.Mu.Lock()
+	defer mpv.Mu.Unlock()
+	_, err := mpv.Conn.Write(append(msg, '\n'))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	scanner := bufio.NewScanner(mpvConn)
+	scanner := bufio.NewScanner(mpv.Conn)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, "request_id") {
@@ -93,73 +90,82 @@ func unixMsg(mpvConn *net.UnixConn, mu *sync.Mutex, msg []byte) []byte {
 	return []byte{}
 }
 
-func mpvGetCmd(mpvConn *net.UnixConn, mu *sync.Mutex, cmd []string) []byte {
+func (mpv *MPV) GetCmd(cmd []string) []byte {
 	query := IMPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
 	}
-	return unixMsg(mpvConn, mu, jsonData)
+	return mpv.unixMsg(jsonData)
 }
 
-func mpvSetCmd(mpvConn *net.UnixConn, mu *sync.Mutex, cmd []interface{}) []byte {
+func (mpv *MPV) SetCmd(cmd []interface{}) []byte {
 	query := IMPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
 	}
-	return unixMsg(mpvConn, mu, jsonData)
+	return mpv.unixMsg(jsonData)
 }
 
 /*
  * MPV command public fxns
  */
-func Play(mpvConn *net.UnixConn, mu *sync.Mutex) []byte {
-	return mpvSetCmd(mpvConn, mu, []interface{}{"set_property", "pause", false})
+func (mpv *MPV) Play() []byte {
+	return mpv.SetCmd([]interface{}{"set_property", "pause", false})
 }
 
-func Pause(mpvConn *net.UnixConn, mu *sync.Mutex) []byte {
-	return mpvSetCmd(mpvConn, mu, []interface{}{"set_property", "pause", true})
+func (mpv *MPV) Pause() []byte {
+	return mpv.SetCmd([]interface{}{"set_property", "pause", true})
 }
 
-func IsPaused(mpvConn *net.UnixConn, mu *sync.Mutex) []byte {
-	return mpvGetCmd(mpvConn, mu, []string{"get_property", "pause"})
+func (mpv *MPV) IsPaused() []byte {
+	return mpv.GetCmd([]string{"get_property", "pause"})
 }
 
-func GetMedia(mpvConn *net.UnixConn, mu *sync.Mutex) []byte {
-	return mpvGetCmd(mpvConn, mu, []string{"get_property", "path"})
+func (mpv *MPV) GetMedia() []byte {
+	return mpv.GetCmd([]string{"get_property", "path"})
 }
 
-func SetMedia(mpvConn *net.UnixConn, mu *sync.Mutex, filepath string) []byte {
-	return mpvSetCmd(mpvConn, mu, []interface{}{"loadfile", filepath})
+func (mpv *MPV) SetMedia(filepath string) []byte {
+	return mpv.SetCmd([]interface{}{"loadfile", filepath})
 }
 
-func GetVol(mpvConn *net.UnixConn, mu *sync.Mutex) (int, error) {
-	resBytes := mpvGetCmd(mpvConn, mu, []string{"get_property", "volume"})
-	n, err := processMpvResult[float64](resBytes)
+func (mpv *MPV) ReplaceQueueAndPlay(filepath string) error {
+	res := mpv.SetCmd([]interface{}{"loadfile", filepath})
+	return processMPVSetResult(res)
+}
+
+func (mpv *MPV) QueueMedia(filepath string) []byte {
+	return mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"})
+}
+
+func (mpv *MPV) GetVol() (int, error) {
+	resBytes := mpv.GetCmd([]string{"get_property", "volume"})
+	n, err := processMPVGetResult[float64](resBytes)
 	if err != nil {
 		return 0, err
 	}
 	return int(n), err
 }
 
-func SetVolume(mpvConn *net.UnixConn, mu *sync.Mutex, vol int) []byte {
-	return mpvSetCmd(mpvConn, mu, []interface{}{"set_property", "volume", vol})
+func (mpv *MPV) SetVolume(vol int) []byte {
+	return mpv.SetCmd([]interface{}{"set_property", "volume", vol})
 }
 
-func GetPos(mpvConn *net.UnixConn, mu *sync.Mutex) (int, error) {
-	resBytes := mpvGetCmd(mpvConn, mu, []string{"get_property", "time-pos"})
-	n, err := processMpvResult[float64](resBytes)
+func (mpv *MPV) GetPos() (int, error) {
+	resBytes := mpv.GetCmd([]string{"get_property", "time-pos"})
+	n, err := processMPVGetResult[float64](resBytes)
 	if err != nil {
 		return 0, err
 	}
 	return int(n), err
 }
 
-func GetTimeRemaining(mpvConn *net.UnixConn, mu *sync.Mutex) []byte {
-	return mpvGetCmd(mpvConn, mu, []string{"get_property", "time-remaining"})
+func (mpv *MPV) GetTimeRemaining() []byte {
+	return mpv.GetCmd([]string{"get_property", "time-remaining"})
 }
 
-func SetPos(mpvConn *net.UnixConn, mu *sync.Mutex, pos int) []byte {
-	return mpvSetCmd(mpvConn, mu, []interface{}{"set_property", "time-pos", pos})
+func (mpv *MPV) SetPos(pos int) []byte {
+	return mpv.SetCmd([]interface{}{"set_property", "time-pos", pos})
 }
