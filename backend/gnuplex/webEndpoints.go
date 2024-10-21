@@ -19,18 +19,14 @@ type MediaDirsBody []string
 type FileExtsBody []string
 
 // Initialize the web server's HTTP Endpoints
-func (gnuplex *GNUPlex) InitWebEndpoints(prod bool) {
+func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 	gnuplex.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
 	gnuplex.Router.GET("/gnuplex", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
-	if prod {
-		gnuplex.Router.Static("/home", consts.ProdStaticFilespath)
-	} else {
-		gnuplex.Router.Static("/home", consts.DevStaticFilespath)
-	}
+	gnuplex.Router.Static("/home", staticFiles)
 	gnuplex.Router.GET("/api/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.GNUPlexVersion)
 	})

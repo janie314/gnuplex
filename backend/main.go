@@ -7,6 +7,8 @@ import (
 	"gnuplex-backend/consts"
 	server "gnuplex-backend/gnuplex"
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +26,11 @@ func main() {
 	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
 	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
+	exe, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	staticFiles := flag.String("static_files", filepath.Join(filepath.Dir(exe), "static"), "Path to static web files.")
 	flag.Parse()
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
@@ -35,7 +42,7 @@ func main() {
 	 */
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), !*noCreateMpvDaemon, *mpvSocket, *dbPath)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), !*noCreateMpvDaemon, *mpvSocket, *dbPath, *staticFiles)
 	if err != nil {
 		log.Fatal(err)
 	}
