@@ -18,14 +18,14 @@ type GNUPlex struct {
 	MPV       *mpv.MPV
 }
 
-func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath string) (*GNUPlex, error) {
+func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath, staticFiles string) (*GNUPlex, error) {
 	/*
 	 * HTTP backend
 	 */
 	gnuplex := new(GNUPlex)
 	gnuplex.Router = gin.Default()
 	gnuplex.Router.SetTrustedProxies(nil)
-	gnuplex.InitWebEndpoints(verbose)
+	gnuplex.InitWebEndpoints(verbose, staticFiles)
 	/*
 	 * mpv unix socket
 	 */
