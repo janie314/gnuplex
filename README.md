@@ -9,7 +9,9 @@ friendly web interface.
 curl -s https://gnuplex.janie.page/install | sh
 ```
 
-This will prompt you for a directory in your PATH, then install GNUPlex there. If you want to script this, you can use the `path` query paramter. (There's also a `systemd` user parameter.)
+This will prompt you for a directory in your PATH, then install GNUPlex there.
+If you want to script this, you can use the `path` query paramter. (There's also
+a `systemd` user parameter.)
 
 ```shell
 curl -s https://gnuplex.janie.page/install?path=%2Fhome%2Fjanie%2F.local%2Fbin%2Fgnuplex | sh
@@ -29,7 +31,7 @@ gnuplex update
 
 # Releases
 
-| Version      | Date                           | Links                           |
+| Version      | Date                           | Details                         |
 | ------------ | ------------------------------ | ------------------------------- |
-| 1.0          |                                |                                 |
+| 0.99         | 2024-10-20                     | v1.0, beta.                     |
 | Alpha stages | ~Christmas 2022 - October 2024 | See commits before 1.0 release. |
