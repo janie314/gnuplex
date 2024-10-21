@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { APICall } from "../lib/APICall";
-import "../App.css";
+import { API } from "../lib/API";
 import "./CRUDPopup.css";
 import { WorkingSpinnerTSX } from "./WorkingSpinner";
 
@@ -16,36 +15,39 @@ function CRUDPopup(props: {
   const [saveFileExtsWorking, setSaveFileExtsWorking] = useState(false);
 
   useEffect(() => {
-    APICall.getOriginMediadirs().then((res: string[]) => {
-      setMediadirs(res.join("\n"));
+    API.getMediadirs().then((res) => {
+      setMediadirs(res.map((item) => item.Path).join("\n"));
     });
-    APICall.getOriginFileExts().then((res: string[]) => {
-      setFileExts(res.join("\n"));
+    API.getFileExts().then((res) => {
+      setFileExts(res.map((item) => item.Extension).join("\n"));
     });
   }, [props.visible]);
 
   if (props.visible) {
     return (
       <div className="crudpopup">
-        <span className="subtitle">Media Directories</span>
+        <h1 className="m-y-2/100 text-lg font-bold">Media Directories</h1>
         <textarea
           value={mediadirs}
           onChange={(e) => setMediadirs(e.target.value)}
-          className="crudpopup-textarea"
+          className="border border-solid border-black p-1"
           rows={10}
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
-        ></textarea>
-        <span className="subtitle">Excluded File Extensions</span>
+        />
+        <h1 className="m-y-2/100 text-lg font-bold">
+          Excluded File Extensions
+        </h1>
         <textarea
           value={file_exts}
           onChange={(e) => setFileExts(e.target.value)}
-          className="crudpopup-textarea"
+          className="border border-solid border-black p-1"
           rows={10}
           placeholder=".pdf"
-        ></textarea>
+        />
         <div>
           <input
             type="button"
+            className="p-1 border border-solid border-black hover:bg-cyan-300"
             value="Save Settings"
             onClick={() => {
               setSaveMediadirsWorking(true);
@@ -60,12 +62,8 @@ function CRUDPopup(props: {
                 .split("\n")
                 .filter((line) => !/^\s*$/.test(line))
                 .map((line) => line.trim());
-              APICall.setOriginMediadirs(arr1).then(() =>
-                setSaveMediadirsWorking(false),
-              );
-              APICall.setOriginFileExts(arr2).then(() =>
-                setSaveFileExtsWorking(false),
-              );
+              API.setMediadirs(arr1).then(() => setSaveMediadirsWorking(false));
+              API.setFileExts(arr2).then(() => setSaveFileExtsWorking(false));
             }}
           />
           <WorkingSpinnerTSX
@@ -75,12 +73,11 @@ function CRUDPopup(props: {
         <div>
           <input
             type="button"
+            className="p-1 border border-solid border-black hover:bg-cyan-300"
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
-              APICall.refreshOriginMediafiles().then(() =>
-                setRefreshLibraryWorking(false),
-              );
+              API.scanLib().then(() => setRefreshLibraryWorking(false));
             }}
           />
           <WorkingSpinnerTSX visible={refreshLibraryWorking} />
@@ -88,12 +85,13 @@ function CRUDPopup(props: {
         <div className="okcancel">
           <input
             type="button"
+            className="p-1 border border-solid border-black hover:bg-cyan-300"
             value="OK"
             onClick={() => {
               props.closeHook();
               props.setMediadirInputPopup(false);
             }}
-          ></input>
+          />
         </div>
       </div>
     );

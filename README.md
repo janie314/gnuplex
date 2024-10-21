@@ -1,65 +1,37 @@
 # GNUPlex
 
-Version 0.9 (Currituck)
-
 GNUPlex is a lightweight media display and media library database with a
 friendly web interface.
 
-The stack is:
+# Installation and Updating
 
-- [Gin](https://github.com/gin-gonic/gin) +
-  [SQLite](https://www.sqlite.org/index.html)
-- [Vite](https://vitejs.dev/config/)
-
-GNUPlex either runs in **user mode** or **server mode**. In user mode, the web
-server operates out of `./gnuplex` (this Git repository).
-
-In server mode, a web server is installed in `/var/gnuplex` and run out of a
-SystemD service (running as the `gnuplex` user). This is useful for setting up a
-computer as a home media display; the GNUPlex web interface would then typically
-be acessed from a laptop or smartphone.
-
-# Prerequisites
-
-- mpv
-- Go
-- NodeJS / npm
-
-Try e.g. `sudo dnf install mpv go nodejs npm` or
-`sudo apt install mpv go nodejs npm`.
-
-# Build
-
-```bash
-git clone https://gitlab.com/jane314/gnuplex.git
-./build
+```shell
+curl -s https://gnuplex.janie.page/install | sh
 ```
 
-# Running (user mode)
+This will prompt you for a directory in your PATH, then install GNUPlex there.
+If you want to script this, you can use the `path` query paramter. (There's also
+a `systemd` user parameter.)
 
-```bash
-./gnuplex
+```shell
+curl -s https://gnuplex.janie.page/install?path=%2Fhome%2Fjanie%2F.local%2Fbin%2Fgnuplex | sh
 ```
 
-# Testing
+To install GNUPlex as a SystemD user service, run:
 
-```bash
-./dev
+```shell
+gnuplex install-user-service
 ```
 
-# Install or update server mode
+To update GNUPlex:
 
-Ensure port port 40000 is open on your server. The site will be hosted at
-`http:hostname:40000/`.
-
-```bash
-sudo sh install-server
+```shell
+gnuplex update
 ```
 
-# Release History 
+# Releases
 
-| Release | Date | Changes |
-| - | - | - |
-| 0.91 Currituck | 2022-12-25 | YouTube casting. |
-| 0.9 Currituck | 2022-12-25 | Initial release. |
-
+| Version      | Date                           | Details                         |
+| ------------ | ------------------------------ | ------------------------------- |
+| 0.99         | 2024-10-20                     | v1.0, beta.                     |
+| Alpha stages | ~Christmas 2022 - October 2024 | See commits before 1.0 release. |
