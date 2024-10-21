@@ -2,6 +2,7 @@
   "linter": {
     "ignore": [
       "app/assets/builds/**",
+      "backend/public/assets/**",
       "app/assets/stylesheets/application.tailwind.css",
       "config/provision/production.json",
       "node_modules",
@@ -9,12 +10,21 @@
       "dist",
       "doc",
       ".yardoc"
-    ]
+    ],
+    "rules": {
+      "complexity": {
+        "noStaticOnlyClass": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      }
+    }
   },
   "formatter": {
     "ignore": [
       "app/assets/builds/**",
       "app/assets/stylesheets/application.tailwind.css",
+      "backend/public/assets/**",
       "dist",
       "doc",
       "package.json",
