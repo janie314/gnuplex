@@ -1,5 +1,9 @@
 on:
   pull_request:
+  push:
+    branches:
+      - main
+      - release
 jobs:
   test:
     runs-on: ubuntu-latest
