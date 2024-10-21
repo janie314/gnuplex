@@ -10,76 +10,68 @@ import (
 	"strings"
 )
 
-type dBFSDiff struct {
-	inDB bool
-	inFS bool
-}
-
 func (gnuplex *GNUPlex) ScanLib() error {
-	var reterr error
-	mediadirsFromDB, err := gnuplex.NewDB.GetMediaDirs()
+	/*
+	 * grab MediaDirs, MediaItems, FileExts from the database
+	 */
+	mediaDirs, err := gnuplex.NewDB.GetMediaDirs()
 	if err != nil {
 		return err
 	}
-	mediaItemsFromDB, err := gnuplex.NewDB.GetMediaItems()
+	mediaItems, err := gnuplex.NewDB.GetMediaItems()
 	if err != nil {
 		return err
+	}
+	mediaItemH := make(map[string]models.MediaItem)
+	for _, mediaItem := range mediaItems {
+		mediaItemH[mediaItem.Path] = mediaItem
 	}
 	fileExts, err := gnuplex.NewDB.GetFileExts()
 	if err != nil {
 		return err
 	}
-	fileExtHash := make(map[string]bool)
-	medialist := make(map[string](*dBFSDiff), len(mediadirsFromDB))
-	for _, mediaItem := range mediaItemsFromDB {
-		medialist[mediaItem.Path] = &dBFSDiff{
-			inDB: true,
-			inFS: false,
-		}
+	fileExtH := make(map[string]bool)
+	for _, fileExt := range fileExts {
+		fileExtH[fileExt.Extension] = true
 	}
-	for _, ext := range fileExts {
-		fileExtHash[ext.Extension] = true
-	}
-	for _, mediadirFromDB := range mediadirsFromDB {
-		dir, err := os.Stat(mediadirFromDB.Path)
+	/*
+	 * add new stuff
+	 */
+	for _, mediaDir := range mediaDirs {
+		dir, err := os.Stat(mediaDir.Path)
 		if (err == nil) && dir.IsDir() {
-			err = filepath.WalkDir(mediadirFromDB.Path, func(path string, entry fs.DirEntry, err error) error {
+			return filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
+				log.Println("path", path)
 				if err != nil {
-					log.Println("Walkdir prob: ", mediadirFromDB)
+					log.Println("Walkdir prob: ", mediaDir)
 					return err
 				} else if !entry.IsDir() {
-					pathLC := strings.ToLower(path)
-					ext := pathLC[strings.LastIndex(path, ".")+1:]
-					if fileExtHash[ext] || fileExtHash["."+ext] {
-						return nil
-					} else if medialist[path] == nil {
-						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return gnuplex.NewDB.AddMediaItem(path)
-					} else if medialist[path].inDB {
-						medialist[path].inFS = true
-						return nil
-					} else {
-						medialist[path] = &dBFSDiff{inDB: false, inFS: true}
-						return gnuplex.NewDB.AddMediaItem(path)
+					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
+					log.Println("ext", ext)
+					if _, ok := fileExtH[ext]; ok {
+						return gnuplex.NewDB.DeleteMediaItemByPath(path)
 					}
+					return gnuplex.NewDB.AddMediaItem(path)
 				} else {
 					return nil
 				}
 			})
+
+		}
+	}
+	/*
+	 * remove stuff that no longer exists
+	 */
+	for _, mediaItem := range mediaItems {
+		_, err := os.Stat(mediaItem.Path)
+		if err != nil {
+			err = gnuplex.NewDB.DeleteMediaItemByPath(mediaItem.Path)
 			if err != nil {
-				reterr = err
+				return err
 			}
-		} else {
-			log.Println("Error: Bad mediadir: ", mediadirFromDB)
-			reterr = err
 		}
 	}
-	for _, mediaItem := range mediaItemsFromDB {
-		if !medialist[mediaItem.Path].inFS {
-			gnuplex.NewDB.DeleteMediaItem(&mediaItem)
-		}
-	}
-	return reterr
+	return nil
 }
 
 func (gnuplex *GNUPlex) SetFileExts(file_exts []string) error {

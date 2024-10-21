@@ -18,8 +18,8 @@ function CRUDPopup(props: {
     API.getMediadirs().then((res) => {
       setMediadirs(res.map((item) => item.Path).join("\n"));
     });
-    API.getFileExts().then((res: string[]) => {
-      setFileExts(res.join("\n"));
+    API.getFileExts().then((res) => {
+      setFileExts(res.map((item) => item.Extension).join("\n"));
     });
   }, [props.visible]);
 

@@ -15,6 +15,11 @@ interface MediaItem {
   LastPlayed: string;
 }
 
+interface FileExtension {
+  ID: number;
+  Extension: string;
+}
+
 class API {
   public static async play() {
     return await fetch("/api/play", { method: "POST" });
@@ -117,9 +122,9 @@ class API {
   public static async getFileExts() {
     return await fetch("/api/file_exts")
       .then((res) => res.json())
-      .then((data: string[]) => {
+      .then((data: FileExtension[]) => {
         return data.sort((a, b) =>
-          a.toLowerCase() < b.toLowerCase() ? -1 : 1,
+          a.Extension.toLowerCase() < b.Extension.toLowerCase() ? -1 : 1,
         );
       });
   }

@@ -2,6 +2,7 @@ package db
 
 import (
 	"gnuplex-backend/models"
+	"log"
 	"time"
 
 	"gorm.io/driver/sqlite"
@@ -43,7 +44,7 @@ func (db *DB) GetFileExts() ([]models.FileExtension, error) {
 }
 
 func (db *DB) SetFileExts(mediadirs []string) error {
-	err := db.ORM.Where("1 = 1").Delete(&models.FileExtension{}).Error
+	err := db.ORM.Unscoped().Where("1 = 1").Delete(&models.FileExtension{}).Error
 	if err != nil {
 		return err
 	}
@@ -59,33 +60,68 @@ func (db *DB) GetMediaDirs() ([]models.MediaDir, error) {
 	return mediaDirs, err
 }
 
-func (db *DB) SetMediadirs(mediadirs []string) error {
-	err := db.ORM.Where("1 = 1").Delete(&models.MediaDir{}).Error
+func (db *DB) SetMediadirs(mediaDirs []string) error {
+	mediaDirsDB, err := db.GetMediaDirs()
 	if err != nil {
 		return err
 	}
-	for _, dir := range mediadirs {
-		db.ORM.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.MediaDir{Path: dir})
+	mediaDirsH := make(map[string]bool)
+	for _, dir := range mediaDirs {
+		log.Println("a", dir)
+		mediaDirsH[dir] = true
+	}
+	for _, dir := range mediaDirs {
+		log.Println("b", dir)
+		err := db.ORM.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.MediaDir{Path: dir}).Error
+		if err != nil {
+			log.Println("b", dir)
+			return err
+		}
+	}
+	for _, dir := range mediaDirsDB {
+		if _, ok := mediaDirsH[dir.Path]; !ok {
+			err := db.ORM.Unscoped().Delete(&dir).Error
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return err
 }
 
 func (db *DB) GetLast25Played() ([]models.MediaItem, error) {
 	var mediaItems []models.MediaItem
-	err := db.ORM.Order("last_played desc").Limit(25).Where("last_played != ''").Find(&mediaItems).Error
+	err := db.ORM.
+		Order("last_played desc").
+		Limit(25).
+		Where("last_played != ''").
+		Find(&mediaItems).Error
 	return mediaItems, err
 }
 
 func (db *DB) GetMediaItems() ([]models.MediaItem, error) {
 	var mediaItems []models.MediaItem
-	err := db.ORM.Order("path").Find(&mediaItems).Error
+	err := db.ORM.
+		Order("path").
+		Find(&mediaItems).Error
 	return mediaItems, err
 }
 
 func (db *DB) DeleteMediaItem(mediaItem *models.MediaItem) error {
-	return db.ORM.Delete(mediaItem).Error
+	return db.ORM.Unscoped().Delete(mediaItem).Error
+}
+
+func (db *DB) DeleteMediaItemByPath(path string) error {
+	return db.ORM.
+		Unscoped().
+		Where("path = ?", path).
+		Delete(&models.MediaItem{}).Error
 }
 
 func (db *DB) AddMediaItem(path string) error {
-	return db.ORM.Create(&models.MediaItem{Path: path}).Error
+	return db.ORM.
+		Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "path"}},
+			DoNothing: true}).
+		Create(&models.MediaItem{Path: path}).Error
 }
