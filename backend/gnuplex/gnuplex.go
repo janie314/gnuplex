@@ -12,7 +12,7 @@ import (
 )
 
 type GNUPlex struct {
-	NewDB     *db.DB
+	DB        *db.DB
 	Router    *gin.Engine
 	PlayQueue [](*models.MediaItem)
 	MPV       *mpv.MPV
@@ -37,11 +37,11 @@ func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath, 
 	/*
 	 * new sqlite DB
 	 */
-	newDB, err := db.Init(dbPath)
+	db, err := db.Init(dbPath)
 	if err != nil {
 		return nil, err
 	}
-	gnuplex.NewDB = newDB
+	gnuplex.DB = db
 	return gnuplex, nil
 }
 
