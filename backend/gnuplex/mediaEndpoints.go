@@ -14,11 +14,11 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	/*
 	 * grab MediaDirs, MediaItems, FileExts from the database
 	 */
-	mediaDirs, err := gnuplex.NewDB.GetMediaDirs()
+	mediaDirs, err := gnuplex.DB.GetMediaDirs()
 	if err != nil {
 		return err
 	}
-	mediaItems, err := gnuplex.NewDB.GetMediaItems()
+	mediaItems, err := gnuplex.DB.GetMediaItems()
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	for _, mediaItem := range mediaItems {
 		mediaItemH[mediaItem.Path] = mediaItem
 	}
-	fileExts, err := gnuplex.NewDB.GetFileExts()
+	fileExts, err := gnuplex.DB.GetFileExts()
 	if err != nil {
 		return err
 	}
@@ -49,9 +49,9 @@ func (gnuplex *GNUPlex) ScanLib() error {
 					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
 					log.Println("ext", ext)
 					if _, ok := fileExtH[ext]; ok {
-						return gnuplex.NewDB.DeleteMediaItemByPath(path)
+						return gnuplex.DB.DeleteMediaItemByPath(path)
 					}
-					return gnuplex.NewDB.AddMediaItem(path)
+					return gnuplex.DB.AddMediaItem(path)
 				} else {
 					return nil
 				}
@@ -65,7 +65,7 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	for _, mediaItem := range mediaItems {
 		_, err := os.Stat(mediaItem.Path)
 		if err != nil {
-			err = gnuplex.NewDB.DeleteMediaItemByPath(mediaItem.Path)
+			err = gnuplex.DB.DeleteMediaItemByPath(mediaItem.Path)
 			if err != nil {
 				return err
 			}
@@ -93,7 +93,7 @@ func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
 
 func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	var mediaItem *models.MediaItem
-	if err := gnuplex.NewDB.ORM.First(&mediaItem, id).Error; err != nil {
+	if err := gnuplex.DB.ORM.First(&mediaItem, id).Error; err != nil {
 		return err
 	}
 	if mediaItem != nil {
@@ -102,7 +102,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
 		return err
 	}
-	if err := gnuplex.NewDB.UpdateLastPlayed(mediaItem); err != nil {
+	if err := gnuplex.DB.UpdateLastPlayed(mediaItem); err != nil {
 		return err
 	}
 	return nil
@@ -110,7 +110,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 
 func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
-	gnuplex.NewDB.ORM.First(&mediaItem, id)
+	gnuplex.DB.ORM.First(&mediaItem, id)
 	if mediaItem != nil {
 		gnuplex.PlayQueue = append(gnuplex.PlayQueue, mediaItem)
 	}

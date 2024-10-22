@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { API, type MediaItem } from "./lib/API";
 import "./App.css";
-import { CRUDPopup } from "./components/CRUDPopup";
+import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
+import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
 
 interface IMPVRes {
@@ -24,6 +25,7 @@ function App() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [last25, setLast25] = useState<MediaItem[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
+  const [castPopup, setCastPopup] = useState(false);
 
   useEffect(() => {
     API.getVersion().then((version: string) => setVersion(version));
@@ -48,7 +50,7 @@ function App() {
     <>
       <div
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100"
-        style={{ opacity: mediadirInputPopup ? "50%" : "100%" }}
+        style={{ opacity: mediadirInputPopup || castPopup ? "50%" : "100%" }}
       >
         <div className="sm:basis-1 md:basis-1/4 sm:max-w-full lg:max-w-sm grow flex-col px-1/100 pb-2 mb-1">
           <div className="logo-panel">
@@ -58,6 +60,7 @@ function App() {
           <MediaControls
             mediadirInputPopup={mediadirInputPopup}
             setMediadirInputPopup={setMediadirInputPopup}
+            setCastPopup={setCastPopup}
             vol={vol}
             setVol={setVol}
             pos={pos}
@@ -87,9 +90,16 @@ function App() {
           />
         </div>
       </div>
-      <CRUDPopup
+      <MediadirsConfigPopup
         visible={mediadirInputPopup}
         setMediadirInputPopup={setMediadirInputPopup}
+        closeHook={() => {
+          setMediaToggle(!mediaToggle);
+        }}
+      />
+      <CastPopup
+        visible={castPopup}
+        setCastPopup={setCastPopup}
         closeHook={() => {
           setMediaToggle(!mediaToggle);
         }}

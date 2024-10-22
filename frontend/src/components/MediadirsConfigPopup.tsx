@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { API } from "../lib/API";
-import "./CRUDPopup.css";
+import "./Popup.css";
 import { WorkingSpinnerTSX } from "./WorkingSpinner";
 
-function CRUDPopup(props: {
+function MediadirsConfigPopup(props: {
   visible: boolean;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
   closeHook: () => void;
@@ -25,7 +25,7 @@ function CRUDPopup(props: {
 
   if (props.visible) {
     return (
-      <div className="crudpopup">
+      <div className="popup w-3/5 h-4/5">
         <h1 className="m-y-2/100 text-lg font-bold">Media Directories</h1>
         <textarea
           value={mediadirs}
@@ -99,4 +99,4 @@ function CRUDPopup(props: {
   return <></>;
 }
 
-export { CRUDPopup };
+export { MediadirsConfigPopup };

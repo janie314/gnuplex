@@ -5,6 +5,7 @@ import { API } from "../lib/API";
 function MediaControls(props: {
   mediadirInputPopup: boolean;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
   startPos: number;
   pos: number;
   timeRemaining: number;
@@ -89,10 +90,7 @@ function MediaControls(props: {
           type="button"
           className="p-1 border border-solid border-black hover:bg-cyan-300"
           value="Cast URL"
-          onClick={() => {
-            const url = window.prompt("URL to cast:", "") || "";
-            API.castMedia(url);
-          }}
+          onClick={() => props.setCastPopup(true)}
         />
       </div>
     </div>

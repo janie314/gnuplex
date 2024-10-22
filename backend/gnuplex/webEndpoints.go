@@ -73,7 +73,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 		}
 	})
 	gnuplex.Router.GET("/api/mediadirs", func(c *gin.Context) {
-		res, err := gnuplex.NewDB.GetMediaDirs()
+		res, err := gnuplex.DB.GetMediaDirs()
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
 		} else {
@@ -84,14 +84,14 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 		body := MediaDirsBody{}
 		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
 			c.String(http.StatusBadRequest, "bad body format")
-		} else if err = gnuplex.NewDB.SetMediadirs(body); err != nil {
+		} else if err = gnuplex.DB.SetMediadirs(body); err != nil {
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {
 			c.Status(http.StatusOK)
 		}
 	})
 	gnuplex.Router.GET("/api/file_exts", func(c *gin.Context) {
-		res, err := gnuplex.NewDB.GetFileExts()
+		res, err := gnuplex.DB.GetFileExts()
 		if err != nil {
 			c.Status(http.StatusInternalServerError)
 		} else {
@@ -102,7 +102,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 		body := FileExtsBody{}
 		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
 			c.String(http.StatusBadRequest, "bad body format")
-		} else if err = gnuplex.NewDB.SetFileExts(body); err != nil {
+		} else if err = gnuplex.DB.SetFileExts(body); err != nil {
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {
 			c.Status(http.StatusOK)
@@ -134,7 +134,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 		}
 	})
 	gnuplex.Router.GET("/api/last25", func(c *gin.Context) {
-		res, err := gnuplex.NewDB.GetLast25Played()
+		res, err := gnuplex.DB.GetLast25Played()
 		if err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)
@@ -144,7 +144,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 
 	})
 	gnuplex.Router.GET("/api/mediaitems", func(c *gin.Context) {
-		res, err := gnuplex.NewDB.GetMediaItems()
+		res, err := gnuplex.DB.GetMediaItems()
 		if err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)

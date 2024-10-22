@@ -6,6 +6,7 @@ type MediaItem struct {
 	gorm.Model
 	Path       string `gorm:"uniqueIndex"`
 	LastPlayed string `gorm:"index:,sort:desc"`
+	Temp       bool   `gorm:"default:false"`
 }
 
 type MediaItemId uint
