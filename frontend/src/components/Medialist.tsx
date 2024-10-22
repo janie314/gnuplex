@@ -3,7 +3,6 @@ import { API, type MediaItem } from "../lib/API";
 function Medialist(props: {
   mediaItems: MediaItem[];
   subtitle: string;
-  setMedia: React.Dispatch<React.SetStateAction<MediaItem>>;
 }) {
   return (
     <div className="flex flex-col mb-2 pl-2 whitespace-pre=wrap">
@@ -14,13 +13,7 @@ function Medialist(props: {
               type="button"
               className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-normal break-words"
               key={props.subtitle + mediaItem.ID}
-              onClick={(e) => {
-                API.setMedia(mediaItem)
-                  .then(() => API.sleep(2000))
-                  .then(() => {
-                    props.setMedia(mediaItem);
-                  });
-              }}
+              onClick={(e) => API.setMedia(mediaItem)}
               value={mediaItem.Path}
             />
           ))

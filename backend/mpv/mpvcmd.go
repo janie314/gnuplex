@@ -123,8 +123,9 @@ func (mpv *MPV) IsPaused() []byte {
 	return mpv.GetCmd([]string{"get_property", "pause"})
 }
 
-func (mpv *MPV) GetMedia() []byte {
-	return mpv.GetCmd([]string{"get_property", "path"})
+func (mpv *MPV) GetMedia() (string, error) {
+	res := mpv.GetCmd([]string{"get_property", "path"})
+	return processMPVGetResult[string](res)
 }
 
 func (mpv *MPV) SetMedia(filepath string) []byte {
