@@ -20,8 +20,7 @@ function App() {
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
-  const m: MediaItem = { ID: -1, Path: "", LastPlayed: "" };
-  const [media, setMedia] = useState<MediaItem>(m);
+  const [media, setMedia] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [last25, setLast25] = useState<MediaItem[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
@@ -71,23 +70,13 @@ function App() {
             setVolPosToggle={setVolPosToggle}
           />
         </div>
-
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1/100">
           <Medialist
-            mediaItems={[media]}
+            mediaItems={[{ Path: media, LastPlayed: "", ID: -1 }]}
             subtitle="Now Playing"
-            setMedia={setMedia}
           />
-          <Medialist
-            mediaItems={last25}
-            subtitle="Recent"
-            setMedia={setMedia}
-          />
-          <Medialist
-            mediaItems={mediaItems}
-            subtitle="Library"
-            setMedia={setMedia}
-          />
+          <Medialist mediaItems={last25} subtitle="Recent" />
+          <Medialist mediaItems={mediaItems} subtitle="Library" />
         </div>
       </div>
       <MediadirsConfigPopup

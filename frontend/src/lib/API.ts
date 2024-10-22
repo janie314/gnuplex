@@ -76,7 +76,7 @@ class API {
   }
 
   public static async getMedia() {
-    return (await fetch("/api/media").then((res) => res.json())) as MediaItem;
+    return (await fetch("/api/media").then((res) => res.json())) as string;
   }
 
   public static async setMedia(mediaItem: MediaItem) {
@@ -90,13 +90,13 @@ class API {
     });
   }
 
-  public static async castMedia(url: string) {
+  public static async cast(url: string, temp: boolean) {
     return await fetch("/api/cast", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ arg: url }),
+      body: JSON.stringify({ url, temp }),
     });
   }
 

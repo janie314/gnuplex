@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Popup.css";
+import { API } from "../lib/API";
 
 function CastPopup(props: {
   visible: boolean;
@@ -17,7 +18,10 @@ function CastPopup(props: {
             type="text"
             className="border border-black text-sm font-mono p-1"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => {
+              API.cast(url, !addToLib);
+              setUrl(e.target.value);
+            }}
           />
         </div>
         <div className="flex flex-row items-center mb-2">
@@ -37,7 +41,12 @@ function CastPopup(props: {
             type="button"
             value="OK"
             className="mr-1 p-1 border border-solid border-black hover:bg-cyan-300"
-            onClick={() => props.setCastPopup(false)}
+            onClick={() => {
+              API.cast(url, !addToLib);
+              setUrl("");
+              setAddToLib(false);
+              props.setCastPopup(false);
+            }}
           />
           <input
             type="button"

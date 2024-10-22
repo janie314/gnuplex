@@ -15,7 +15,7 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.3'
-    - name: setup ruby
+    - name: setup bun
       uses: oven-sh/setup-bun@v2
     - name: setup go
       uses: actions/setup-go@v5
@@ -34,3 +34,8 @@ jobs:
       run: |
         bun i
         bun run biome ci
+    - name: check for TODOs
+      run: |
+        grep -rnI . \
+          --exclude-dir .github --exclude-dir .git --exclude-dir node_modules --exclude-dir .git \
+          -e TODO | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'

@@ -14,6 +14,11 @@ type MediaActionBody struct {
 	Id models.MediaItemId `json:"id"`
 }
 
+type CastBody struct {
+	Url  string `json:"url"`
+	Temp bool   `json:"temp"`
+}
+
 type MediaDirsBody []string
 
 type FileExtsBody []string
@@ -40,7 +45,12 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 		c.Data(http.StatusOK, "application/json", gnuplex.MPV.IsPaused())
 	})
 	gnuplex.Router.GET("/api/media", func(c *gin.Context) {
-		c.Data(http.StatusOK, "application/json", gnuplex.MPV.GetMedia())
+		media, err := gnuplex.MPV.GetMedia()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 0)
+		} else {
+			c.JSON(http.StatusOK, media)
+		}
 	})
 	gnuplex.Router.POST("/api/media", func(c *gin.Context) {
 		body := MediaActionBody{}
@@ -52,6 +62,17 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 			c.Status(http.StatusOK)
 		}
 	})
+	gnuplex.Router.POST("/api/cast", func(c *gin.Context) {
+		body := CastBody{}
+		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
+			c.String(http.StatusBadRequest, "bad body format")
+		} else if err = gnuplex.Cast(body.Url, body.Temp); err != nil {
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
+
 	gnuplex.Router.GET("/api/vol", func(c *gin.Context) {
 		vol, err := gnuplex.MPV.GetVol()
 		if err != nil {

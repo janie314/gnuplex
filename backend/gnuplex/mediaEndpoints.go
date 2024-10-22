@@ -74,16 +74,6 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	return nil
 }
 
-func (gnuplex *GNUPlex) SetFileExts(file_exts []string) error {
-	// TODO
-	return nil
-}
-
-func (gnuplex *GNUPlex) Last25() []string {
-	// TODO return nil
-	return nil
-}
-
 func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
 	if len(gnuplex.PlayQueue) == 0 {
 		return nil, errors.New("PlayQueue is empty at the moment")
@@ -108,6 +98,27 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	return nil
 }
 
+func (gnuplex *GNUPlex) ReplaceQueueAndPlayByPath(path string) error {
+	var mediaItem *models.MediaItem
+	if err := gnuplex.DB.ORM.First(&mediaItem, "path = ?", path).Error; err != nil {
+		return err
+	}
+	if mediaItem != nil {
+		gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
+	}
+	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
+		return err
+	}
+	if err := gnuplex.DB.UpdateLastPlayed(mediaItem); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gnuplex *GNUPlex) ReplaceQueueAndCastTempUrl(url string) error {
+	return gnuplex.MPV.ReplaceQueueAndPlay(url)
+}
+
 func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
 	gnuplex.DB.ORM.First(&mediaItem, id)
@@ -116,4 +127,14 @@ func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	}
 	gnuplex.MPV.QueueMedia(mediaItem.Path)
 	return mediaItem
+}
+
+func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
+	if temp {
+		return gnuplex.ReplaceQueueAndCastTempUrl(url)
+	} else if err := gnuplex.DB.AddMediaItem(url); err != nil {
+		return err
+	} else {
+		return gnuplex.ReplaceQueueAndPlayByPath(url)
+	}
 }
