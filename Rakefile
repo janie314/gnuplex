@@ -18,5 +18,5 @@ desc "build gnuplex"
 task :build do
   sh "bun i --cwd frontend"
   sh "bun run --cwd frontend build"
-  sh "go build -C backend ."
+  sh "go build -C backend -o bin/gnuplex ."
 end
