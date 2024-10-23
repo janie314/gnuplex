@@ -1,0 +1,11 @@
+[Unit]
+Description=GNUPLex
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/gnuplex/git/gnuplex/backend
+ExecStart=/home/gnuplex/git/gnuplex/backend/gnuplex-backend -mpv_socket_path /tmp/janeplex -db_path /home/gnuplex/gnuplex.sqlite3
+
+[Install]
+WantedBy=default.target
