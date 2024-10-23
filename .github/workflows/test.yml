@@ -34,6 +34,11 @@ jobs:
       run: |
         bun i
         bun run biome ci
+    - name: check 'rake build' was run
+      working-directory: frontend
+      run: |
+        bun run build
+        git status --porcelain | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
     - name: check for TODOs
       run: |
         grep -rnI . \
