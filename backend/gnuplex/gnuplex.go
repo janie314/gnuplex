@@ -4,9 +4,9 @@ import (
 	"log"
 	"sync"
 
-	"gnuplex-backend/db"
-	"gnuplex-backend/models"
-	"gnuplex-backend/mpv"
+	"gnuplex/db"
+	"gnuplex/models"
+	"gnuplex/mpv"
 
 	"github.com/gin-gonic/gin"
 )

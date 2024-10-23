@@ -1,8 +1,8 @@
 package gnuplex
 
 import (
-	"gnuplex-backend/consts"
-	"gnuplex-backend/models"
+	"gnuplex/consts"
+	"gnuplex/models"
 	"log"
 	"net/http"
 	"strconv"
