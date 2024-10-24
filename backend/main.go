@@ -26,12 +26,16 @@ func main() {
 	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
 	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
+	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
 	exe, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
 	}
 	staticFiles := flag.String("static_files", filepath.Join(filepath.Dir(exe), "static"), "Path to static web files.")
 	flag.Parse()
+	if *upgrade {
+		upgradeGNUPlex(exe)
+	}
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -69,4 +73,9 @@ func main() {
 	 * Main execution
 	 */
 	wg.Wait()
+}
+
+func upgradeGNUPlex(exe string) {
+	fmt.Println(filepath.Join(filepath.Dir(exe), ""))
+	os.Exit(0)
 }
