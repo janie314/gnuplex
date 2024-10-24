@@ -23,9 +23,10 @@ jobs:
         go-version: '^1.23.2'
         cache-dependency-path: backend/go.sum
     - name: compile the go backend
-      working-directory: backend
       run: |
-        go build .
+        GIT_COMMIT=$(git rev-list -1 HEAD) && go build -C backend -o /tmp/gnuplex -ldflags "-X main.GitCommit=$GIT_COMMIT" .
+        TODO no actually do tar cvzO backend | sha512sum | cut -d ' ' -f 1
+
     - name: check go formatting
       working-directory: backend
       run: |
@@ -34,12 +35,15 @@ jobs:
       run: |
         bun i
         bun run biome ci
-    - name: check 'rake build' was run
+    - name: check frontend build was run
       working-directory: frontend
       run: |
         bun i
         bun run build
         git status --porcelain | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
+    - name: check backend build was run
+      run: |
+        ruby -e 'exit (`./backend/bin/gnuplex -commit` == `git rev-list -1 HEAD`)'
     - name: check for TODOs
       run: |
         grep -rnI . \

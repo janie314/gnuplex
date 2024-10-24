@@ -1,7 +1,7 @@
 package db
 
 import (
-	"gnuplex-backend/models"
+	"gnuplex/models"
 	"log"
 	"time"
 

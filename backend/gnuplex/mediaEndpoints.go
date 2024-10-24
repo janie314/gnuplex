@@ -2,7 +2,7 @@ package gnuplex
 
 import (
 	"errors"
-	"gnuplex-backend/models"
+	"gnuplex/models"
 	"io/fs"
 	"log"
 	"os"
