@@ -18,7 +18,6 @@ import (
 )
 
 func main() {
-	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	/*
 	 * Cmd line flags
 	 */
@@ -34,9 +33,13 @@ func main() {
 	}
 	staticFiles := flag.String("static_files", filepath.Join(filepath.Dir(exe), "static"), "Path to static web files.")
 	flag.Parse()
+	/*
+	 * upgrade option
+	 */
 	if *upgrade {
 		upgradeGNUPlex(exe)
 	}
+	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
