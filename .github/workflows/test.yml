@@ -24,7 +24,7 @@ jobs:
         cache-dependency-path: backend/go.sum
     - name: compile the go backend
       run: |
-        GIT_COMMIT=$(git rev-list -1 HEAD) && go build -C backend -o bin/gnuplex -ldflags "-X main.GitCommit=$GIT_COMMIT" .
+        GIT_COMMIT=$(git rev-list -1 HEAD) && go build -C backend -o /tmp/gnuplex -ldflags "-X main.GitCommit=$GIT_COMMIT" .
     - name: check go formatting
       working-directory: backend
       run: |
