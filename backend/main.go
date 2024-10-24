@@ -8,6 +8,7 @@ import (
 	server "gnuplex/gnuplex"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 
@@ -76,6 +77,13 @@ func main() {
 }
 
 func upgradeGNUPlex(exe string) {
-	fmt.Println(filepath.Join(filepath.Dir(exe), "../.."))
-	os.Exit(0)
+	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalln("fail", err)
+	} else {
+		os.Exit(0)
+	}
 }
