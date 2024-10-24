@@ -25,6 +25,8 @@ jobs:
     - name: compile the go backend
       run: |
         GIT_COMMIT=$(git rev-list -1 HEAD) && go build -C backend -o /tmp/gnuplex -ldflags "-X main.GitCommit=$GIT_COMMIT" .
+        TODO no actually do tar cvzO backend | sha512sum | cut -d ' ' -f 1
+
     - name: check go formatting
       working-directory: backend
       run: |
