@@ -17,6 +17,8 @@ import (
 	"github.com/reugn/go-quartz/quartz"
 )
 
+var GitCommit string
+
 func main() {
 	/*
 	 * Cmd line flags
@@ -27,6 +29,7 @@ func main() {
 	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
 	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
+	commit := flag.Bool("commit", false, "Git commit this build comes from.")
 	exe, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
@@ -38,6 +41,9 @@ func main() {
 	 */
 	if *upgrade {
 		upgradeGNUPlex(exe)
+	}
+	if *commit {
+		showCommit()
 	}
 	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	if *prod {
@@ -89,4 +95,9 @@ func upgradeGNUPlex(exe string) {
 	} else {
 		os.Exit(0)
 	}
+}
+
+func showCommit() {
+	fmt.Println(GitCommit)
+	os.Exit(0)
 }
