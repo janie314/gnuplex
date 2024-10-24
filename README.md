@@ -14,7 +14,7 @@ This will prompt you for a directory in your PATH, then install GNUPlex there.
 To update GNUPlex:
 
 ```shell
-gnuplex update
+gnuplex -upgrade
 ```
 
 # Releases
