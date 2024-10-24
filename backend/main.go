@@ -76,6 +76,6 @@ func main() {
 }
 
 func upgradeGNUPlex(exe string) {
-	fmt.Println(filepath.Join(filepath.Dir(exe), ""))
+	fmt.Println(filepath.Join(filepath.Dir(exe), "../.."))
 	os.Exit(0)
 }
