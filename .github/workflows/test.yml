@@ -11,7 +11,8 @@ jobs:
     steps:
     - name: check out this repo
       uses: actions/checkout@v4
-      lfs: true
+      with:
+        lfs: true
     - name: setup ruby
       uses: ruby/setup-ruby@v1
       with:
