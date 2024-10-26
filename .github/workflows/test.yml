@@ -11,6 +11,7 @@ jobs:
     steps:
     - name: check out this repo
       uses: actions/checkout@v4
+      lfs: true
     - name: setup ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -41,6 +42,7 @@ jobs:
         git status --porcelain | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
     - name: check backend build was run
       run: |
+        ./backend/bin/gnuplex -source_hash
         ruby -e 'exit (`./backend/bin/gnuplex -source_hash`.strip == `tar cvO backend | sha512sum | cut -d " " -f 1`.strip)'
     - name: check for TODOs
       run: |
