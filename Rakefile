@@ -18,5 +18,5 @@ desc "build gnuplex"
 task :build do
   sh "bun i --cwd frontend"
   sh "bun run --cwd frontend build"
-  sh "GIT_COMMIT=$(git rev-list -1 HEAD) && go build -C backend -o bin/gnuplex -ldflags \"-X main.GitCommit=$GIT_COMMIT\" ."
+  sh "SOURCE_HASH=$(tar cvO backend | sha512sum | cut -d ' ' -f 1) && go build -C backend -o bin/gnuplex -ldflags \"-X main.SourceHash=$SOURCE_HASH\" ."
 end
