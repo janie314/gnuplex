@@ -46,5 +46,5 @@ task :go_source_hash do
 end
 
 def source_hash
-  `git ls-files -s backend | git hash-object --stdin`.strip
+  `find backend -type f -name '*.go' -or -name 'go*' | xargs sha512sum | cut -d ' ' -f 1 | sort | sha512sum | cut -d ' ' -f 1`.strip
 end
