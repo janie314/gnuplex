@@ -33,7 +33,14 @@ task build: [:build_frontend, :build_backend]
 desc "is the go build current?"
 task :go_build_current do
   exit 1 unless File.exist? File.join(__dir__, "backend/bin/gnuplex")
-  source_hash = `find backend -type f -not -path 'backend/bin/gnuplex' | xargs sha512sum | sha512sum | cut -d ' ' -f 1`.strip
+  puts "b"
   build_hash = `./backend/bin/gnuplex -source_hash`.strip
+  puts source_hash
+  puts build_hash
+  puts "b"
   exit source_hash == build_hash
+end
+
+def source_hash
+  `find backend -type f -not -path 'backend/bin/gnuplex' | xargs sha512sum | sha512sum | cut -d ' ' -f 1`.strip
 end
