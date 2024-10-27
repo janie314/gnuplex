@@ -28,7 +28,9 @@ end
 
 desc "build backend (CI use only)"
 task :go_build_ci do
-  sh "go", "build", "-o", "/tmp/gnuplex", "-ldflags", "-X main.SourceHash=" + source_hash, "."
+  Dir.chdir(File.join(__dir__, "backend")) do
+    sh "go", "build", "-o", "/tmp/gnuplex", "-ldflags", "-X main.SourceHash=" + source_hash, "."
+  end
 end
 
 desc "build gnuplex"
