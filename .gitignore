@@ -6,3 +6,5 @@ backend/gnuplex.sqlite3node_modules
 node_modules
 backend/gnuplex.sqlite3
 backend/__debug_bin*
+vendor
+.bundle

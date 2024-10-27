@@ -4,10 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"gnuplex-backend/consts"
-	server "gnuplex-backend/gnuplex"
+	"gnuplex/consts"
+	server "gnuplex/gnuplex"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 
@@ -16,8 +17,9 @@ import (
 	"github.com/reugn/go-quartz/quartz"
 )
 
+var SourceHash string
+
 func main() {
-	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	/*
 	 * Cmd line flags
 	 */
@@ -26,12 +28,24 @@ func main() {
 	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
 	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
+	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
+	source_hash := flag.Bool("source_hash", false, "Git commit this build comes from.")
 	exe, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
 	}
 	staticFiles := flag.String("static_files", filepath.Join(filepath.Dir(exe), "static"), "Path to static web files.")
 	flag.Parse()
+	/*
+	 * upgrade option
+	 */
+	if *upgrade {
+		upgradeGNUPlex(exe)
+	}
+	if *source_hash {
+		sourceHash()
+	}
+	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -69,4 +83,21 @@ func main() {
 	 * Main execution
 	 */
 	wg.Wait()
+}
+
+func upgradeGNUPlex(exe string) {
+	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalln("fail", err)
+	} else {
+		os.Exit(0)
+	}
+}
+
+func sourceHash() {
+	fmt.Println(SourceHash)
+	os.Exit(0)
 }
