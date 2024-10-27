@@ -36,7 +36,6 @@ jobs:
       run: |
         gofmt -s -d . | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
     - name: lint frontend code
-      working-directory: frontend
       run: |
         bun run -i biome ci
     - name: lint ruby code
