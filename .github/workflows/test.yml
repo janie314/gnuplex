@@ -20,6 +20,8 @@ jobs:
         bundler-cache: true
     - name: setup bun
       uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
     - name: setup go
       uses: actions/setup-go@v5
       with:
@@ -36,7 +38,7 @@ jobs:
     - name: lint frontend code
       working-directory: frontend
       run: |
-        bun run biome ci
+        bun run -i biome ci
     - name: lint ruby code
       run: |
         bundle exec rubocop
