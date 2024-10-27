@@ -30,7 +30,7 @@ jobs:
     - name: compile the go backend
       working-directory: backend
       run: |
-        bundle exec rake go_build
+        bundle exec rake go_build_ci
     - name: check go formatting
       working-directory: backend
       run: |
