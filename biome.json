@@ -4,7 +4,6 @@
       "app/assets/builds/**",
       "backend/public/assets/**",
       "backend/static/**",
-      "files/**",
       "app/assets/stylesheets/application.tailwind.css",
       "config/provision/production.json",
       "node_modules",
@@ -28,7 +27,6 @@
       "app/assets/stylesheets/application.tailwind.css",
       "backend/public/assets/**",
       "backend/static/**",
-      "files/**",
       "dist",
       "doc",
       "package.json",
@@ -52,5 +50,8 @@
     "formatter": {
       "indentStyle": "space"
     }
+  },
+  "files": {
+    "ignoreUnknown": true
   }
 }
