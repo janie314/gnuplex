@@ -17,7 +17,9 @@ jobs:
     - name: setup ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3'
+        ruby-version: '3.3.5'
+    - name: pull ruby dependencies
+      run: bundle
     - name: setup bun
       uses: oven-sh/setup-bun@v2
     - name: setup go
@@ -26,9 +28,9 @@ jobs:
         go-version: '^1.23.2'
         cache-dependency-path: backend/go.sum
     - name: compile the go backend
+      working-directory: backend
       run: |
-        bundle
-        TARGET=/tmp/gnuplex bundle exec rake go_build
+        bundle exec rake go_build
     - name: check go formatting
       working-directory: backend
       run: |
@@ -43,8 +45,7 @@ jobs:
     - name: check frontend build was run
       working-directory: frontend
       run: |
-        bun i
-        bun run build
+        bundle exec rake frontend_build
         git status --porcelain | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
     - name: check backend build was run
       run: |

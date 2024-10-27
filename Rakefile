@@ -15,7 +15,7 @@ task :dev do
 end
 
 desc "build frontend"
-task :build_frontend do
+task :frontend_build do
   sh "bun i --cwd frontend"
   sh "bun run --cwd frontend build"
 end
@@ -26,17 +26,18 @@ task :go_build do
   sh "go", "build", "-C", "backend", "-o", target, "-ldflags", "-X main.SourceHash=" + source_hash, "."
 end
 
+desc "build backend (CI use only)"
+task :go_build_ci do
+  sh "go", "build", "-o", "/tmp/gnuplex", "-ldflags", "-X main.SourceHash=" + source_hash, "."
+end
+
 desc "build gnuplex"
-task build: [:build_frontend, :go_build]
+task build: [:frontend_build, :go_build]
 
 desc "is the go build current?"
 task :go_build_current do
   exit 1 unless File.exist? File.join(__dir__, "backend/bin/gnuplex")
-  puts "b"
   build_hash = `./backend/bin/gnuplex -source_hash`.strip
-  puts source_hash
-  puts build_hash
-  puts "b"
   exit source_hash == build_hash
 end
 
