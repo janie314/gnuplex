@@ -38,7 +38,7 @@ jobs:
     - name: lint frontend code
       run: |
         bun i
-        bun run biome ci
+        bun run biome ci --verbose
     - name: lint ruby code
       run: |
         bundle exec rubocop
