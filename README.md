@@ -6,7 +6,7 @@ friendly web interface.
 # Installation and Updating
 
 ```shell
-curl -s https://gnuplex.janie.page/install.sh | sh
+sh <(curl -sL https://gnuplex.janie.page/install.sh)
 ```
 
 This will prompt you for a directory in your PATH, then install GNUPlex there.
