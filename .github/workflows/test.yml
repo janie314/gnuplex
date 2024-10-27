@@ -26,6 +26,7 @@ jobs:
         cache-dependency-path: backend/go.sum
     - name: compile the go backend
       run: |
+        bundle
         TARGET=/tmp/gnuplex bundle exec rake build_backend
     - name: check go formatting
       working-directory: backend
@@ -37,7 +38,6 @@ jobs:
         bun run biome ci
     - name: lint ruby code
       run: |
-        bundle
         bundle exec rubocop
     - name: check frontend build was run
       working-directory: frontend
