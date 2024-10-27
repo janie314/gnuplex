@@ -52,6 +52,4 @@ jobs:
         bundle exec rake go_build_current
     - name: check for TODOs
       run: |
-        grep -rnI . \
-          --exclude-dir .github --exclude-dir .git --exclude-dir node_modules --exclude-dir .git \
-          -e TODO | wc -l | xargs ruby -e 'exit ARGV[0].to_i == 0'
+        git ls-files frontend backend | xargs grep -Ii todo | wc -l | xargs ruby -e 'exit A(RGV[0].to_i == 0'
