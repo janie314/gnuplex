@@ -47,7 +47,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 	gnuplex.Router.GET("/api/media", func(c *gin.Context) {
 		media, err := gnuplex.MPV.GetMedia()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, 0)
+			c.JSON(http.StatusInternalServerError, "")
 		} else {
 			c.JSON(http.StatusOK, media)
 		}
