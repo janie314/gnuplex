@@ -54,4 +54,4 @@ jobs:
       run: |
         grep -rnI . \
           --exclude-dir .github --exclude-dir .git --exclude-dir node_modules --exclude-dir .git \
-          -e TODO | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
+          -e TODO | wc -l | xargs ruby -e 'exit ARGV[0].to_i == 0'
