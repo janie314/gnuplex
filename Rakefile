@@ -20,15 +20,14 @@ task :build_frontend do
   sh "bun run --cwd frontend build"
 end
 
-desc "build backend"
-task :build_backend do
-  source_hash = `find backend -type f -not -path 'backend/bin/gnuplex' | xargs sha512sum | sha512sum | cut -d ' ' -f 1`.strip
+desc "build backend go code"
+task :go_build do
   target = ENV.fetch("TARGET", "bin/gnuplex")
   sh "go", "build", "-C", "backend", "-o", target, "-ldflags", "-X main.SourceHash=" + source_hash, "."
 end
 
 desc "build gnuplex"
-task build: [:build_frontend, :build_backend]
+task build: [:build_frontend, :go_build]
 
 desc "is the go build current?"
 task :go_build_current do
@@ -41,6 +40,11 @@ task :go_build_current do
   exit source_hash == build_hash
 end
 
+desc "print go source code hash"
+task :go_source_hash do
+  puts source_hash
+end
+
 def source_hash
-  `find backend -type f -not -path 'backend/bin/gnuplex' | xargs sha512sum | sha512sum | cut -d ' ' -f 1`.strip
+  `find backend -type f -not -path 'backend/bin/gnuplex' | sort | xargs sha512sum | sha512sum | cut -d ' ' -f 1`.strip
 end

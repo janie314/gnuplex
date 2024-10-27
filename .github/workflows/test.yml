@@ -28,7 +28,7 @@ jobs:
     - name: compile the go backend
       run: |
         bundle
-        TARGET=/tmp/gnuplex bundle exec rake build_backend
+        TARGET=/tmp/gnuplex bundle exec rake go_build
     - name: check go formatting
       working-directory: backend
       run: |
