@@ -46,6 +46,7 @@ jobs:
       working-directory: frontend
       run: |
         bundle exec rake frontend_build
+        git status
         git status --porcelain | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
     - name: check backend build was run
       run: |
