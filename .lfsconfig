@@ -1,1 +1,2 @@
-lfs.url = https://lfs.janie.page
+[lfs]
+url = https://lfs.janie.page
