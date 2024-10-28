@@ -67,14 +67,11 @@ func (db *DB) SetMediadirs(mediaDirs []string) error {
 	}
 	mediaDirsH := make(map[string]bool)
 	for _, dir := range mediaDirs {
-		log.Println("a", dir)
 		mediaDirsH[dir] = true
 	}
 	for _, dir := range mediaDirs {
-		log.Println("b", dir)
 		err := db.ORM.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.MediaDir{Path: dir}).Error
 		if err != nil {
-			log.Println("b", dir)
 			return err
 		}
 	}
