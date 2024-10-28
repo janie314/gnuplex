@@ -15,6 +15,6 @@ fi
 mkdir -p "$install_dir"
 git clone -b release https://github.com/janie314/gnuplex.git "$install_dir/gnuplex-code"
 mkdir -p "$install_dir/gnuplex-code/backend/bin"
-curl -o "$install_dir/gnuplex-code/backend/bin/gnuplex" https://gnuplex.janie.page/gnuplex
+curl --output-dir "$install_dir/gnuplex-code/backend/bin" -O https://gnuplex.janie.page/gnuplex
 cd "$install_dir"
 ln -s gnuplex-code/backend/bin/gnuplex .
