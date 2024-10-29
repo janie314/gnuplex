@@ -2,7 +2,6 @@ package db
 
 import (
 	"gnuplex/models"
-	"log"
 	"time"
 
 	"gorm.io/driver/sqlite"
