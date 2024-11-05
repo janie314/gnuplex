@@ -20,7 +20,7 @@ function MediaControls(props: {
       <div className="mr-1">
         <button
           type="button"
-          className="p-2 w-8 border border-solid border-black hover:bg-cyan-300"
+          className="p-2 w-8 border border-solid border-black hover:bg-cyan-200"
           onClick={() =>
             API.play()
               .then(() => API.sleep(2000))
@@ -33,7 +33,7 @@ function MediaControls(props: {
       <div className="mr-2">
         <button
           type="button"
-          className="p-2 w-8 border border-solid border-black hover:bg-cyan-300"
+          className="p-2 w-8 border border-solid border-black hover:bg-cyan-200"
           onClick={() =>
             API.pause()
               .then(() => API.sleep(2000))
@@ -80,7 +80,7 @@ function MediaControls(props: {
       <div className="flex flex-row justify-center mt-3 p-1">
         <input
           type="button"
-          className="mr-1 p-1 border border-solid border-black hover:bg-cyan-300"
+          className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
           value="Manage Library"
           onClick={() => {
             props.setMediadirInputPopup(true);
@@ -88,7 +88,7 @@ function MediaControls(props: {
         />
         <input
           type="button"
-          className="p-1 border border-solid border-black hover:bg-cyan-300"
+          className="p-1 border border-solid border-black hover:bg-cyan-200"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
         />

@@ -5,6 +5,7 @@ import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
+import search from "../public/search.svg";
 
 interface IMPVRes {
   data?: number | string;
@@ -25,6 +26,7 @@ function App() {
   const [last25, setLast25] = useState<MediaItem[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
   const [castPopup, setCastPopup] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     API.getVersion().then((version: string) => setVersion(version));
@@ -70,7 +72,14 @@ function App() {
             setVolPosToggle={setVolPosToggle}
           />
         </div>
-        <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1/100">
+        <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
+          <input
+            type="text"
+            className="grow mb-2 p-3 w-full border-2 border-gray-300 focus:bg-cyan-50"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <Medialist
             mediaItems={[{ Path: media, LastPlayed: "", ID: -1 }]}
             subtitle="Now Playing"

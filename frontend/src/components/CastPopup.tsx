@@ -40,7 +40,7 @@ function CastPopup(props: {
           <input
             type="button"
             value="OK"
-            className="mr-1 p-1 border border-solid border-black hover:bg-cyan-300"
+            className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
             onClick={() => {
               API.cast(url, !addToLib);
               setUrl("");
@@ -51,7 +51,7 @@ function CastPopup(props: {
           <input
             type="button"
             value="Cancel"
-            className="p-1 border border-solid border-black hover:bg-cyan-300"
+            className="p-1 border border-solid border-black hover:bg-cyan-200"
             onClick={() => props.setCastPopup(false)}
           />
         </div>
