@@ -8,23 +8,19 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func (gnuplex *GNUPlex) ScanLib() error {
+	lastScanUUID := uuid.New().String()
+	log.Println("scanuuid", lastScanUUID)
 	/*
 	 * grab MediaDirs, MediaItems, FileExts from the database
 	 */
 	mediaDirs, err := gnuplex.DB.GetMediaDirs()
 	if err != nil {
 		return err
-	}
-	mediaItems, err := gnuplex.DB.GetMediaItems()
-	if err != nil {
-		return err
-	}
-	mediaItemH := make(map[string]models.MediaItem)
-	for _, mediaItem := range mediaItems {
-		mediaItemH[mediaItem.Path] = mediaItem
 	}
 	fileExts, err := gnuplex.DB.GetFileExts()
 	if err != nil {
@@ -48,30 +44,20 @@ func (gnuplex *GNUPlex) ScanLib() error {
 				} else if !entry.IsDir() {
 					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
 					log.Println("ext", ext)
-					if _, ok := fileExtH[ext]; ok {
-						return gnuplex.DB.DeleteMediaItemByPath(path)
+					if _, fileExtMatch := fileExtH[ext]; fileExtMatch {
+						return gnuplex.DB.AddMediaItemFile(path, lastScanUUID)
 					}
-					return gnuplex.DB.AddMediaItem(path)
+					return nil
 				} else {
 					return nil
 				}
 			})
-
 		}
 	}
 	/*
 	 * remove stuff that no longer exists
 	 */
-	for _, mediaItem := range mediaItems {
-		_, err := os.Stat(mediaItem.Path)
-		if err != nil {
-			err = gnuplex.DB.DeleteMediaItemByPath(mediaItem.Path)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+	return gnuplex.DB.DeleteMediaItemFilesNotMatchingUUID(lastScanUUID)
 }
 
 func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
@@ -132,7 +118,7 @@ func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
 	if temp {
 		return gnuplex.ReplaceQueueAndCastTempUrl(url)
-	} else if err := gnuplex.DB.AddMediaItem(url); err != nil {
+	} else if err := gnuplex.DB.AddMediaItemURL(url); err != nil {
 		return err
 	} else {
 		return gnuplex.ReplaceQueueAndPlayByPath(url)

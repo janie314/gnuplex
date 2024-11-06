@@ -89,8 +89,9 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 			vol, err := strconv.Atoi(param)
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad vol string")
+			} else {
+				c.Data(http.StatusOK, "application/json", gnuplex.MPV.SetVolume(vol))
 			}
-			c.Data(http.StatusOK, "application/json", gnuplex.MPV.SetVolume(vol))
 		}
 	})
 	gnuplex.Router.GET("/api/mediadirs", func(c *gin.Context) {
@@ -150,8 +151,9 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 			pos, err := strconv.Atoi(param)
 			if err != nil {
 				c.String(http.StatusBadRequest, "bad pos string")
+			} else {
+				c.Data(http.StatusOK, "application/json", gnuplex.MPV.SetPos(pos))
 			}
-			c.Data(http.StatusOK, "application/json", gnuplex.MPV.SetPos(pos))
 		}
 	})
 	gnuplex.Router.GET("/api/last25", func(c *gin.Context) {
@@ -174,8 +176,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 		}
 	})
 	gnuplex.Router.POST("/api/scanlib", func(c *gin.Context) {
-		err := gnuplex.ScanLib()
-		if err != nil {
+		if err := gnuplex.ScanLib(); err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)
 		} else {
