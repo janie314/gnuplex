@@ -37,7 +37,7 @@ func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath, 
 	/*
 	 * new sqlite DB
 	 */
-	db, err := db.Init(dbPath)
+	db, err := db.Init(dbPath, verbose)
 	if err != nil {
 		return nil, err
 	}

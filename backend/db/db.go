@@ -7,14 +7,21 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
 )
 
 type DB struct {
 	ORM *gorm.DB
 }
 
-func Init(path string) (*DB, error) {
-	orm, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
+func Init(path string, verbose bool) (*DB, error) {
+	logLevel := logger.Warn
+	if verbose {
+		logLevel = logger.Info
+	}
+	orm, err := gorm.Open(sqlite.Open(path), &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
+	})
 	db := DB{ORM: orm}
 	if err != nil {
 		return nil, err
@@ -117,7 +124,8 @@ func (db *DB) DeleteMediaItemByPath(path string) error {
 func (db *DB) DeleteMediaItemFilesNotMatchingUUID(uuid string) error {
 	return db.ORM.
 		Unscoped().
-		Where("last_scan_uuid != ? and type = ?", uuid, models.File).
+		Where("last_scan_uuid != ?", uuid).
+		Where("type = ?", models.File).
 		Delete(&models.MediaItem{}).Error
 }
 

@@ -36,15 +36,13 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	for _, mediaDir := range mediaDirs {
 		dir, err := os.Stat(mediaDir.Path)
 		if (err == nil) && dir.IsDir() {
-			return filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
-				log.Println("path", path)
+			err = filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
 				if err != nil {
 					log.Println("Walkdir prob: ", mediaDir)
 					return err
 				} else if !entry.IsDir() {
 					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
-					log.Println("ext", ext)
-					if _, fileExtMatch := fileExtH[ext]; fileExtMatch {
+					if _, match := fileExtH[ext]; !match {
 						return gnuplex.DB.AddMediaItemFile(path, lastScanUUID)
 					}
 					return nil
@@ -52,6 +50,9 @@ func (gnuplex *GNUPlex) ScanLib() error {
 					return nil
 				}
 			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 	/*
