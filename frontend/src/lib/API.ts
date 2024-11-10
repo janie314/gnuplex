@@ -75,8 +75,12 @@ class API {
     );
   }
 
-  public static async getMedia() {
-    return (await fetch("/api/media").then((res) => res.json())) as string;
+  public static async getMedia(search: string | null) {
+    // TODO i think you mixed this up with getMediaItems. rename to be less confusing
+    const param = search || "";
+    return (await fetch(`/api/media?search=${encodeURIComponent(param)}`).then(
+      (res) => res.json(),
+    )) as string;
   }
 
   public static async setMedia(mediaItem: MediaItem) {

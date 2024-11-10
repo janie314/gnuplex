@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { API, type MediaItem } from "./lib/API";
 import "./App.css";
+import { useDebounce } from "@uidotdev/usehooks";
 import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
-import { useDebounce } from "@uidotdev/usehooks";
 
 interface IMPVRes {
   data?: number | string;
@@ -38,10 +38,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    API.getMedia().then((res) => setMedia(res));
     API.getMediaItems().then((res) => setMediaItems(res));
     API.getLast25Played().then((res) => setLast25(res));
   }, [mediaToggle]);
+
+  useEffect(() => {
+    API.getMedia(searchQueryDebounced).then((res) => setMedia(res));
+  }, [searchQueryDebounced]);
 
   useEffect(() => {
     API.getPos().then((res: number) => {
