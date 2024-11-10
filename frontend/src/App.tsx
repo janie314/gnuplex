@@ -5,6 +5,7 @@ import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
+import { useDebounce } from "@uidotdev/usehooks";
 
 interface IMPVRes {
   data?: number | string;
@@ -26,9 +27,14 @@ function App() {
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
   const [castPopup, setCastPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const searchQueryDebounced = useDebounce(searchQuery, 1000);
 
   useEffect(() => {
     API.getVersion().then((version: string) => setVersion(version));
+    const urlParams = new URLSearchParams(window.location.search);
+    if ((urlParams.get("search") || "").length > 0) {
+      setSearchQuery(urlParams.get("search") || "");
+    }
   }, []);
 
   useEffect(() => {
@@ -45,6 +51,17 @@ function App() {
     API.getTimeRemaining().then((res: number) => setTimeRemaining(res));
     API.getVol().then((res: number) => setVol(res));
   }, [media, volPosToggle]);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (
+      urlParams.get("search") !== searchQueryDebounced &&
+      searchQueryDebounced.length !== 0
+    ) {
+      urlParams.set("search", searchQueryDebounced);
+      window.location.search = urlParams.toString();
+    }
+  }, [searchQueryDebounced]);
 
   return (
     <>
@@ -79,10 +96,7 @@ function App() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Medialist
-            mediaItems={[{ Path: media, LastPlayed: "", ID: -1 }]}
-            subtitle="Now Playing"
-          />
+          <Medialist mediaItems={[]} subtitle="Now Playing" />
           <Medialist mediaItems={last25} subtitle="Recent" />
           <Medialist mediaItems={mediaItems} subtitle="Library" />
         </div>
