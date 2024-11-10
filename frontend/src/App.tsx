@@ -5,7 +5,6 @@ import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
-import search from "../public/search.svg";
 
 interface IMPVRes {
   data?: number | string;
