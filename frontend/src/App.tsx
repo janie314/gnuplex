@@ -21,7 +21,7 @@ function App() {
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
-  const [media, setMedia] = useState("");
+  const [nowPlaying, setNowPlaying] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [last25, setLast25] = useState<MediaItem[]>([]);
   const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
@@ -38,12 +38,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    API.getMediaItems().then((res) => setMediaItems(res));
+    API.getNowPlaying().then((res) => setNowPlaying(res));
     API.getLast25Played().then((res) => setLast25(res));
   }, [mediaToggle]);
 
   useEffect(() => {
-    API.getMedia(searchQueryDebounced).then((res) => setMedia(res));
+    API.getMediaItems(searchQueryDebounced).then((res) => setMediaItems(res));
   }, [searchQueryDebounced]);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function App() {
     });
     API.getTimeRemaining().then((res: number) => setTimeRemaining(res));
     API.getVol().then((res: number) => setVol(res));
-  }, [media, volPosToggle]);
+  }, [nowPlaying, volPosToggle]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

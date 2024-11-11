@@ -12,7 +12,7 @@ function Medialist(props: {
           type="button"
           className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-normal break-words"
           key={props.subtitle + mediaItem.ID}
-          onClick={(e) => API.setMedia(mediaItem)}
+          onClick={(e) => API.setNowPlaying(mediaItem)}
           value={mediaItem.Path}
         />
       ))}
