@@ -2,6 +2,7 @@ package db
 
 import (
 	"gnuplex/models"
+	"strings"
 	"time"
 
 	"gorm.io/driver/sqlite"
@@ -102,9 +103,10 @@ func (db *DB) GetLast25Played() ([]models.MediaItem, error) {
 	return mediaItems, err
 }
 
-func (db *DB) GetMediaItems() ([]models.MediaItem, error) {
+func (db *DB) GetMediaItems(search string) ([]models.MediaItem, error) {
 	var mediaItems []models.MediaItem
 	err := db.ORM.
+		Where("instr(lower(path), ?) != 0", strings.ToLower(search)).
 		Order("path").
 		Find(&mediaItems).Error
 	return mediaItems, err

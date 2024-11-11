@@ -167,7 +167,8 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 
 	})
 	gnuplex.Router.GET("/api/mediaitems", func(c *gin.Context) {
-		res, err := gnuplex.DB.GetMediaItems()
+		searchQuery := c.Query("search")
+		res, err := gnuplex.DB.GetMediaItems(searchQuery)
 		if err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)
