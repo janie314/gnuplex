@@ -44,15 +44,15 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 	gnuplex.Router.GET("/api/paused", func(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", gnuplex.MPV.IsPaused())
 	})
-	gnuplex.Router.GET("/api/media", func(c *gin.Context) {
-		media, err := gnuplex.MPV.GetMedia()
+	gnuplex.Router.GET("/api/nowplaying", func(c *gin.Context) {
+		media, err := gnuplex.MPV.GetNowPlaying()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "")
 		} else {
 			c.JSON(http.StatusOK, media)
 		}
 	})
-	gnuplex.Router.POST("/api/media", func(c *gin.Context) {
+	gnuplex.Router.POST("/api/nowplaying", func(c *gin.Context) {
 		body := MediaActionBody{}
 		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
 			c.String(http.StatusBadRequest, "bad body format")

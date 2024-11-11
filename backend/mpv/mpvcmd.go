@@ -123,7 +123,7 @@ func (mpv *MPV) IsPaused() []byte {
 	return mpv.GetCmd([]string{"get_property", "pause"})
 }
 
-func (mpv *MPV) GetMedia() (string, error) {
+func (mpv *MPV) GetNowPlaying() (string, error) {
 	res := mpv.GetCmd([]string{"get_property", "path"})
 	return processMPVGetResult[string](res)
 }

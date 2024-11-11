@@ -14,9 +14,12 @@ interface IMPVRes {
 }
 
 function App() {
+  // app info
   const [version, setVersion] = useState("");
+  // UI refresh triggers
   const [volPosToggle, setVolPosToggle] = useState(false);
   const [mediaToggle, setMediaToggle] = useState(false);
+  // media player state info
   const [pos, setPos] = useState(0);
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -24,8 +27,11 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [last25, setLast25] = useState<MediaItem[]>([]);
-  const [mediadirInputPopup, setMediadirInputPopup] = useState(false);
-  const [castPopup, setCastPopup] = useState(false);
+  // UI popups' visibility
+  const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
+    useState(false);
+  const [castPopupVisible, setCastPopupVisible] = useState(false);
+  // URL params
   const [searchQuery, setSearchQuery] = useState("");
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
 
@@ -41,10 +47,6 @@ function App() {
     API.getNowPlaying().then((res) => setNowPlaying(res));
     API.getLast25Played().then((res) => setLast25(res));
   }, [mediaToggle]);
-
-  useEffect(() => {
-    API.getMediaItems(searchQueryDebounced).then((res) => setMediaItems(res));
-  }, [searchQueryDebounced]);
 
   useEffect(() => {
     API.getPos().then((res: number) => {
@@ -64,13 +66,17 @@ function App() {
       urlParams.set("search", searchQueryDebounced);
       window.location.search = urlParams.toString();
     }
+    API.getMediaItems(searchQueryDebounced).then((res) => setMediaItems(res));
   }, [searchQueryDebounced]);
 
   return (
     <>
       <div
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100"
-        style={{ opacity: mediadirInputPopup || castPopup ? "50%" : "100%" }}
+        style={{
+          opacity:
+            mediaDirInputPopupVisible || castPopupVisible ? "50%" : "100%",
+        }}
       >
         <div className="sm:basis-1 md:basis-1/4 sm:max-w-full lg:max-w-sm grow flex-col px-1/100 pb-2 mb-1">
           <div className="logo-panel">
@@ -78,9 +84,9 @@ function App() {
             <span className="version">{version}</span>
           </div>
           <MediaControls
-            mediadirInputPopup={mediadirInputPopup}
-            setMediadirInputPopup={setMediadirInputPopup}
-            setCastPopup={setCastPopup}
+            mediadirInputPopup={mediaDirInputPopupVisible}
+            setMediadirInputPopup={setMediaDirInputPopupVisible}
+            setCastPopup={setCastPopupVisible}
             vol={vol}
             setVol={setVol}
             pos={pos}
@@ -105,15 +111,15 @@ function App() {
         </div>
       </div>
       <MediadirsConfigPopup
-        visible={mediadirInputPopup}
-        setMediadirInputPopup={setMediadirInputPopup}
+        visible={mediaDirInputPopupVisible}
+        setMediadirInputPopup={setMediaDirInputPopupVisible}
         closeHook={() => {
           setMediaToggle(!mediaToggle);
         }}
       />
       <CastPopup
-        visible={castPopup}
-        setCastPopup={setCastPopup}
+        visible={castPopupVisible}
+        setCastPopup={setCastPopupVisible}
         closeHook={() => {
           setMediaToggle(!mediaToggle);
         }}

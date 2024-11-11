@@ -80,7 +80,7 @@ class API {
   }
 
   public static async setNowPlaying(mediaItem: MediaItem) {
-    return await fetch("/api/media", {
+    return await fetch("/api/nowplaying", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
