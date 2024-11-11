@@ -14,12 +14,9 @@ interface IMPVRes {
 }
 
 function App() {
-  // app info
+  // App info
   const [version, setVersion] = useState("");
-  // UI refresh triggers
-  const [volPosToggle, setVolPosToggle] = useState(false);
-  const [mediaToggle, setMediaToggle] = useState(false);
-  // media player state info
+  // Media player state info
   const [pos, setPos] = useState(0);
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -36,37 +33,42 @@ function App() {
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
 
   useEffect(() => {
-    API.getVersion().then((version: string) => setVersion(version));
+    // Populate app version
+    API.getVersion().then((version) => setVersion(version));
+    // Refresh React's copy of the URL parameters from the browser's copy
     const urlParams = new URLSearchParams(window.location.search);
     if ((urlParams.get("search") || "").length > 0) {
       setSearchQuery(urlParams.get("search") || "");
     }
+    // Poll media player state from the backend
+    window.setInterval(() => {
+      API.getPos().then((res) => {
+        setPos(res);
+        setStartPos(res);
+      });
+      API.getTimeRemaining().then((res) => setTimeRemaining(res));
+      API.getVol().then((res) => setVol(res));
+      API.getNowPlaying().then((res) => setNowPlaying(res));
+    }, 2000);
   }, []);
 
   useEffect(() => {
-    API.getNowPlaying().then((res) => setNowPlaying(res));
     API.getLast25Played().then((res) => setLast25(res));
-  }, [mediaToggle]);
+  }, [nowPlaying]);
 
-  useEffect(() => {
-    API.getPos().then((res: number) => {
-      setPos(res);
-      setStartPos(res);
-    });
-    API.getTimeRemaining().then((res: number) => setTimeRemaining(res));
-    API.getVol().then((res: number) => setVol(res));
-  }, [nowPlaying, volPosToggle]);
-
-  useEffect(() => {
+  // Refresh browser's search URL parameter when the search input changes
+  function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (
-      urlParams.get("search") !== searchQueryDebounced &&
-      searchQueryDebounced.length !== 0
-    ) {
+    // TODO now this is not quite working. need a more "react" of updating browser search query params. that fancy new hooks library?
+    if (urlParams.get("search") !== searchQueryDebounced) {
       urlParams.set("search", searchQueryDebounced);
       window.location.search = urlParams.toString();
     }
     API.getMediaItems(searchQueryDebounced).then((res) => setMediaItems(res));
+  }
+
+  useEffect(() => {
+    refreshMediaItems();
   }, [searchQueryDebounced]);
 
   return (
@@ -90,11 +92,9 @@ function App() {
             vol={vol}
             setVol={setVol}
             pos={pos}
+            setPos={setPos}
             startPos={startPos}
             timeRemaining={timeRemaining}
-            setPos={setPos}
-            volPosToggle={volPosToggle}
-            setVolPosToggle={setVolPosToggle}
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
@@ -113,16 +113,12 @@ function App() {
       <MediadirsConfigPopup
         visible={mediaDirInputPopupVisible}
         setMediadirInputPopup={setMediaDirInputPopupVisible}
-        closeHook={() => {
-          setMediaToggle(!mediaToggle);
-        }}
+        closeHook={refreshMediaItems}
       />
       <CastPopup
         visible={castPopupVisible}
         setCastPopup={setCastPopupVisible}
-        closeHook={() => {
-          setMediaToggle(!mediaToggle);
-        }}
+        closeHook={refreshMediaItems}
       />
     </>
   );

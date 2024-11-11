@@ -8,12 +8,10 @@ function MediaControls(props: {
   setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
   startPos: number;
   pos: number;
-  timeRemaining: number;
   setPos: React.Dispatch<React.SetStateAction<number>>;
+  timeRemaining: number;
   vol: number;
   setVol: React.Dispatch<React.SetStateAction<number>>;
-  volPosToggle: boolean;
-  setVolPosToggle: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
@@ -21,11 +19,7 @@ function MediaControls(props: {
         <button
           type="button"
           className="p-2 w-8 border border-solid border-black hover:bg-cyan-200"
-          onClick={() =>
-            API.play()
-              .then(() => API.sleep(2000))
-              .then(() => props.setVolPosToggle(!props.volPosToggle))
-          }
+          onClick={() => API.play()}
         >
           <img src={play} alt="Play icon" />
         </button>
@@ -34,11 +28,7 @@ function MediaControls(props: {
         <button
           type="button"
           className="p-2 w-8 border border-solid border-black hover:bg-cyan-200"
-          onClick={() =>
-            API.pause()
-              .then(() => API.sleep(2000))
-              .then(() => props.setVolPosToggle(!props.volPosToggle))
-          }
+          onClick={() => API.pause()}
         >
           <img src={pause} alt="Pause icon" />
         </button>
@@ -53,8 +43,7 @@ function MediaControls(props: {
             max={props.startPos + props.timeRemaining}
             value={props.pos}
             className="range range-xs"
-            // @ts-ignore
-            onChange={(e) => props.setPos(e.target.value)}
+            onChange={(e) => props.setPos(e.target.valueAsNumber)}
             onMouseUp={() => API.setPos(props.pos)}
             onTouchCancel={() => API.setPos(props.pos)}
           />
@@ -69,8 +58,7 @@ function MediaControls(props: {
             max={120}
             value={props.vol}
             className="range range-xs"
-            // @ts-ignore
-            onChange={(e) => props.setVol(e.target.value)}
+            onChange={(e) => props.setVol(e.target.valueAsNumber)}
             onMouseUp={() => API.setVol(props.vol)}
             onTouchCancel={() => API.setVol(props.vol)}
           />

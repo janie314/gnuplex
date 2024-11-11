@@ -111,16 +111,22 @@ func (mpv *MPV) SetCmd(cmd []interface{}) []byte {
 /*
  * MPV command public fxns
  */
-func (mpv *MPV) Play() []byte {
-	return mpv.SetCmd([]interface{}{"set_property", "pause", false})
+func (mpv *MPV) Play() error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "pause", false}),
+	)
 }
 
-func (mpv *MPV) Pause() []byte {
-	return mpv.SetCmd([]interface{}{"set_property", "pause", true})
+func (mpv *MPV) Pause() error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "pause", true}),
+	)
 }
 
-func (mpv *MPV) IsPaused() []byte {
-	return mpv.GetCmd([]string{"get_property", "pause"})
+func (mpv *MPV) IsPaused() error {
+	return processMPVSetResult(
+		mpv.GetCmd([]string{"get_property", "pause"}),
+	)
 }
 
 func (mpv *MPV) GetNowPlaying() (string, error) {
@@ -128,8 +134,10 @@ func (mpv *MPV) GetNowPlaying() (string, error) {
 	return processMPVGetResult[string](res)
 }
 
-func (mpv *MPV) SetMedia(filepath string) []byte {
-	return mpv.SetCmd([]interface{}{"loadfile", filepath})
+func (mpv *MPV) SetMedia(filepath string) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"loadfile", filepath}),
+	)
 }
 
 func (mpv *MPV) ReplaceQueueAndPlay(filepath string) error {
@@ -137,8 +145,10 @@ func (mpv *MPV) ReplaceQueueAndPlay(filepath string) error {
 	return processMPVSetResult(res)
 }
 
-func (mpv *MPV) QueueMedia(filepath string) []byte {
-	return mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"})
+func (mpv *MPV) QueueMedia(filepath string) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"}),
+	)
 }
 
 func (mpv *MPV) GetVol() (int, error) {
@@ -150,8 +160,10 @@ func (mpv *MPV) GetVol() (int, error) {
 	return int(n), err
 }
 
-func (mpv *MPV) SetVolume(vol int) []byte {
-	return mpv.SetCmd([]interface{}{"set_property", "volume", vol})
+func (mpv *MPV) SetVol(vol int) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "volume", vol}),
+	)
 }
 
 func (mpv *MPV) GetPos() (int, error) {
@@ -163,10 +175,18 @@ func (mpv *MPV) GetPos() (int, error) {
 	return int(n), err
 }
 
-func (mpv *MPV) GetTimeRemaining() []byte {
-	return mpv.GetCmd([]string{"get_property", "time-remaining"})
+func (mpv *MPV) GetTimeRemaining() (int, error) {
+	resBytes := mpv.GetCmd([]string{"get_property", "time-remaining"})
+	n, err := processMPVGetResult[float64](resBytes)
+	if err != nil {
+		return 0, err
+	}
+	return int(n), err
+
 }
 
-func (mpv *MPV) SetPos(pos int) []byte {
-	return mpv.SetCmd([]interface{}{"set_property", "time-pos", pos})
+func (mpv *MPV) SetPos(pos int) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "time-pos", pos}),
+	)
 }
