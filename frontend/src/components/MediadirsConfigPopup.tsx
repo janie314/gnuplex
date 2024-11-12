@@ -47,7 +47,7 @@ function MediadirsConfigPopup(props: {
         <div>
           <input
             type="button"
-            className="p-1 border border-solid border-black hover:bg-cyan-300"
+            className="p-1 border border-solid border-black hover:bg-cyan-200"
             value="Save Settings"
             onClick={() => {
               setSaveMediadirsWorking(true);
@@ -73,7 +73,7 @@ function MediadirsConfigPopup(props: {
         <div>
           <input
             type="button"
-            className="p-1 border border-solid border-black hover:bg-cyan-300"
+            className="p-1 border border-solid border-black hover:bg-cyan-200"
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
@@ -85,7 +85,7 @@ function MediadirsConfigPopup(props: {
         <div className="okcancel">
           <input
             type="button"
-            className="p-1 border border-solid border-black hover:bg-cyan-300"
+            className="p-1 border border-solid border-black hover:bg-cyan-200"
             value="OK"
             onClick={() => {
               props.closeHook();

@@ -38,14 +38,11 @@ class API {
       });
   }
 
-  public static async getTimeRemaining() {
+  public static async getTimeRemaining(): Promise<number> {
     return await fetch("/api/timeremaining")
       .then((res) => res.json())
-      .then((res: IMPVRes) => {
-        if (res.data !== undefined) {
-          // @ts-ignore
-          return Math.floor(res.data);
-        }
+      .catch((e) => {
+        console.error("failed to get time remaining", e);
         return 0;
       });
   }
@@ -55,9 +52,11 @@ class API {
   }
 
   public static async setPos(pos: number) {
-    return await fetch(`/api/pos?pos=${pos}`, { method: "POST" }).then((res) =>
-      res.json(),
-    );
+    return await fetch("/api/pos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pos }),
+    }).then((res) => res.json());
   }
 
   public static async getVol(): Promise<number> {
@@ -70,18 +69,21 @@ class API {
   }
 
   public static async setVol(vol: number) {
-    return await fetch(`/api/vol?vol=${vol}`, { method: "POST" }).then((res) =>
+    return await fetch("/api/vol", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ vol }),
+    }).then((res) => res.json());
+  }
+
+  public static async getNowPlaying() {
+    return (await fetch("/api/nowplaying").then((res) =>
       res.json(),
-    );
+    )) as MediaItem;
   }
 
-  public static async getMedia() {
-    return (await fetch("/api/media").then((res) => res.json())) as string;
-  }
-
-  public static async setMedia(mediaItem: MediaItem) {
-    console.log("m", mediaItem);
-    return await fetch("/api/media", {
+  public static async setNowPlaying(mediaItem: MediaItem) {
+    return await fetch("/api/nowplaying", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -139,10 +141,11 @@ class API {
     });
   }
 
-  public static async getMediaItems() {
-    return (await fetch("/api/mediaitems").then((res) =>
-      res.json(),
-    )) as MediaItem[];
+  public static async getMediaItems(search: string) {
+    const param = search || "";
+    return (await fetch(
+      `/api/mediaitems?search=${encodeURIComponent(param)}`,
+    ).then((res) => res.json())) as MediaItem[];
   }
 
   public static async scanLib() {

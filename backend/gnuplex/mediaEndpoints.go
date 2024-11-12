@@ -1,30 +1,21 @@
 package gnuplex
 
 import (
-	"errors"
 	"gnuplex/models"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func (gnuplex *GNUPlex) ScanLib() error {
-	/*
-	 * grab MediaDirs, MediaItems, FileExts from the database
-	 */
+	// Grab MediaDirs, FileExts from the database
 	mediaDirs, err := gnuplex.DB.GetMediaDirs()
 	if err != nil {
 		return err
-	}
-	mediaItems, err := gnuplex.DB.GetMediaItems()
-	if err != nil {
-		return err
-	}
-	mediaItemH := make(map[string]models.MediaItem)
-	for _, mediaItem := range mediaItems {
-		mediaItemH[mediaItem.Path] = mediaItem
 	}
 	fileExts, err := gnuplex.DB.GetFileExts()
 	if err != nil {
@@ -34,53 +25,43 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	for _, fileExt := range fileExts {
 		fileExtH[fileExt.Extension] = true
 	}
-	/*
-	 * add new stuff
-	 */
+	// Add new stuff
+	lastScanUUID := uuid.New().String()
 	for _, mediaDir := range mediaDirs {
 		dir, err := os.Stat(mediaDir.Path)
 		if (err == nil) && dir.IsDir() {
-			return filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
-				log.Println("path", path)
+			err = filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
 				if err != nil {
 					log.Println("Walkdir prob: ", mediaDir)
 					return err
 				} else if !entry.IsDir() {
 					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
-					log.Println("ext", ext)
-					if _, ok := fileExtH[ext]; ok {
-						return gnuplex.DB.DeleteMediaItemByPath(path)
+					if _, match := fileExtH[ext]; !match {
+						return gnuplex.DB.AddMediaItemFile(path, lastScanUUID)
 					}
-					return gnuplex.DB.AddMediaItem(path)
+					return nil
 				} else {
 					return nil
 				}
 			})
-
-		}
-	}
-	/*
-	 * remove stuff that no longer exists
-	 */
-	for _, mediaItem := range mediaItems {
-		_, err := os.Stat(mediaItem.Path)
-		if err != nil {
-			err = gnuplex.DB.DeleteMediaItemByPath(mediaItem.Path)
 			if err != nil {
 				return err
 			}
 		}
 	}
-	return nil
+	// Remove stuff that no longer exists
+	return gnuplex.DB.DeleteMediaItemFilesNotMatchingUUID(lastScanUUID)
 }
 
-func (gnuplex *GNUPlex) NowPlaying() (*models.MediaItem, error) {
-	if len(gnuplex.PlayQueue) == 0 {
-		return nil, errors.New("PlayQueue is empty at the moment")
+func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
+	path, err := gnuplex.MPV.GetNowPlaying()
+	if err != nil {
+		return nil, err
 	}
-	return gnuplex.PlayQueue[0], nil
+	return gnuplex.DB.GetMediaItemByPath(path)
 }
 
+// Replace the current queue with a MediaItem from the library (by ID).
 func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	var mediaItem *models.MediaItem
 	if err := gnuplex.DB.ORM.First(&mediaItem, id).Error; err != nil {
@@ -98,6 +79,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	return nil
 }
 
+// Replace the current queue with a MediaItem from the library (by path/URL).
 func (gnuplex *GNUPlex) ReplaceQueueAndPlayByPath(path string) error {
 	var mediaItem *models.MediaItem
 	if err := gnuplex.DB.ORM.First(&mediaItem, "path = ?", path).Error; err != nil {
@@ -115,10 +97,12 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlayByPath(path string) error {
 	return nil
 }
 
+// Replace the current queue with a cast URL, without adding that URL to the library.
 func (gnuplex *GNUPlex) ReplaceQueueAndCastTempUrl(url string) error {
 	return gnuplex.MPV.ReplaceQueueAndPlay(url)
 }
 
+// Add a MediaItem to the end of the current queue.
 func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
 	gnuplex.DB.ORM.First(&mediaItem, id)
@@ -129,10 +113,11 @@ func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	return mediaItem
 }
 
+// Cast a URL to the media player. `temp` determines whether or not it should be added to your library.
 func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
 	if temp {
 		return gnuplex.ReplaceQueueAndCastTempUrl(url)
-	} else if err := gnuplex.DB.AddMediaItem(url); err != nil {
+	} else if err := gnuplex.DB.AddMediaItemURL(url); err != nil {
 		return err
 	} else {
 		return gnuplex.ReplaceQueueAndPlayByPath(url)

@@ -18,26 +18,21 @@ type GNUPlex struct {
 	MPV       *mpv.MPV
 }
 
+// Initialize a GNUPlex instance.
 func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath, staticFiles string) (*GNUPlex, error) {
-	/*
-	 * HTTP backend
-	 */
+	// HTTP backend
 	gnuplex := new(GNUPlex)
 	gnuplex.Router = gin.Default()
 	gnuplex.Router.SetTrustedProxies(nil)
 	gnuplex.InitWebEndpoints(verbose, staticFiles)
-	/*
-	 * mpv unix socket
-	 */
+	// MPV instance
 	mpv, err := mpv.Init(wg, verbose, createMpvDaemon, mpvSocket)
 	if err != nil {
 		return nil, err
 	}
 	gnuplex.MPV = mpv
-	/*
-	 * new sqlite DB
-	 */
-	db, err := db.Init(dbPath)
+	// SQLite DB
+	db, err := db.Init(dbPath, verbose)
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +40,7 @@ func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath, 
 	return gnuplex, nil
 }
 
+// Run the GNUPlex daemon.
 func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 	defer wg.Done()
 	err := server.Router.Run(":40000")
