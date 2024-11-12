@@ -29,7 +29,9 @@ function App() {
     useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
   // URL params
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(
+    new URLSearchParams(window.location.search).get("search") || "",
+  );
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
 
   useEffect(() => {
@@ -60,7 +62,10 @@ function App() {
   function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
     // TODO now this is not quite working. need a more "react" of updating browser search query params. that fancy new hooks library?
-    if (urlParams.get("search") !== searchQueryDebounced) {
+    if (
+      urlParams.get("search") !== searchQueryDebounced &&
+      searchQueryDebounced.length !== 0
+    ) {
       urlParams.set("search", searchQueryDebounced);
       window.location.search = urlParams.toString();
     }
