@@ -61,7 +61,6 @@ function App() {
   // Refresh browser's search URL parameter when the search input changes
   function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
-    // TODO now this is not quite working. need a more "react" of updating browser search query params. that fancy new hooks library?
     if (
       urlParams.get("search") !== searchQueryDebounced &&
       searchQueryDebounced.length !== 0
