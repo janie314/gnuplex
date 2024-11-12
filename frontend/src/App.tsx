@@ -21,7 +21,7 @@ function App() {
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
-  const [nowPlaying, setNowPlaying] = useState("");
+  const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [last25, setLast25] = useState<MediaItem[]>([]);
   // UI popups' visibility
@@ -110,7 +110,7 @@ function App() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Medialist mediaItems={[]} subtitle="Now Playing" />
+          <Medialist mediaItems={[nowPlaying]} subtitle="Now Playing" />
           <Medialist mediaItems={last25} subtitle="Recent" />
           <Medialist mediaItems={mediaItems} subtitle="Library" />
         </div>

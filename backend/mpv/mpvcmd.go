@@ -134,7 +134,7 @@ func (mpv *MPV) GetNowPlaying() (string, error) {
 	return processMPVGetResult[string](res)
 }
 
-func (mpv *MPV) SetMedia(filepath string) error {
+func (mpv *MPV) SetNowPlaying(filepath string) error {
 	return processMPVSetResult(
 		mpv.SetCmd([]interface{}{"loadfile", filepath}),
 	)
