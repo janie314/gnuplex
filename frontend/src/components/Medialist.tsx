@@ -8,14 +8,14 @@ function Medialist(props: {
     return null;
   }
   return (
-    <div className="flex flex-col mb-2 pl-2 whitespace-pre=wrap">
+    <div className="w-full flex flex-col mb-2 pl-2 whitespace-pre=wrap">
       <h1 className="m-y-2/100 text-lg font-bold">{props.subtitle}</h1>
       {props.mediaItems
         .filter((mediaItem) => mediaItem !== null)
         .map((mediaItem, i: number) => (
           <input
             type="button"
-            className="text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-normal break-words"
+            className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-break-spaces break-words"
             key={props.subtitle + mediaItem.ID}
             onClick={(e) => API.setNowPlaying(mediaItem)}
             value={mediaItem.Path}
