@@ -115,6 +115,7 @@ func (db *DB) GetLast25Played() ([]models.MediaItem, error) {
 func (db *DB) GetMediaItems(search string) ([]models.MediaItem, error) {
 	var mediaItems []models.MediaItem
 	err := db.ORM.
+		Limit(1000).
 		Where("instr(lower(path), ?) != 0", strings.ToLower(search)).
 		Order("path").
 		Find(&mediaItems).Error
