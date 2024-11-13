@@ -61,10 +61,7 @@ function App() {
   // Refresh browser's search URL parameter when the search input changes
   function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (
-      urlParams.get("search") !== searchQueryDebounced &&
-      searchQueryDebounced.length !== 0
-    ) {
+    if (urlParams.get("search") !== searchQueryDebounced) {
       urlParams.set("search", searchQueryDebounced);
       window.location.search = urlParams.toString();
     }
