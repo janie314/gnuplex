@@ -61,7 +61,8 @@ func (db *DB) SetFileExts(mediadirs []string) error {
 		return err
 	}
 	for _, dir := range mediadirs {
-		db.ORM.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.FileExtension{Extension: dir})
+		db.ORM.Clauses(clause.OnConflict{DoNothing: true}).
+			Create(&models.FileExtension{Extension: strings.ToLower(dir)})
 	}
 	return err
 }
