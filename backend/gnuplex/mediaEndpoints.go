@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 )
 
 func (gnuplex *GNUPlex) ScanLib() error {
@@ -27,30 +28,49 @@ func (gnuplex *GNUPlex) ScanLib() error {
 	}
 	// Add new stuff
 	lastScanUUID := uuid.New().String()
-	for _, mediaDir := range mediaDirs {
+	var batch []models.MediaItem
+	for i, mediaDir := range mediaDirs {
+		if (i%100 == 0) && (i != 0) {
+			if err = gnuplex.processScanLibBatch(batch, lastScanUUID); err != nil {
+				return err
+			}
+		}
 		dir, err := os.Stat(mediaDir.Path)
 		if (err == nil) && dir.IsDir() {
-			err = filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
+			if err = filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
 				if err != nil {
-					log.Println("Walkdir prob: ", mediaDir)
 					return err
 				} else if !entry.IsDir() {
 					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
 					if _, match := fileExtH[ext]; !match {
-						return gnuplex.DB.AddMediaItemFile(path, lastScanUUID)
+						batch = append(batch, models.MediaItem{Path: path, Type: models.File, LastScanUUID: lastScanUUID})
 					}
 					return nil
 				} else {
 					return nil
 				}
-			})
-			if err != nil {
+			}); err != nil {
 				return err
 			}
+		} else if err != nil {
+			log.Println("skipping", dir, "- could not stat this directory")
 		}
 	}
-	// Remove stuff that no longer exists
+	if len(batch) != 0 {
+		if err = gnuplex.processScanLibBatch(batch, lastScanUUID); err != nil {
+			return err
+		}
+	}
 	return gnuplex.DB.DeleteMediaItemFilesNotMatchingUUID(lastScanUUID)
+}
+
+func (gnuplex *GNUPlex) processScanLibBatch(batch []models.MediaItem, lastScanUUID string) error {
+	return gnuplex.DB.ORM.
+		Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "path"}},
+			DoUpdates: clause.Assignments(map[string]interface{}{"last_scan_uuid": lastScanUUID}),
+		}).
+		CreateInBatches(batch, 100).Error
 }
 
 func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
