@@ -124,15 +124,15 @@ function App() {
           <Medialist mediaItems={last25} subtitle="Recent" />
           <Medialist mediaItems={mediaItems} subtitle="Library" />
           {mediaItemCount < 1000 ? null : (
-            <select className="select select-bordered mb-10 ml-2">
+            <select
+              className="select select-bordered mb-10 ml-2"
+              onChange={(e) => {
+                setPaginationOffset((Number(e.target.value) || 0) * 1000);
+              }}
+            >
               {[...new Array(Math.ceil(mediaItemCount / 1000)).keys()].map(
                 (i) => (
-                  <option
-                    key={`range-${i}`}
-                    onSelect={(e) => {
-                      setPaginationOffset(i * 1000);
-                    }}
-                  >
+                  <option key={`range-${i}`} value={i}>
                     {`${i * 1000}-${Math.min(mediaItemCount, (i + 1) * 1000 - 1)}`}
                   </option>
                 ),
