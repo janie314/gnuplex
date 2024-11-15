@@ -24,6 +24,7 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [mediaItemCount, setMediaItemCount] = useState(0);
+  const [paginationOffset, setPaginationOffset] = useState(0);
   const [last25, setLast25] = useState<MediaItem[]>([]);
   // UI popups' visibility
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
@@ -42,6 +43,11 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     if ((urlParams.get("search") || "").length > 0) {
       setSearchQuery(urlParams.get("search") || "");
+    }
+    if ((urlParams.get("offset") || "").length > 0) {
+      if (!Number.isNaN(Number(urlParams.get("offset")))) {
+        setPaginationOffset(Number(urlParams.get("offset")));
+      }
     }
     // Poll media player state from the backend
     window.setInterval(() => {
@@ -62,11 +68,15 @@ function App() {
   // Refresh browser's search URL parameter when the search input changes
   function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("search") !== searchQueryDebounced) {
+    if (
+      urlParams.get("search") !== searchQueryDebounced ||
+      urlParams.get("offset") !== paginationOffset.toString()
+    ) {
       urlParams.set("search", searchQueryDebounced);
+      urlParams.set("offset", paginationOffset.toString());
       window.location.search = urlParams.toString();
     }
-    API.getMediaItems(searchQueryDebounced).then((res) => {
+    API.getMediaItems(searchQueryDebounced, paginationOffset).then((res) => {
       setMediaItems(res.res);
       setMediaItemCount(res.count);
     });
@@ -74,7 +84,7 @@ function App() {
 
   useEffect(() => {
     refreshMediaItems();
-  }, [searchQueryDebounced]);
+  }, [searchQueryDebounced, paginationOffset]);
 
   return (
     <>
@@ -113,11 +123,16 @@ function App() {
           <Medialist mediaItems={[nowPlaying]} subtitle="Now Playing" />
           <Medialist mediaItems={last25} subtitle="Recent" />
           <Medialist mediaItems={mediaItems} subtitle="Library" />
-          {mediaItemCount === 0 ? null : (
-            <select className="select select-bordered">
+          {mediaItemCount < 1000 ? null : (
+            <select className="select select-bordered mb-10 ml-2">
               {[...new Array(Math.ceil(mediaItemCount / 1000)).keys()].map(
                 (i) => (
-                  <option key={`range-${i}`}>
+                  <option
+                    key={`range-${i}`}
+                    onSelect={(e) => {
+                      setPaginationOffset(i * 1000);
+                    }}
+                  >
                     {`${i * 1000}-${Math.min(mediaItemCount, (i + 1) * 1000 - 1)}`}
                   </option>
                 ),

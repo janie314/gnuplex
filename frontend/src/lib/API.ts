@@ -146,10 +146,10 @@ class API {
     });
   }
 
-  public static async getMediaItems(search: string) {
+  public static async getMediaItems(search: string, paginationOffset: number) {
     const param = search || "";
     return (await fetch(
-      `/api/mediaitems?search=${encodeURIComponent(param)}`,
+      `/api/mediaitems?search=${encodeURIComponent(param)}&offset=${encodeURIComponent(paginationOffset)}`,
     ).then((res) => res.json())) as MediaItemRes;
   }
 

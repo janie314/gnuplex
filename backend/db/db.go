@@ -117,12 +117,15 @@ func (db *DB) GetMediaItems(search string, offset int) ([]models.MediaItem, int6
 	var mediaItems []models.MediaItem
 	if err := db.ORM.
 		Where("instr(lower(path), ?) != 0", strings.ToLower(search)).
+		Order("path").
+		Limit(1000).
+		Offset(offset).
 		Find(&mediaItems).Error; err != nil {
-		// Offset(offset).
 		return nil, 0, err
 	}
 	var count int64
 	if err := db.ORM.
+		Model(models.MediaItem{}).
 		Where("instr(lower(path), ?) != 0", strings.ToLower(search)).
 		Count(&count).Error; err != nil {
 		return nil, 0, err
