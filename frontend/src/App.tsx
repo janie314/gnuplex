@@ -23,6 +23,7 @@ function App() {
   const [vol, setVol] = useState(0);
   const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [mediaItemCount, setMediaItemCount] = useState(0);
   const [last25, setLast25] = useState<MediaItem[]>([]);
   // UI popups' visibility
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
@@ -65,7 +66,10 @@ function App() {
       urlParams.set("search", searchQueryDebounced);
       window.location.search = urlParams.toString();
     }
-    API.getMediaItems(searchQueryDebounced).then((res) => setMediaItems(res));
+    API.getMediaItems(searchQueryDebounced).then((res) => {
+      setMediaItems(res.res);
+      setMediaItemCount(res.count);
+    });
   }
 
   useEffect(() => {
@@ -109,6 +113,17 @@ function App() {
           <Medialist mediaItems={[nowPlaying]} subtitle="Now Playing" />
           <Medialist mediaItems={last25} subtitle="Recent" />
           <Medialist mediaItems={mediaItems} subtitle="Library" />
+          {mediaItemCount === 0 ? null : (
+            <select className="select select-bordered">
+              {[...new Array(Math.ceil(mediaItemCount / 1000)).keys()].map(
+                (i) => (
+                  <option key={`range-${i}`}>
+                    {`${i * 1000}-${Math.min(mediaItemCount, (i + 1) * 1000 - 1)}`}
+                  </option>
+                ),
+              )}
+            </select>
+          )}
         </div>
       </div>
       <MediadirsConfigPopup

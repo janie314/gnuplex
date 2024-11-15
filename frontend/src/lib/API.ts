@@ -15,6 +15,11 @@ interface MediaItem {
   LastPlayed: string;
 }
 
+interface MediaItemRes {
+  res: MediaItem[];
+  count: number;
+}
+
 interface FileExtension {
   ID: number;
   Extension: string;
@@ -145,7 +150,7 @@ class API {
     const param = search || "";
     return (await fetch(
       `/api/mediaitems?search=${encodeURIComponent(param)}`,
-    ).then((res) => res.json())) as MediaItem[];
+    ).then((res) => res.json())) as MediaItemRes;
   }
 
   public static async scanLib() {
