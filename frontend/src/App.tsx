@@ -24,7 +24,10 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [mediaItemCount, setMediaItemCount] = useState(0);
-  const [paginationOffset, setPaginationOffset] = useState(0);
+  const [paginationOffset, setPaginationOffset] = useState(
+    Number(new URLSearchParams(window.location.search).get("offset") || 0) /
+      1000,
+  );
   const [last25, setLast25] = useState<MediaItem[]>([]);
   // UI popups' visibility
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
@@ -39,16 +42,6 @@ function App() {
   useEffect(() => {
     // Populate app version
     API.getVersion().then((version) => setVersion(version));
-    // Refresh React's copy of the URL parameters from the browser's copy
-    const urlParams = new URLSearchParams(window.location.search);
-    if ((urlParams.get("search") || "").length > 0) {
-      setSearchQuery(urlParams.get("search") || "");
-    }
-    if ((urlParams.get("offset") || "").length > 0) {
-      if (!Number.isNaN(Number(urlParams.get("offset")))) {
-        setPaginationOffset(Number(urlParams.get("offset")));
-      }
-    }
     // Poll media player state from the backend
     window.setInterval(() => {
       API.getPos().then((res) => {
@@ -70,7 +63,7 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     if (
       urlParams.get("search") !== searchQueryDebounced ||
-      urlParams.get("offset") !== paginationOffset.toString()
+      (Number(urlParams.get("offset")) || 0) / 1000 !== paginationOffset
     ) {
       urlParams.set("search", searchQueryDebounced);
       urlParams.set("offset", paginationOffset.toString());
@@ -126,6 +119,7 @@ function App() {
           {mediaItemCount < 1000 ? null : (
             <select
               className="select select-bordered mb-10 ml-2"
+              value={paginationOffset}
               onChange={(e) => {
                 setPaginationOffset((Number(e.target.value) || 0) * 1000);
               }}
