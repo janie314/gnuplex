@@ -15,6 +15,11 @@ interface MediaItem {
   LastPlayed: string;
 }
 
+interface MediaItemRes {
+  res: MediaItem[];
+  count: number;
+}
+
 interface FileExtension {
   ID: number;
   Extension: string;
@@ -141,11 +146,11 @@ class API {
     });
   }
 
-  public static async getMediaItems(search: string) {
+  public static async getMediaItems(search: string, paginationOffset: number) {
     const param = search || "";
     return (await fetch(
-      `/api/mediaitems?search=${encodeURIComponent(param)}`,
-    ).then((res) => res.json())) as MediaItem[];
+      `/api/mediaitems?search=${encodeURIComponent(param)}&offset=${encodeURIComponent(paginationOffset)}`,
+    ).then((res) => res.json())) as MediaItemRes;
   }
 
   public static async scanLib() {

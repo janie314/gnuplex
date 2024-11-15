@@ -113,14 +113,24 @@ func (db *DB) GetLast25Played() ([]models.MediaItem, error) {
 }
 
 // Get all MediaItems which match the given search string.
-func (db *DB) GetMediaItems(search string) ([]models.MediaItem, error) {
+func (db *DB) GetMediaItems(search string, offset int) ([]models.MediaItem, int64, error) {
 	var mediaItems []models.MediaItem
-	err := db.ORM.
-		Limit(1000).
+	if err := db.ORM.
 		Where("instr(lower(path), ?) != 0", strings.ToLower(search)).
 		Order("path").
-		Find(&mediaItems).Error
-	return mediaItems, err
+		Limit(1000).
+		Offset(offset).
+		Find(&mediaItems).Error; err != nil {
+		return nil, 0, err
+	}
+	var count int64
+	if err := db.ORM.
+		Model(models.MediaItem{}).
+		Where("instr(lower(path), ?) != 0", strings.ToLower(search)).
+		Count(&count).Error; err != nil {
+		return nil, 0, err
+	}
+	return mediaItems, count, nil
 }
 
 func (db *DB) GetMediaItemByPath(path string) (*models.MediaItem, error) {
