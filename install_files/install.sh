@@ -20,6 +20,6 @@ cd "$install_dir"
 ln -s gnuplex-code/backend/bin/gnuplex .
 echo "Installing systemd user service..."
 mkdir -p "$HOME/.config/systemd/user"
-install_dir_replace=$(echo "$install_dir/gnuplex-code/backend" | sed -e 's~/~\\/~g')
+install_dir_replace=$(echo "$install_dir" | sed -e 's~/~\\/~g')
 cat "$install_dir/gnuplex-code/install_files/gnuplex.service" | sed -e "s/__DIR__/$install_dir_replace/" >"$HOME/.config/systemd/user/gnuplex.service"
 echo "Done. To turn on GNUPlex, run: systemctl --user enable --now gnuplex"
