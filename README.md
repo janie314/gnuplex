@@ -21,5 +21,6 @@ gnuplex -upgrade
 
 | Version      | Date                           | Details                         |
 | ------------ | ------------------------------ | ------------------------------- |
+| 1.0          | 2024-11-16                     | v1.0!!                          |
 | 0.99         | 2024-10-20                     | v1.0, beta.                     |
 | Alpha stages | ~Christmas 2022 - October 2024 | See commits before 1.0 release. |
