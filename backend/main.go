@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/reugn/go-quartz/job"
 	"github.com/reugn/go-quartz/quartz"
 )
@@ -27,7 +28,7 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	version := flag.Bool("version", false, "Print version.")
 	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
-	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
+	mpvSocket := flag.String("mpv_socket_path", fmt.Sprintf("/tmp/mpvsocket-%s", uuid.New().String()), "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
 	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
 	source_hash := flag.Bool("source_hash", false, "Git commit this build comes from.")
@@ -35,7 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	staticFiles := flag.String("static_files", filepath.Join(filepath.Dir(exe), "static"), "Path to static web files.")
+	staticFiles := flag.String("static_files", "static", "Path to static web files.")
 	flag.Parse()
 	// Some flags that subvert the main daemon process
 	if *upgrade {
