@@ -61,18 +61,27 @@ function App() {
   // Refresh browser's search URL parameter when the search input changes
   function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (
-      urlParams.get("search") !== searchQueryDebounced ||
-      (Number(urlParams.get("offset")) || 0) / 1000 !== paginationOffset
-    ) {
+    let updateURL = false;
+    if (urlParams.get("search") !== searchQueryDebounced) {
       urlParams.set("search", searchQueryDebounced);
+      urlParams.set("offset", "0");
+      updateURL = true;
+    } else if (
+      (Number(urlParams.get("offset")) || 0) / 1000 !==
+      paginationOffset
+    ) {
       urlParams.set("offset", paginationOffset.toString());
+      updateURL = true;
+    }
+    if (updateURL) {
       window.location.search = urlParams.toString();
     }
-    API.getMediaItems(searchQueryDebounced, paginationOffset).then((res) => {
-      setMediaItems(res.res);
-      setMediaItemCount(res.count);
-    });
+    API.getMediaItems(searchQueryDebounced, paginationOffset * 1000).then(
+      (res) => {
+        setMediaItems(res.res);
+        setMediaItemCount(res.count);
+      },
+    );
   }
 
   useEffect(() => {
