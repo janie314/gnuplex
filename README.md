@@ -5,6 +5,12 @@ friendly web interface.
 
 # Installation and Updating
 
+GNUPlex is only built for Linux at the moment. To install it:
+
+1. Install [mpv](https://mpv.io/).
+
+2. Run the following:
+
 ```shell
 sh <(curl -sL https://gnuplex.janie.page/install.sh)
 ```
