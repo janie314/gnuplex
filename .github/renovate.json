@@ -1,9 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "packageRules": [
-    {
-      "automerge": true
-    }
-  ]
+  "major": { "automerge": true },
+  "minor": { "automerge": true },
+  "patch": { "automerge": true },
+  "pin": { "automerge": true },
+  "pinDigest": { "automerge": true },
+  "digest": { "automerge": true },
+  "lockFileMaintenance": { "automerge": true },
+  "rollback": { "automerge": true },
+  "replacement": { "automerge": true }
 }
