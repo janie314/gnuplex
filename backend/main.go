@@ -25,6 +25,7 @@ func main() {
 	 */
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
+	version := flag.Bool("version", false, "Print version.")
 	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
 	mpvSocket := flag.String("mpv_socket_path", "/tmp/mpvsocket", "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
@@ -36,14 +37,15 @@ func main() {
 	}
 	staticFiles := flag.String("static_files", filepath.Join(filepath.Dir(exe), "static"), "Path to static web files.")
 	flag.Parse()
-	/*
-	 * upgrade option
-	 */
+	// Some flags that subvert the main daemon process
 	if *upgrade {
 		upgradeGNUPlex(exe)
 	}
 	if *source_hash {
 		sourceHash()
+	}
+	if *version {
+		printVersion()
 	}
 	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
 	if *prod {
@@ -51,9 +53,7 @@ func main() {
 	} else {
 		gin.SetMode(gin.DebugMode)
 	}
-	/*
-	 * Main daemon setup
-	 */
+	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
 	server, err := server.Init(&wg, (!*prod) || (*verbose), !*noCreateMpvDaemon, *mpvSocket, *dbPath, *staticFiles)
@@ -61,9 +61,7 @@ func main() {
 		log.Fatal(err)
 	}
 	go server.Run(&wg)
-	/*
-	 * Scheduler process
-	 */
+	// Scheduler process
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	sched := quartz.NewStdScheduler()
@@ -79,9 +77,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Scheduler init failure", err)
 	}
-	/*
-	 * Main execution
-	 */
+	// Main execution
 	wg.Wait()
 }
 
@@ -99,5 +95,10 @@ func upgradeGNUPlex(exe string) {
 
 func sourceHash() {
 	fmt.Println(SourceHash)
+	os.Exit(0)
+}
+
+func printVersion() {
+	fmt.Println(consts.GNUPlexVersion)
 	os.Exit(0)
 }
