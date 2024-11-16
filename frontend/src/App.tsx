@@ -61,18 +61,27 @@ function App() {
   // Refresh browser's search URL parameter when the search input changes
   function refreshMediaItems() {
     const urlParams = new URLSearchParams(window.location.search);
-    if (
-      urlParams.get("search") !== searchQueryDebounced ||
-      (Number(urlParams.get("offset")) || 0) / 1000 !== paginationOffset
-    ) {
+    let updateURL = false;
+    if (urlParams.get("search") !== searchQueryDebounced) {
       urlParams.set("search", searchQueryDebounced);
+      urlParams.set("offset", "0");
+      updateURL = true;
+    } else if (
+      (Number(urlParams.get("offset")) || 0) / 1000 !==
+      paginationOffset
+    ) {
       urlParams.set("offset", paginationOffset.toString());
+      updateURL = true;
+    }
+    if (updateURL) {
       window.location.search = urlParams.toString();
     }
-    API.getMediaItems(searchQueryDebounced, paginationOffset).then((res) => {
-      setMediaItems(res.res);
-      setMediaItemCount(res.count);
-    });
+    API.getMediaItems(searchQueryDebounced, paginationOffset * 1000).then(
+      (res) => {
+        setMediaItems(res.res);
+        setMediaItemCount(res.count);
+      },
+    );
   }
 
   useEffect(() => {
@@ -113,26 +122,27 @@ function App() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Medialist mediaItems={[nowPlaying]} subtitle="Now Playing" />
-          <Medialist mediaItems={last25} subtitle="Recent" />
-          <Medialist mediaItems={mediaItems} subtitle="Library" />
-          {mediaItemCount < 1000 ? null : (
-            <select
-              className="select select-bordered mb-10 ml-2"
-              value={paginationOffset}
-              onChange={(e) => {
-                setPaginationOffset((Number(e.target.value) || 0) * 1000);
-              }}
-            >
-              {[...new Array(Math.ceil(mediaItemCount / 1000)).keys()].map(
-                (i) => (
-                  <option key={`range-${i}`} value={i}>
-                    {`${i * 1000}-${Math.min(mediaItemCount, (i + 1) * 1000 - 1)}`}
-                  </option>
-                ),
-              )}
-            </select>
-          )}
+          <Medialist
+            mediaItems={[nowPlaying]}
+            subtitle="Now Playing"
+            mediaItemCount={null}
+            paginationOffset={null}
+            setPaginationOffset={null}
+          />
+          <Medialist
+            mediaItems={last25}
+            subtitle="Recent"
+            mediaItemCount={null}
+            paginationOffset={null}
+            setPaginationOffset={null}
+          />
+          <Medialist
+            mediaItems={mediaItems}
+            subtitle="Library"
+            mediaItemCount={mediaItemCount}
+            paginationOffset={paginationOffset}
+            setPaginationOffset={setPaginationOffset}
+          />
         </div>
       </div>
       <MediadirsConfigPopup
