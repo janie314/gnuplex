@@ -80,6 +80,21 @@ function MediaControls(props: {
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
         />
+        <span className="ml-1 p-1">Subs</span>
+        <input
+          type="button"
+          className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
+          value="<"
+          onClick={() => {
+            API.cycleSub(false);
+          }}
+        />
+        <input
+          type="button"
+          className="p-1 border border-solid border-black hover:bg-cyan-200"
+          value=">"
+          onClick={() => API.cycleSub(true)}
+        />
       </div>
     </div>
   );

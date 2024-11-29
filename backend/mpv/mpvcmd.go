@@ -190,3 +190,13 @@ func (mpv *MPV) SetPos(pos int) error {
 		mpv.SetCmd([]interface{}{"set_property", "time-pos", pos}),
 	)
 }
+
+func (mpv *MPV) CycleSubTrack(next bool) error {
+	dir := "down"
+	if next {
+		dir = "up"
+	}
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"cycle", "sub", dir}),
+	)
+}

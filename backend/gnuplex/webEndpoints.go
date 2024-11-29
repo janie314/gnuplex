@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -230,5 +231,19 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 			c.Status(http.StatusOK)
 		}
 	})
-
+	gnuplex.Router.POST("/api/sub", func(c *gin.Context) {
+		dir := c.Query("dir")
+		var err error
+		if dir == "" || strings.ToLower(dir) == "next" {
+			err = gnuplex.CycleSubTrack(true)
+		} else {
+			err = gnuplex.CycleSubTrack(false)
+		}
+		if err != nil {
+			log.Println(err)
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
 }

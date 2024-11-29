@@ -166,6 +166,11 @@ class API {
   public static sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+
+  public static async cycleSub(next: boolean) {
+    const dir = next ? "next" : "prev";
+    return await fetch(`/api/sub?dir=${dir}`, { method: "POST" });
+  }
 }
 
 export { type MediaDir, type MediaItem, API };
