@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { API, type SubTrack } from "../lib/API";
 
 function SubSelector(props: { subs: SubTrack[] | null }) {
   const selectedID =
     (props.subs || []).filter((sub) => sub.selected)[0]?.id || -1;
   const [subID, setSubID] = useState(selectedID);
+  useEffect(() => {
+    setSubID(selectedID);
+  }, [props.subs]);
   return (
     <select
       className="select select-sm select-bordered ml-1 mr-1"
