@@ -17,7 +17,7 @@ function App() {
   // App info
   const [version, setVersion] = useState("");
   // Media player state info
-  const [subs, setSubs] = useState<SubTrack[]>([]);
+  const [subs, setSubs] = useState<SubTrack[] | null>([]);
   const [pos, setPos] = useState(0);
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);

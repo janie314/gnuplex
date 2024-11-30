@@ -13,7 +13,7 @@ function MediaControls(props: {
   timeRemaining: number;
   vol: number;
   setVol: React.Dispatch<React.SetStateAction<number>>;
-  subs: SubTrack[];
+  subs: SubTrack[] | null;
 }) {
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
