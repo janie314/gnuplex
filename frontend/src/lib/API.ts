@@ -174,7 +174,9 @@ class API {
   }
 
   public static async getSubTracks() {
-    return (await fetch("/api/sub").then((res) => res.json())) as SubTrack[];
+    return (await fetch("/api/sub").then((res) => res.json())) as
+      | SubTrack[]
+      | null;
   }
 
   public static async setSubTrack(id: number) {
