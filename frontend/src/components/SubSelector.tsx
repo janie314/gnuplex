@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { API, type SubTrack } from "../lib/API";
 
-function SubSelector(props: { subs: SubTrack[] }) {
-  const selectedID = props.subs.filter((sub) => sub.selected)[0]?.id || -1;
+function SubSelector(props: { subs: SubTrack[] | null }) {
+  const selectedID =
+    (props.subs || []).filter((sub) => sub.selected)[0]?.id || -1;
   const [subID, setSubID] = useState(selectedID);
   return (
     <select
@@ -15,9 +16,9 @@ function SubSelector(props: { subs: SubTrack[] }) {
       }}
     >
       <option value={-1}>Off</option>
-      {props.subs.map((sub) => (
+      {(props.subs || []).map((sub) => (
         <option key={sub.id} value={sub.id}>
-          {sub.title}
+          {sub.id}
         </option>
       ))}
     </select>

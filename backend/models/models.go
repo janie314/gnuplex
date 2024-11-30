@@ -38,7 +38,7 @@ type FileExtensionId uint
 // This one isn't stored in the DB, it just lives in MPV state.
 type Track struct {
 	ID       int    `json:"id"`
-	Title    int    `json:"title"`
+	Title    string `json:"title,omitempty"`
 	Type     string `json:"type"`
 	Selected bool   `json:"selected"`
 }

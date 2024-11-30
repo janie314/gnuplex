@@ -165,3 +165,8 @@ func (gnuplex *GNUPlex) GetSubs() ([]models.Track, error) {
 func (gnuplex *GNUPlex) SetSubVisibility(visible bool) error {
 	return gnuplex.MPV.SetSubVisibility(visible)
 }
+
+// Set subtitle track.
+func (gnuplex *GNUPlex) SetSubTrack(trackID int64) error {
+	return gnuplex.MPV.SetSubTrack(trackID)
+}

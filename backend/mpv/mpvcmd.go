@@ -196,3 +196,9 @@ func (mpv *MPV) SetSubVisibility(visible bool) error {
 		mpv.SetCmd([]interface{}{"set_property", "sub-visibility", visible}),
 	)
 }
+
+func (mpv *MPV) SetSubTrack(trackID int64) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "sid", trackID}),
+	)
+}
