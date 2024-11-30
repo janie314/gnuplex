@@ -1,6 +1,7 @@
 import pause from "../assets/pause.svg";
 import play from "../assets/play.svg";
-import { API } from "../lib/API";
+import { API, type SubTrack } from "../lib/API";
+import { SubSelector } from "./SubSelector";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;
@@ -12,6 +13,7 @@ function MediaControls(props: {
   timeRemaining: number;
   vol: number;
   setVol: React.Dispatch<React.SetStateAction<number>>;
+  subs: SubTrack[];
 }) {
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
@@ -33,7 +35,6 @@ function MediaControls(props: {
           <img src={pause} alt="Pause icon" />
         </button>
       </div>
-
       <div className="flex flex-col max-w-sm grow p-1">
         <div className="flex flex-row items-center">
           <span className="mx-1">Pos</span>
@@ -66,6 +67,7 @@ function MediaControls(props: {
         </div>
       </div>
       <div className="flex flex-row justify-center mt-3 p-1">
+        <SubSelector subs={props.subs} />
         <input
           type="button"
           className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
@@ -79,21 +81,6 @@ function MediaControls(props: {
           className="p-1 border border-solid border-black hover:bg-cyan-200"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
-        />
-        <span className="ml-1 p-1">Subs</span>
-        <input
-          type="button"
-          className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
-          value="<"
-          onClick={() => {
-            API.cycleSub(false);
-          }}
-        />
-        <input
-          type="button"
-          className="p-1 border border-solid border-black hover:bg-cyan-200"
-          value=">"
-          onClick={() => API.cycleSub(true)}
         />
       </div>
     </div>

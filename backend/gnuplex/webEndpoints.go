@@ -233,11 +233,26 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 	})
 	gnuplex.Router.POST("/api/sub", func(c *gin.Context) {
 		dir := c.Query("dir")
+		visible := c.Query("visible")
 		var err error
-		if dir == "" || strings.ToLower(dir) == "next" {
+		if strings.ToLower(dir) == "next" {
+			if err = gnuplex.SetSubVisibility(true); err != nil {
+				log.Println(err)
+				c.Status(http.StatusInternalServerError)
+				return
+			}
 			err = gnuplex.CycleSubTrack(true)
-		} else {
+		} else if strings.ToLower(dir) == "prev" {
+			if err = gnuplex.SetSubVisibility(true); err != nil {
+				log.Println(err)
+				c.Status(http.StatusInternalServerError)
+				return
+			}
 			err = gnuplex.CycleSubTrack(false)
+		} else if strings.ToLower(visible) == "on" {
+			err = gnuplex.SetSubVisibility(true)
+		} else if strings.ToLower(visible) == "on" {
+			err = gnuplex.SetSubVisibility(false)
 		}
 		if err != nil {
 			log.Println(err)

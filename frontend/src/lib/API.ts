@@ -25,6 +25,12 @@ interface FileExtension {
   Extension: string;
 }
 
+interface SubTrack {
+  id: number;
+  title: string;
+  selected: boolean;
+}
+
 class API {
   public static async play() {
     return await fetch("/api/play", { method: "POST" });
@@ -167,10 +173,20 @@ class API {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  public static async cycleSub(next: boolean) {
-    const dir = next ? "next" : "prev";
-    return await fetch(`/api/sub?dir=${dir}`, { method: "POST" });
+  public static async getSubTracks() {
+    return (await fetch("/api/sub").then((res) => res.json())) as SubTrack[];
+  }
+
+  public static async setSubTrack(id: number) {
+    const body = id === -1 ? { visible: false } : { visible: true, id };
+    return await fetch("/api/sub", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
   }
 }
 
-export { type MediaDir, type MediaItem, API };
+export { type MediaDir, type MediaItem, type SubTrack, API };

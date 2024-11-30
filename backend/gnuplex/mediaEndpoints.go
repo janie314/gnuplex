@@ -146,7 +146,22 @@ func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
 	}
 }
 
-// Cycle subs
-func (gnuplex *GNUPlex) CycleSubTrack(next bool) error {
-	return gnuplex.MPV.CycleSubTrack(next)
+// Cycle subtitle track.
+func (gnuplex *GNUPlex) GetSubs() ([]models.Track, error) {
+	tracks, err := gnuplex.MPV.GetTracks()
+	if err != nil {
+		return nil, err
+	}
+	var res []models.Track
+	for _, track := range tracks {
+		if track.Type == "sub" {
+			res = append(res, track)
+		}
+	}
+	return res, nil
+}
+
+// Set subtitle visibility.
+func (gnuplex *GNUPlex) SetSubVisibility(visible bool) error {
+	return gnuplex.MPV.SetSubVisibility(visible)
 }
