@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API, type MediaItem } from "./lib/API";
+import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
 import { useDebounce } from "@uidotdev/usehooks";
 import { CastPopup } from "./components/CastPopup";
@@ -17,6 +17,7 @@ function App() {
   // App info
   const [version, setVersion] = useState("");
   // Media player state info
+  const [subs, setSubs] = useState<SubTrack[]>([]);
   const [pos, setPos] = useState(0);
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -51,6 +52,7 @@ function App() {
       API.getTimeRemaining().then((res) => setTimeRemaining(res));
       API.getVol().then((res) => setVol(res));
       API.getNowPlaying().then((res) => setNowPlaying(res));
+      API.getSubTracks().then((res) => setSubs(res));
     }, 2000);
   }, []);
 
@@ -112,6 +114,7 @@ function App() {
             setPos={setPos}
             startPos={startPos}
             timeRemaining={timeRemaining}
+            subs={subs}
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">

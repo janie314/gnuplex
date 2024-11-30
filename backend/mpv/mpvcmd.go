@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gnuplex/models"
 	"log"
 	"os"
 	"strings"
@@ -33,7 +34,7 @@ type IMPVResponseInt struct {
 	Data int `json:"data"`
 }
 
-type MPVGetResult[T string | int | float64] struct {
+type MPVGetResult[T string | int | float64 | []models.Track] struct {
 	Data      T      `json:"data"`
 	RequestId int    `json:"request_id"`
 	Error     string `json:"error"`
@@ -44,7 +45,7 @@ type MPVSetResult struct {
 	Error     string `json:"error"`
 }
 
-func processMPVGetResult[T string | int | float64](resBytes []byte) (T, error) {
+func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []byte) (T, error) {
 	var res MPVGetResult[T]
 	var defaultVal T
 	err := json.Unmarshal(resBytes, &res)
@@ -123,12 +124,6 @@ func (mpv *MPV) Pause() error {
 	)
 }
 
-func (mpv *MPV) IsPaused() error {
-	return processMPVSetResult(
-		mpv.GetCmd([]string{"get_property", "pause"}),
-	)
-}
-
 func (mpv *MPV) GetNowPlaying() (string, error) {
 	res := mpv.GetCmd([]string{"get_property", "path"})
 	return processMPVGetResult[string](res)
@@ -188,5 +183,22 @@ func (mpv *MPV) GetTimeRemaining() (int, error) {
 func (mpv *MPV) SetPos(pos int) error {
 	return processMPVSetResult(
 		mpv.SetCmd([]interface{}{"set_property", "time-pos", pos}),
+	)
+}
+
+func (mpv *MPV) GetTracks() ([]models.Track, error) {
+	resBytes := mpv.GetCmd([]string{"get_property", "track-list"})
+	return processMPVGetResult[[]models.Track](resBytes)
+}
+
+func (mpv *MPV) SetSubVisibility(visible bool) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "sub-visibility", visible}),
+	)
+}
+
+func (mpv *MPV) SetSubTrack(trackID int64) error {
+	return processMPVSetResult(
+		mpv.SetCmd([]interface{}{"set_property", "sid", trackID}),
 	)
 }

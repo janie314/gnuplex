@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+// Updates GNUPlex's stored MediaItems, using its configured MediaDirs.
 func (gnuplex *GNUPlex) ScanLib() error {
 	// Grab MediaDirs, FileExts from the database
 	mediaDirs, err := gnuplex.DB.GetMediaDirs()
@@ -73,6 +74,7 @@ func (gnuplex *GNUPlex) processScanLibBatch(batch []models.MediaItem, lastScanUU
 		CreateInBatches(batch, 100).Error
 }
 
+// Returns the currently playing MediaItem
 func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
 	path, err := gnuplex.MPV.GetNowPlaying()
 	if err != nil {
@@ -142,4 +144,29 @@ func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
 	} else {
 		return gnuplex.ReplaceQueueAndPlayByPath(url)
 	}
+}
+
+// Cycle subtitle track.
+func (gnuplex *GNUPlex) GetSubs() ([]models.Track, error) {
+	tracks, err := gnuplex.MPV.GetTracks()
+	if err != nil {
+		return nil, err
+	}
+	var res []models.Track
+	for _, track := range tracks {
+		if track.Type == "sub" {
+			res = append(res, track)
+		}
+	}
+	return res, nil
+}
+
+// Set subtitle visibility.
+func (gnuplex *GNUPlex) SetSubVisibility(visible bool) error {
+	return gnuplex.MPV.SetSubVisibility(visible)
+}
+
+// Set subtitle track.
+func (gnuplex *GNUPlex) SetSubTrack(trackID int64) error {
+	return gnuplex.MPV.SetSubTrack(trackID)
 }

@@ -36,6 +36,11 @@ type MediaDirsBody []string
 
 type FileExtsBody []string
 
+type SubBody struct {
+	Visible bool  `json:"visible"`
+	ID      int64 `json:"id,omitempty"`
+}
+
 // Initialize the web server's HTTP Endpoints
 func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 	gnuplex.Router.GET("/", func(c *gin.Context) {
@@ -230,5 +235,38 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles string) {
 			c.Status(http.StatusOK)
 		}
 	})
-
+	gnuplex.Router.GET("/api/sub", func(c *gin.Context) {
+		res, err := gnuplex.GetSubs()
+		if err != nil {
+			log.Println(err)
+			c.Status(http.StatusInternalServerError)
+		} else {
+			c.JSON(http.StatusOK, res)
+		}
+	})
+	gnuplex.Router.POST("/api/sub", func(c *gin.Context) {
+		body := SubBody{}
+		var err error
+		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
+			log.Println(err)
+			c.String(http.StatusBadRequest, "bad body format")
+			return
+		}
+		if body.ID == -1 {
+			err = gnuplex.SetSubVisibility(body.Visible)
+		} else {
+			if err = gnuplex.SetSubTrack(body.ID); err != nil {
+				log.Println(err)
+				c.String(http.StatusInternalServerError, "some problem doing that")
+				return
+			}
+			err = gnuplex.SetSubVisibility(true)
+		}
+		if err != nil {
+			log.Println(err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
 }
