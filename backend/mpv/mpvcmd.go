@@ -14,23 +14,23 @@ import (
 /*
  * Types
  */
-type IMPVQuery struct {
+type MPVQuery struct {
 	Command []interface{} `json:"command"`
 }
 
-type IMPVQueryString struct {
+type MPVQueryString struct {
 	Command []string `json:"command"`
 }
 
-type IMPVResponseBool struct {
+type MPVResponseBool struct {
 	Data bool `json:"data"`
 }
 
-type IMPVResponseString struct {
+type MPVResponseString struct {
 	Data string `json:"data"`
 }
 
-type IMPVResponseInt struct {
+type MPVResponseInt struct {
 	Data int `json:"data"`
 }
 
@@ -92,7 +92,7 @@ func (mpv *MPV) unixMsg(msg []byte) []byte {
 }
 
 func (mpv *MPV) GetCmd(cmd []string) []byte {
-	query := IMPVQueryString{Command: cmd}
+	query := MPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
@@ -101,7 +101,7 @@ func (mpv *MPV) GetCmd(cmd []string) []byte {
 }
 
 func (mpv *MPV) SetCmd(cmd []interface{}) []byte {
-	query := IMPVQuery{Command: cmd}
+	query := MPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
 		return []byte{}
