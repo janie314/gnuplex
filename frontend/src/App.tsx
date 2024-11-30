@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API, type SubTrack, type MediaItem } from "./lib/API";
+import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
 import { useDebounce } from "@uidotdev/usehooks";
 import { CastPopup } from "./components/CastPopup";
