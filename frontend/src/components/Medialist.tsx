@@ -14,7 +14,9 @@ function Medialist(props: {
   return (
     <div className="w-full flex flex-col mb-2 pl-2 whitespace-pre=wrap">
       <div className="flex flex-row align-center mb-1">
-        <h1 className="m-y-2/100 text-lg font-bold">{props.subtitle}</h1>
+        <h1 className="m-y-2/100 text-lg dark:text-white font-bold">
+          {props.subtitle}
+        </h1>
         <PageSelector
           mediaItemCount={props.mediaItemCount}
           paginationOffset={props.paginationOffset}
@@ -26,7 +28,7 @@ function Medialist(props: {
         .map((mediaItem, i: number) => (
           <input
             type="button"
-            className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 p-1 border-lightgray border-t-2 whitespace-break-spaces break-words"
+            className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
             key={props.subtitle + mediaItem.ID}
             onClick={(e) => API.setNowPlaying(mediaItem)}
             value={mediaItem.Path}
