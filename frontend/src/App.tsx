@@ -93,7 +93,7 @@ function App() {
   return (
     <>
       <div
-        className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100"
+        className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100 dark:bg-stone-950 text:white"
         style={{
           opacity:
             mediaDirInputPopupVisible || castPopupVisible ? "50%" : "100%",
