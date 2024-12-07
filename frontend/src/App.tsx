@@ -120,7 +120,7 @@ function App() {
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
           <input
             type="text"
-            className="mb-2 p-3 w-full border-2 border-gray-300 focus:bg-cyan-50"
+            className="mb-2 p-3 w-full border-2 border-stone-400 focus:bg-cyan-50 dark:bg-cyan-900 focus:dark:bg-cyan-700 dark:text-white"
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
