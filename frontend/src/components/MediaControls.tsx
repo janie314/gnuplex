@@ -15,12 +15,13 @@ function MediaControls(props: {
   setVol: React.Dispatch<React.SetStateAction<number>>;
   subs: SubTrack[] | null;
 }) {
+  console.log(play);
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
       <div className="mr-1">
         <button
           type="button"
-          className="p-2 w-8 border border-solid border-black hover:bg-cyan-200"
+          className="p-2 w-8 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
           onClick={() => API.play()}
         >
           <img src={play} alt="Play icon" />
@@ -29,7 +30,7 @@ function MediaControls(props: {
       <div className="mr-2">
         <button
           type="button"
-          className="p-2 w-8 border border-solid border-black hover:bg-cyan-200"
+          className="p-2 w-8 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
           onClick={() => API.pause()}
         >
           <img src={pause} alt="Pause icon" />
@@ -37,40 +38,40 @@ function MediaControls(props: {
       </div>
       <div className="flex flex-col max-w-sm grow p-1">
         <div className="flex flex-row items-center">
-          <span className="mx-1">Pos</span>
+          <span className="mx-1 dark:text-white">Pos</span>
           <input
             type="range"
             min={0}
             max={props.startPos + props.timeRemaining}
             value={props.pos}
-            className="range range-xs"
+            className="range range-xs dark:[--range-shdw:#0e7490]"
             onChange={(e) => props.setPos(e.target.valueAsNumber)}
             onMouseUp={() => API.setPos(props.pos)}
             onTouchCancel={() => API.setPos(props.pos)}
           />
-          <span className="mx-1">{timeFormat(props.pos)}</span>
+          <span className="mx-1 dark:text-white">{timeFormat(props.pos)}</span>
         </div>
 
         <div className="flex flex-row mt-3">
-          <span className="mx-1">Vol</span>
+          <span className="mx-1 dark:text-white">Vol</span>
           <input
             type="range"
             min={0}
             max={120}
             value={props.vol}
-            className="range range-xs"
+            className="range range-xs dark:[--range-shdw:#0e7490]"
             onChange={(e) => props.setVol(e.target.valueAsNumber)}
             onMouseUp={() => API.setVol(props.vol)}
             onTouchCancel={() => API.setVol(props.vol)}
           />
-          <span className="mx-1">{props.vol}</span>
+          <span className="mx-1 dark:text-white">{props.vol}</span>
         </div>
       </div>
       <div className="flex flex-row justify-center mt-3 p-1">
         <SubSelector subs={props.subs} />
         <input
           type="button"
-          className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
+          className="mr-1 p-1 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
           value="Manage Library"
           onClick={() => {
             props.setMediadirInputPopup(true);
@@ -78,7 +79,7 @@ function MediaControls(props: {
         />
         <input
           type="button"
-          className="p-1 border border-solid border-black hover:bg-cyan-200"
+          className="p-1 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
         />
