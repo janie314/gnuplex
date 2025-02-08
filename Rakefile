@@ -5,7 +5,7 @@ desc "start development server"
 task :dev do
   FileUtils.mkdir_p "tmp"
   caddy = Process.spawn "caddy run"
-  frontend = Process.spawn "bun run --cwd frontend dev"
+  frontend = Process.spawn "bun run -i --cwd frontend dev"
   backend = Process.spawn "go run -C backend . -verbose"
   Signal.trap("TERM") {
     [caddy, frontend, backend].each { |p| Process.kill "HUP", p }
@@ -16,8 +16,7 @@ end
 
 desc "build frontend"
 task :frontend_build do
-  sh "bun i --cwd frontend"
-  sh "bun run --cwd frontend build"
+  sh "bun run -i --cwd frontend build"
 end
 
 desc "build backend go code"
