@@ -11,12 +11,12 @@ function CastPopup(props: {
   const [addToLib, setAddToLib] = useState(false);
   if (props.visible) {
     return (
-      <div className="popup">
+      <div className="popup bg-white dark:bg-stone-800 m-5">
         <div className="flex flex-row mb-2 items-center">
-          <span className="mr-1">URL</span>
+          <span className="header mr-1">URL</span>
           <input
             type="text"
-            className="border border-black text-sm font-mono p-1"
+            className="bg-cyan-800 text-slate-100 border border-black text-sm font-mono font-bold p-1"
             value={url}
             onChange={(e) => {
               API.cast(url, !addToLib);
@@ -26,7 +26,7 @@ function CastPopup(props: {
         </div>
         <div className="flex flex-row items-center mb-2">
           <label>
-            Add to Library
+            <span className="header mr-1">Add to Library</span>
             <input
               type="checkbox"
               id="boxy"
@@ -40,7 +40,7 @@ function CastPopup(props: {
           <input
             type="button"
             value="OK"
-            className="mr-1 p-1 border border-solid border-black hover:bg-cyan-200"
+            className="btn-standard mr-1"
             onClick={() => {
               API.cast(url, !addToLib);
               setUrl("");
@@ -51,7 +51,7 @@ function CastPopup(props: {
           <input
             type="button"
             value="Cancel"
-            className="p-1 border border-solid border-black hover:bg-cyan-200"
+            className="btn-standard"
             onClick={() => props.setCastPopup(false)}
           />
         </div>

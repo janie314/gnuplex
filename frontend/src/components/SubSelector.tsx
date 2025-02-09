@@ -10,7 +10,7 @@ function SubSelector(props: { subs: SubTrack[] | null }) {
   }, [props.subs]);
   return (
     <select
-      className="select select-sm select-bordered ml-1 mr-1"
+      className="bg-cyan-800 text-white border px-2 mr-1"
       value={subID}
       onChange={(e) => {
         const newID = Number(e.target.value);
