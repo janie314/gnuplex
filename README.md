@@ -27,7 +27,7 @@ gnuplex -upgrade
 
 | Version          | Date                           | Details                                                |
 | ---------------- | ------------------------------ | ------------------------------------------------------ |
-| 1.4              | 2025-02-09                     | Better MPV crash handling, style touchups, Tailwind 4. |
+| 1.41             | 2025-02-09                     | Better MPV crash handling, style touchups, Tailwind 4. |
 | 1.3              | 2024-12-07                     | Dark mode, React 19.                                   |
 | 1.2              | 2024-11-30                     | Hotfix.                                                |
 | 1.1              | 2024-11-30                     | Subtitle selection.                                    |
