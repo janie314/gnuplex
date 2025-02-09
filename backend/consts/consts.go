@@ -1,5 +1,5 @@
 package consts
 
 const (
-	GNUPlexVersion = "1.4 Seaside Park"
+	GNUPlexVersion = "1.41 Seaside Park"
 )
