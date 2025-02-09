@@ -2,7 +2,6 @@ backend/bin/gnuplex
 backend/__debug_bin*
 backend/gnuplex-backend
 backend/gnuplex.sqlite3
-backend/gnuplex.sqlite3
 backend/public/*
 backend/static/*
 .bundle
