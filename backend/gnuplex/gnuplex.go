@@ -19,14 +19,14 @@ type GNUPlex struct {
 }
 
 // Initialize a GNUPlex instance.
-func Init(wg *sync.WaitGroup, verbose, createMpvDaemon bool, mpvSocket, dbPath, staticFiles string) (*GNUPlex, error) {
+func Init(wg *sync.WaitGroup, verbose bool, dbPath, staticFiles string) (*GNUPlex, error) {
 	// HTTP backend
 	gnuplex := new(GNUPlex)
 	gnuplex.Router = gin.Default()
 	gnuplex.Router.SetTrustedProxies(nil)
 	gnuplex.InitWebEndpoints(verbose, staticFiles)
 	// MPV instance
-	mpv, err := mpv.Init(wg, verbose, createMpvDaemon, mpvSocket)
+	mpv, err := mpv.Init(wg, verbose)
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,6 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/reugn/go-quartz/job"
 	"github.com/reugn/go-quartz/quartz"
 )
@@ -27,8 +26,6 @@ func main() {
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	version := flag.Bool("version", false, "Print version.")
-	noCreateMpvDaemon := flag.Bool("no_mpv_daemon", false, "Do not spawn an mpv daemon and mpv socket.")
-	mpvSocket := flag.String("mpv_socket_path", fmt.Sprintf("/tmp/mpvsocket-%s", uuid.New().String()), "Spawn an mpv daemon. Otherwise, use someone else's mpv socket.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
 	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
 	source_hash := flag.Bool("source_hash", false, "Git commit this build comes from.")
@@ -57,7 +54,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), !*noCreateMpvDaemon, *mpvSocket, *dbPath, *staticFiles)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles)
 	if err != nil {
 		log.Fatal(err)
 	}

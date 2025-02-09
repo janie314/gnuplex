@@ -4,10 +4,8 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gnuplex/models"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -45,10 +43,13 @@ type MPVSetResult struct {
 	Error     string `json:"error"`
 }
 
-func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []byte) (T, error) {
-	var res MPVGetResult[T]
+func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []byte, err error) (T, error) {
 	var defaultVal T
-	err := json.Unmarshal(resBytes, &res)
+	if err != nil {
+		return defaultVal, err
+	}
+	var res MPVGetResult[T]
+	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
 		log.Println("mpv result error", err)
 		return defaultVal, err
@@ -60,9 +61,12 @@ func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []b
 
 }
 
-func processMPVSetResult(resBytes []byte) error {
+func processMPVSetResult(resBytes []byte, err error) error {
+	if err != nil {
+		return err
+	}
 	var res MPVSetResult
-	err := json.Unmarshal(resBytes, &res)
+	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
 		log.Println("mpv result error", err)
 		return err
@@ -74,37 +78,37 @@ func processMPVSetResult(resBytes []byte) error {
 
 }
 
-func (mpv *MPV) unixMsg(msg []byte) []byte {
+func (mpv *MPV) unixMsg(msg []byte) ([]byte, error) {
 	mpv.Mu.Lock()
 	defer mpv.Mu.Unlock()
 	_, err := mpv.Conn.Write(append(msg, '\n'))
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return nil, err
 	}
 	scanner := bufio.NewScanner(mpv.Conn)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, "request_id") {
-			return []byte(line)
+			return []byte(line), nil
 		}
 	}
-	return []byte{}
+	return []byte{}, nil
 }
 
-func (mpv *MPV) GetCmd(cmd []string) []byte {
+func (mpv *MPV) GetCmd(cmd []string) ([]byte, error) {
 	query := MPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
-		return []byte{}
+		return []byte{}, nil
 	}
 	return mpv.unixMsg(jsonData)
 }
 
-func (mpv *MPV) SetCmd(cmd []interface{}) []byte {
+func (mpv *MPV) SetCmd(cmd []interface{}) ([]byte, error) {
 	query := MPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
-		return []byte{}
+		return []byte{}, nil
 	}
 	return mpv.unixMsg(jsonData)
 }
@@ -125,8 +129,7 @@ func (mpv *MPV) Pause() error {
 }
 
 func (mpv *MPV) GetNowPlaying() (string, error) {
-	res := mpv.GetCmd([]string{"get_property", "path"})
-	return processMPVGetResult[string](res)
+	return processMPVGetResult[string](mpv.GetCmd([]string{"get_property", "path"}))
 }
 
 func (mpv *MPV) SetNowPlaying(filepath string) error {
@@ -136,8 +139,7 @@ func (mpv *MPV) SetNowPlaying(filepath string) error {
 }
 
 func (mpv *MPV) ReplaceQueueAndPlay(filepath string) error {
-	res := mpv.SetCmd([]interface{}{"loadfile", filepath})
-	return processMPVSetResult(res)
+	return processMPVSetResult(mpv.SetCmd([]interface{}{"loadfile", filepath}))
 }
 
 func (mpv *MPV) QueueMedia(filepath string) error {
@@ -147,8 +149,7 @@ func (mpv *MPV) QueueMedia(filepath string) error {
 }
 
 func (mpv *MPV) GetVol() (int, error) {
-	resBytes := mpv.GetCmd([]string{"get_property", "volume"})
-	n, err := processMPVGetResult[float64](resBytes)
+	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "volume"}))
 	if err != nil {
 		return 0, err
 	}
@@ -162,8 +163,7 @@ func (mpv *MPV) SetVol(vol int) error {
 }
 
 func (mpv *MPV) GetPos() (int, error) {
-	resBytes := mpv.GetCmd([]string{"get_property", "time-pos"})
-	n, err := processMPVGetResult[float64](resBytes)
+	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "time-pos"}))
 	if err != nil {
 		return 0, err
 	}
@@ -171,8 +171,7 @@ func (mpv *MPV) GetPos() (int, error) {
 }
 
 func (mpv *MPV) GetTimeRemaining() (int, error) {
-	resBytes := mpv.GetCmd([]string{"get_property", "time-remaining"})
-	n, err := processMPVGetResult[float64](resBytes)
+	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "time-remaining"}))
 	if err != nil {
 		return 0, err
 	}
@@ -187,8 +186,7 @@ func (mpv *MPV) SetPos(pos int) error {
 }
 
 func (mpv *MPV) GetTracks() ([]models.Track, error) {
-	resBytes := mpv.GetCmd([]string{"get_property", "track-list"})
-	return processMPVGetResult[[]models.Track](resBytes)
+	return processMPVGetResult[[]models.Track](mpv.GetCmd([]string{"get_property", "track-list"}))
 }
 
 func (mpv *MPV) SetSubVisibility(visible bool) error {
@@ -201,4 +199,8 @@ func (mpv *MPV) SetSubTrack(trackID int64) error {
 	return processMPVSetResult(
 		mpv.SetCmd([]interface{}{"set_property", "sid", trackID}),
 	)
+}
+
+func (mpv *MPV) Ping() (int, error) {
+	return processMPVGetResult[int](mpv.GetCmd([]string{"get_property", "pid"}))
 }
