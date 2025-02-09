@@ -1,1 +1,6 @@
-{ "dependencies": { "@biomejs/biome": "^1.9.4" } }
+{
+  "dependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@tailwindcss/vite": "^4.0.5"
+  }
+}

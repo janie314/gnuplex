@@ -14,9 +14,7 @@ function Medialist(props: {
   return (
     <div className="w-full flex flex-col mb-2 pl-2 whitespace-pre=wrap">
       <div className="flex flex-row align-center mb-1">
-        <h1 className="m-y-2/100 text-lg dark:text-white font-bold">
-          {props.subtitle}
-        </h1>
+        <h1 className="header">{props.subtitle}</h1>
         <PageSelector
           mediaItemCount={props.mediaItemCount}
           paginationOffset={props.paginationOffset}
