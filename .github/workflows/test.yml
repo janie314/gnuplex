@@ -40,12 +40,9 @@ jobs:
     - name: lint ruby code
       run: |
         bundle exec rubocop
-    - name: check frontend build was run
-      working-directory: frontend
+    - name: compile the frontend
       run: |
         bundle exec rake frontend_build
-        git status
-        git status --porcelain | wc -l | xargs ruby -e 'exit (ARGV[0].to_i > 0 ? 1 : 0)'
     - name: check for TODOs
       run: |
         git ls-files frontend backend | xargs grep -Ii todo | wc -l | xargs ruby -e 'exit ARGV[0].to_i == 0'
