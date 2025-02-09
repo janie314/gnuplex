@@ -21,7 +21,7 @@ function MediaControls(props: {
       <div className="mr-1">
         <button
           type="button"
-          className="p-2 w-8 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
+          className="p-2 w-8 btn-standard"
           onClick={() => API.play()}
         >
           <img src={play} alt="Play icon" />
@@ -30,7 +30,7 @@ function MediaControls(props: {
       <div className="mr-2">
         <button
           type="button"
-          className="p-2 w-8 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
+          className="p-2 w-8 btn-standard"
           onClick={() => API.pause()}
         >
           <img src={pause} alt="Pause icon" />
@@ -71,7 +71,7 @@ function MediaControls(props: {
         <SubSelector subs={props.subs} />
         <input
           type="button"
-          className="mr-1 p-1 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
+          className="mr-1 btn-standard"
           value="Manage Library"
           onClick={() => {
             props.setMediadirInputPopup(true);
@@ -79,7 +79,7 @@ function MediaControls(props: {
         />
         <input
           type="button"
-          className="p-1 border border-solid border-black bg-white hover:bg-cyan-200 hover:dark:bg-cyan-700 hover:dark:text-slate-200"
+          className="btn-standard"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
         />

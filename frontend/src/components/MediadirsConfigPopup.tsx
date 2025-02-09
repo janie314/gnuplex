@@ -25,29 +25,27 @@ function MediadirsConfigPopup(props: {
 
   if (props.visible) {
     return (
-      <div className="popup w-3/5 h-4/5">
-        <h1 className="m-y-2/100 text-lg font-bold">Media Directories</h1>
+      <div className="popup w-full sm:w-full md:w-full lg:w-3/5 dark:bg-stone-800 dark:text-white">
+        <h1 className="header">Media Directories</h1>
         <textarea
           value={mediadirs}
           onChange={(e) => setMediadirs(e.target.value)}
-          className="border border-solid border-black p-1"
+          className="border border-solid border-black p-1 dark:bg-cyan-700 dark:text-white"
           rows={10}
           placeholder="/mnt/externalssd/tv/twilight_zone/eye_of_the_beholder.av1"
         />
-        <h1 className="m-y-2/100 text-lg font-bold">
-          Excluded File Extensions
-        </h1>
+        <h1 className="header">Excluded File Extensions</h1>
         <textarea
           value={file_exts}
           onChange={(e) => setFileExts(e.target.value)}
-          className="border border-solid border-black p-1"
+          className="border border-solid border-black p-1 dark:bg-cyan-700 dark:text-white"
           rows={10}
           placeholder=".pdf"
         />
         <div>
           <input
             type="button"
-            className="p-1 border border-solid border-black hover:bg-cyan-200"
+            className="btn-standard"
             value="Save Settings"
             onClick={() => {
               setSaveMediadirsWorking(true);
@@ -73,7 +71,7 @@ function MediadirsConfigPopup(props: {
         <div>
           <input
             type="button"
-            className="p-1 border border-solid border-black hover:bg-cyan-200"
+            className="btn-standard"
             value="Refresh Library"
             onClick={() => {
               setRefreshLibraryWorking(true);
@@ -85,7 +83,7 @@ function MediadirsConfigPopup(props: {
         <div className="okcancel">
           <input
             type="button"
-            className="p-1 border border-solid border-black hover:bg-cyan-200"
+            className="btn-standard"
             value="OK"
             onClick={() => {
               props.closeHook();
