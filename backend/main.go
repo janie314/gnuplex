@@ -62,7 +62,10 @@ func main() {
 	// Scheduler process
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	sched := quartz.NewStdScheduler()
+	sched, err := quartz.NewStdScheduler()
+	if err != nil {
+		log.Fatal("Cron init failure", err)
+	}
 	sched.Start(ctx)
 	scanLibTrigger, err := quartz.NewCronTrigger("0 15 10 * * ?")
 	if err != nil {
