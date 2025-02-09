@@ -3,9 +3,10 @@ require "fileutils"
 
 desc "start development server"
 task :dev do
+  sh "bun i --cwd frontend"
   FileUtils.mkdir_p "tmp"
   caddy = Process.spawn "caddy run"
-  frontend = Process.spawn "bun run -i --cwd frontend dev"
+  frontend = Process.spawn "bun run --cwd frontend dev"
   backend = Process.spawn "go run -C backend . -verbose"
   Signal.trap("TERM") {
     [caddy, frontend, backend].each { |p| Process.kill "HUP", p }
