@@ -90,7 +90,7 @@ func upgradeGNUPlex(exe string) {
 	if err != nil {
 		log.Fatalln("fail", err)
 	} else {
-		fmt.Println("Successfully upgraded! Now run `systemctl --user gnuplex restart`.")
+		fmt.Println("Successfully upgraded! Now run `systemctl --user restart gnuplex`.")
 		os.Exit(0)
 	}
 }
