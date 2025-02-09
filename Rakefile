@@ -16,7 +16,8 @@ end
 
 desc "build frontend"
 task :frontend_build do
-  sh "bun run -i --cwd frontend build"
+  sh "bun i --cwd frontend"
+  sh "bun run --cwd frontend build"
 end
 
 desc "build backend go code"

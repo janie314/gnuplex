@@ -25,7 +25,7 @@ function MediadirsConfigPopup(props: {
 
   if (props.visible) {
     return (
-      <div className="popup w-full sm:w-full md:w-full lg:w-3/5 dark:bg-stone-800 text:white">
+      <div className="popup w-full sm:w-full md:w-full lg:w-3/5 dark:bg-stone-800 dark:text-white">
         <h1 className="header">Media Directories</h1>
         <textarea
           value={mediadirs}

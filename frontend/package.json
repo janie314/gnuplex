@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.5",
     "@uidotdev/usehooks": "^2.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
