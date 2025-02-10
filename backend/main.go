@@ -27,6 +27,7 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
 	version := flag.Bool("version", false, "Print version.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
+	port := flag.Int("port", 40000, "HTTP server's port.")
 	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
 	source_hash := flag.Bool("source_hash", false, "Git commit this build comes from.")
 	exe, err := os.Executable()
@@ -54,7 +55,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port)
 	if err != nil {
 		log.Fatal(err)
 	}
