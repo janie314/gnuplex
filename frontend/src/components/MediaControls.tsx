@@ -44,7 +44,7 @@ function MediaControls(props: {
             min={0}
             max={props.startPos + props.timeRemaining}
             value={props.pos}
-            className="range range-xs dark:[--range-shdw:#0e7490]"
+            className="range range-xs --range-shdw:#0e7490"
             onChange={(e) => props.setPos(e.target.valueAsNumber)}
             onMouseUp={() => API.setPos(props.pos)}
             onTouchCancel={() => API.setPos(props.pos)}

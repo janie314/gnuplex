@@ -24,13 +24,15 @@ function Medialist(props: {
       {props.mediaItems
         .filter((mediaItem) => mediaItem !== null)
         .map((mediaItem, i: number) => (
-          <input
-            type="button"
-            className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
-            key={props.subtitle + mediaItem.ID}
-            onClick={(e) => API.setNowPlaying(mediaItem)}
-            value={mediaItem.Path}
-          />
+          <div key={props.subtitle + mediaItem.ID} className="flex flex-row">
+            <input
+              type="button"
+              className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
+              onClick={(e) => API.setNowPlaying(mediaItem)}
+              value={mediaItem.Path}
+            />
+            <input type="button" className="btn-standard" value="+" />
+          </div>
         ))}
     </div>
   );
