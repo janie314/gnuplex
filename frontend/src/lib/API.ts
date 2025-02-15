@@ -153,7 +153,7 @@ class API {
   }
 
   public static async getMediaItems(search: string, paginationOffset: number) {
-    const param = search || "";
+    const param = search.trim() || "";
     return (await fetch(
       `/api/mediaitems?search=${encodeURIComponent(param)}&offset=${encodeURIComponent(paginationOffset)}`,
     ).then((res) => res.json())) as MediaItemRes;
