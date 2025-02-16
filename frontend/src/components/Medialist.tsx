@@ -1,5 +1,6 @@
 import { API, type MediaItem } from "../lib/API";
 import { PageSelector } from "./Medialist/PageSelector";
+import queue from "../assets/queue.svg";
 
 function Medialist(props: {
   mediaItems: (MediaItem | null)[];
@@ -24,13 +25,24 @@ function Medialist(props: {
       {props.mediaItems
         .filter((mediaItem) => mediaItem !== null)
         .map((mediaItem, i: number) => (
-          <input
-            type="button"
-            className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
+          <div
             key={props.subtitle + mediaItem.ID}
-            onClick={(e) => API.setNowPlaying(mediaItem)}
-            value={mediaItem.Path}
-          />
+            className="flex flex-row items-center"
+          >
+            <input
+              type="button"
+              className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-1 border-b-1 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
+              onClick={(e) => API.setNowPlaying(mediaItem)}
+              value={mediaItem.Path}
+            />
+            <button
+              type="button"
+              className="p-3 inline-flex items-center text-xl text-bold h-full hover:dark:bg-cyan-700 dark:text-white"
+              onClick={() => API.pause()}
+            >
+              ...
+            </button>
+          </div>
         ))}
     </div>
   );

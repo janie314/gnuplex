@@ -19,6 +19,7 @@ type MPV struct {
 	Conn         *net.UnixConn
 	Mu           *sync.Mutex
 	Process      *os.Process
+	Queue        []string
 	RestartCount int
 	Verbose      bool
 }
@@ -56,7 +57,7 @@ func (mpv *MPV) restartProcess() error {
 		return err
 	}
 	var mpvConn *net.UnixConn
-	for i := 10; (err != nil || i == 10) && i >= 0; i-- {
+	for i := 100; (err != nil || i == 100) && i >= 0; i-- {
 		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
 		if err != nil {
 			log.Println("Warning: InitUnixConn:", err)
@@ -86,6 +87,7 @@ func (mpv *MPV) runProcessSupervisor(wg *sync.WaitGroup) {
 func Init(wg *sync.WaitGroup, verbose bool) (*MPV, error) {
 	var mpv MPV
 	mpv.Mu = &sync.Mutex{}
+	mpv.Queue = make([]string, 0)
 	mpv.RestartCount = 0
 	mpv.Verbose = verbose
 	if err := mpv.restartProcess(); err != nil {
