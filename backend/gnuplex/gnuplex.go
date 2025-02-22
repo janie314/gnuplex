@@ -1,6 +1,7 @@
 package gnuplex
 
 import (
+	"fmt"
 	"log"
 	"sync"
 
@@ -13,13 +14,14 @@ import (
 
 type GNUPlex struct {
 	DB        *db.DB
+	Port      int
 	Router    *gin.Engine
 	PlayQueue [](*models.MediaItem)
 	MPV       *mpv.MPV
 }
 
 // Initialize a GNUPlex instance.
-func Init(wg *sync.WaitGroup, verbose bool, dbPath, staticFiles string) (*GNUPlex, error) {
+func Init(wg *sync.WaitGroup, verbose bool, dbPath, staticFiles string, port int) (*GNUPlex, error) {
 	// HTTP backend
 	gnuplex := new(GNUPlex)
 	gnuplex.Router = gin.Default()
@@ -37,13 +39,14 @@ func Init(wg *sync.WaitGroup, verbose bool, dbPath, staticFiles string) (*GNUPle
 		return nil, err
 	}
 	gnuplex.DB = db
+	gnuplex.Port = port
 	return gnuplex, nil
 }
 
 // Run the GNUPlex daemon.
 func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 	defer wg.Done()
-	err := server.Router.Run(":40000")
+	err := server.Router.Run(fmt.Sprintf(":%d", server.Port))
 	if err != nil {
 		log.Println("Server error:", err)
 	}
