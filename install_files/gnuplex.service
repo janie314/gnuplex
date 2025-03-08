@@ -3,7 +3,7 @@ Description=GNUPLex
 After=network.target
 
 [Service]
-Type=simple
+Restart=always
 WorkingDirectory=__DIR__/gnuplex-code/backend
 ExecStart=__DIR__/gnuplex
 
