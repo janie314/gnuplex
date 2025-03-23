@@ -51,10 +51,10 @@ func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []b
 	var res MPVGetResult[T]
 	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
-		log.Println("mpv result error", err)
+		log.Println("7b289386-c838-457d-8545-2f56bddb3746 MPV reported error in API call:", err)
 		return defaultVal, err
 	} else if res.Error != "success" {
-		log.Println("mpv result error", err)
+		log.Println("b8d14416-bbec-4297-ada8-3d13bf9c6e79 MPV reported error in API Call:", err)
 		return defaultVal, errors.New(res.Error)
 	}
 	return res.Data, nil
@@ -68,10 +68,10 @@ func processMPVSetResult(resBytes []byte, err error) error {
 	var res MPVSetResult
 	err = json.Unmarshal(resBytes, &res)
 	if err != nil {
-		log.Println("mpv result error", err)
+		log.Println("3989f92e-5230-4403-a60c-1ee8429c0088 MPV reported error in API call:", err)
 		return err
 	} else if res.Error != "success" {
-		log.Println("mpv result error", err)
+		log.Println("d1a6f614-5eb6-4fa5-aedb-31b1940cb58e MPV reported error in API call:", err)
 		return errors.New(res.Error)
 	}
 	return nil

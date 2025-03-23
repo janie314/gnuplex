@@ -17,6 +17,7 @@ import (
 	"github.com/reugn/go-quartz/quartz"
 )
 
+// Set by Ldflag at compile time (see Rakefile's go_build task)
 var SourceHash string
 
 func main() {
@@ -55,7 +56,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -65,19 +66,19 @@ func main() {
 	defer cancel()
 	sched, err := quartz.NewStdScheduler()
 	if err != nil {
-		log.Fatal("Cron init failure", err)
+		log.Fatal("c98500e1-42f4-4c5d-ad2c-cedd4e4712b0 Failed to initialize cron scheduler", err)
 	}
 	sched.Start(ctx)
 	scanLibTrigger, err := quartz.NewCronTrigger("0 15 10 * * ?")
 	if err != nil {
-		log.Fatal("CronTrigger init failure", err)
+		log.Fatalln("9d9da752-4415-48ce-beec-0d8c703dd012 Failed to initialize cron scheduler", err)
 	}
 	scanLibJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
 		return 0, server.ScanLib()
 	})
 	err = sched.ScheduleJob(quartz.NewJobDetail(scanLibJob, quartz.NewJobKey("scanlib")), scanLibTrigger)
 	if err != nil {
-		log.Fatal("Scheduler init failure", err)
+		log.Fatalln("638eded7-2ad6-45b5-a13f-a99ad4642ff5 Failed to initialize cron scheduler", err)
 	}
 	// Main execution
 	wg.Wait()
@@ -89,7 +90,7 @@ func upgradeGNUPlex(exe string) {
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalln("fail", err)
+		log.Fatalln("f0ac0db2-c77e-4bb4-94b4-7b98931d6379 Failed to upgrade GNUPlex", err)
 	} else {
 		fmt.Println("Successfully upgraded! Now run `systemctl --user restart gnuplex`.")
 		os.Exit(0)

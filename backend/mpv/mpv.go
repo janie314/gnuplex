@@ -25,7 +25,7 @@ type MPV struct {
 
 func (mpv *MPV) restartProcess() error {
 	if mpv.RestartCount >= 10 {
-		return errors.New("reached restart limit, 10")
+		return errors.New("4b367530-abab-4964-a093-72f78cf523f2 reached limit of MPV restarts (10)")
 	}
 	mpv.RestartCount += 1
 	if mpv.Process != nil {
@@ -46,7 +46,7 @@ func (mpv *MPV) restartProcess() error {
 	cmd.Stderr = os.Stderr
 	log.Println("starting mpv process")
 	if err := cmd.Start(); err != nil {
-		log.Println("Error: mpvdaemon.Run: ", err)
+		log.Println("Error 1b2b2f70-d75c-4ee4-b977-95f7272f72e9: mpvdaemon.Run: ", err)
 		return err
 	}
 	// Initialize Unix socket
@@ -59,14 +59,14 @@ func (mpv *MPV) restartProcess() error {
 	for i := 100; (err != nil || i == 100) && i >= 0; i-- {
 		mpvConn, err = net.DialUnix("unix", nil, mpvUnixAddr)
 		if err != nil {
-			log.Println("Warning: InitUnixConn:", err)
+			log.Println("Warning 6b94b8d9-9992-4276-8f6f-4d1b339cb59a: could not init unix socket to mpv, trying again in 2 seconds.", err)
 			time.Sleep(2 * time.Second)
 		}
 	}
 	if err != nil {
-		return fmt.Errorf("could not establish a unix socket connection to %s", mpvSocketPath)
+		return fmt.Errorf("84c2ca00-1df2-4af5-8bd4-9248d941ad7d: could not establish a unix socket connection to %s", mpvSocketPath)
 	} else {
-		log.Println("stablished unix socket connection")
+		log.Println("Established unix socket connection to mpv.")
 		mpv.Conn = mpvConn
 	}
 	return nil
@@ -75,7 +75,9 @@ func (mpv *MPV) restartProcess() error {
 func (mpv *MPV) runProcessSupervisor(wg *sync.WaitGroup) {
 	for {
 		if _, err := mpv.Ping(); err != nil {
+			log.Println("Error b304c2bb-a940-4a3e-979d-2939e986ed87: failed to ping MPV. restarting MPV.")
 			if err := mpv.restartProcess(); err != nil {
+				log.Println("Error c7b92229-b6b8-4800-91d6-8b8afb733d9c: failed to restart MPV. stopping gnuplex.")
 				wg.Done()
 			}
 		}

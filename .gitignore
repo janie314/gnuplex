@@ -5,7 +5,8 @@ backend/gnuplex.sqlite3
 backend/public/*
 backend/static/*
 .bundle
+gnuplex.sqlite3
 node_modules
 .project.vim
-tmp/*
-vendor
+tmp
+vendor.ruby-lsp
