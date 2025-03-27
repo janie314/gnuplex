@@ -4,6 +4,10 @@ backend/__debug_bin*
 backend/gnuplex-backend
 backend/gnuplex.sqlite3
 backend/public/*
+backend/static/*
+.bundle
+gnuplex.sqlite3
 node_modules
-tmp/*
-vendor
+.project.vim
+tmp
+vendor.ruby-lsp

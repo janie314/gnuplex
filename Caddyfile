@@ -1,4 +1,3 @@
 http://localhost:50000 {
-	reverse_proxy /api/* localhost:40000
-	reverse_proxy localhost:5173
+	reverse_proxy * localhost:40000
 }
