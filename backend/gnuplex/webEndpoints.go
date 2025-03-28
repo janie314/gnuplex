@@ -41,11 +41,6 @@ type SubBody struct {
 	ID      int64 `json:"id,omitempty"`
 }
 
-type VersionRes struct {
-	Version    string `json:"version"`
-	SourceHash string `json:"source_hash"`
-}
-
 // Initialize the web server's HTTP Endpoints
 func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash string) {
 	gnuplex.Router.GET("/", func(c *gin.Context) {
@@ -56,7 +51,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash stri
 	})
 	gnuplex.Router.Static("/home", staticFiles)
 	gnuplex.Router.GET("/api/version", func(c *gin.Context) {
-		c.JSON(http.StatusOK, VersionRes{Version: consts.Version, SourceHash: sourceHash})
+		c.JSON(http.StatusOK, consts.VersionInfo{Version: consts.Version, SourceHash: sourceHash})
 	})
 	gnuplex.Router.POST("/api/play", func(c *gin.Context) {
 		if err := gnuplex.MPV.Play(); err != nil {
