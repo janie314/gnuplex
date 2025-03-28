@@ -45,4 +45,4 @@ jobs:
         bundle exec rake frontend_build
     - name: check for TODO string instances
       run: |
-        git ls-files | grep -v test\.yml | xargs grep -Ii todo | wc -l | xargs ruby -e 'exit ARGV[0].to_i == 0'
+        git ls-files | grep -v test-branch\.yml | xargs grep -Ii todo | wc -l | xargs ruby -e 'exit ARGV[0].to_i == 0'
