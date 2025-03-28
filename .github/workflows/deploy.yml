@@ -30,7 +30,7 @@ jobs:
         cache-dependency-path: backend/go.sum
     - name: Update Release Branch
       run: |
-        git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository }}
+        git remote set-url origin https://janie314:${{ secrets.PAT }}@github.com/${{ github.repository }}
         git config user.name "deploy.yml workflow"
         git config user.email "x@example.com"
         git checkout release 
