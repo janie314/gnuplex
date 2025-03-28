@@ -14,8 +14,6 @@ interface IMPVRes {
 }
 
 function App() {
-  // App info
-  const [version, setVersion] = useState("");
   // Media player state info
   const [subs, setSubs] = useState<SubTrack[] | null>([]);
   const [pos, setPos] = useState(0);
@@ -41,8 +39,6 @@ function App() {
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
 
   useEffect(() => {
-    // Populate app version
-    API.getVersion().then((version) => setVersion(version));
     // Poll media player state from the backend
     window.setInterval(() => {
       API.getPos().then((res) => {
@@ -102,7 +98,6 @@ function App() {
         <div className="sm:basis-1 md:basis-1/4 sm:max-w-full lg:max-w-sm grow flex-col px-1/100 pb-2 mb-1">
           <div className="logo-panel">
             <span className="logo">GNUPlex</span>
-            <span className="version">{version}</span>
           </div>
           <MediaControls
             mediadirInputPopup={mediaDirInputPopupVisible}
