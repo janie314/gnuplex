@@ -8,5 +8,6 @@ backend/static/*
 gnuplex.sqlite3
 node_modules
 .project.vim
+.ruby-lsp
 tmp
-vendor.ruby-lsp
+vendor
