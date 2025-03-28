@@ -31,6 +31,11 @@ interface SubTrack {
   selected: boolean;
 }
 
+interface Version {
+  version: string;
+  source_hash: string;
+}
+
 class API {
   public static async play() {
     return await fetch("/api/play", { method: "POST" });
@@ -59,7 +64,7 @@ class API {
   }
 
   public static async getVersion() {
-    return (await fetch("/api/version").then((res) => res.json())) as string;
+    return (await fetch("/api/version").then((res) => res.json())) as Version;
   }
 
   public static async setPos(pos: number) {

@@ -47,7 +47,7 @@ func main() {
 	if *version {
 		printVersion()
 	}
-	fmt.Println("GNUPlex Version " + consts.GNUPlexVersion)
+	fmt.Println("GNUPlex Version " + consts.Version)
 	if *prod {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
@@ -103,6 +103,6 @@ func sourceHash() {
 }
 
 func printVersion() {
-	fmt.Println(consts.GNUPlexVersion)
+	fmt.Println(consts.Version)
 	os.Exit(0)
 }
