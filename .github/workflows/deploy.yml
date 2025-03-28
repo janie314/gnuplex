@@ -41,6 +41,7 @@ jobs:
         bundle exec rake build
     - name: update release branch
       run: |
+        umask 077
         echo "${{ secrets.GNUPLEX_DEPLOY }}" >>/tmp/gnuplex-deploy
         version_output=$(./backend/bin/gnuplex -version)
         git add .
