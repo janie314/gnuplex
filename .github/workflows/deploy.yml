@@ -14,7 +14,7 @@ jobs:
     - name: Checkout main
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Required for git log and merge
+        fetch-depth: 0
     - name: setup ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -30,13 +30,13 @@ jobs:
         cache-dependency-path: backend/go.sum
     - name: Update Release Branch
       run: |
-        git checkout release || git checkout -b release
+        git config user.name "deploy.yml workflow"
+        git config user.email "x@example.com"
+        git checkout release 
         git merge main -X theirs --allow-unrelated-histories
         bundle install
         bundle exec rake build
         version_output=$(./backend/bin/gnuplex -version)
-        git config user.name "deploy.yml workflow"
-        git config user.email "x@example.com"
         git add .
         git commit -m "Release: $version_output"
         git push origin release

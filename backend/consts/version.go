@@ -1,5 +1,5 @@
 package consts
 
 const (
-	Version = "1743122138"
+	Version = "1743172344"
 )

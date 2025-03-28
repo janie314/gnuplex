@@ -28,6 +28,7 @@ jobs:
         cache-dependency-path: backend/go.sum
     - name: compile the go backend
       run: |
+        bundle
         bundle exec rake go_build_ci
     - name: check go formatting
       working-directory: backend
