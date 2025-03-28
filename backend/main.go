@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"gnuplex/consts"
@@ -26,11 +27,10 @@ func main() {
 	 */
 	prod := flag.Bool("prod", false, "Run in prod mode.")
 	verbose := flag.Bool("verbose", false, "Verbose logging.")
-	version := flag.Bool("version", false, "Print version.")
+	version := flag.Bool("version", false, "Print version info.")
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
 	port := flag.Int("port", 40000, "HTTP server's port.")
 	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
-	source_hash := flag.Bool("source_hash", false, "Git commit this build comes from.")
 	exe, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
@@ -40,9 +40,6 @@ func main() {
 	// Some flags that subvert the main daemon process
 	if *upgrade {
 		upgradeGNUPlex(exe)
-	}
-	if *source_hash {
-		sourceHash()
 	}
 	if *version {
 		printVersion()
@@ -97,12 +94,14 @@ func upgradeGNUPlex(exe string) {
 	}
 }
 
-func sourceHash() {
-	fmt.Println(SourceHash)
-	os.Exit(0)
-}
-
 func printVersion() {
-	fmt.Println(consts.Version)
+	var version consts.VersionInfo
+	version.SourceHash = SourceHash
+	version.Version = consts.Version
+	res, err := json.Marshal(version)
+	if err != nil {
+		log.Fatalln("678f5d62-8c22-42bc-b25a-c5903b533312 failed to turn version info into JSON")
+	}
+	fmt.Println(string(res))
 	os.Exit(0)
 }
