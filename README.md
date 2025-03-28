@@ -27,7 +27,7 @@ gnuplex -upgrade
 
 | Version          | Date                           | Details                                                                              |
 | ---------------- | ------------------------------ | ------------------------------------------------------------------------------------ |
-| 1.44             | 2025-03-22                     | More debug logging, the /build webpage.                                                                                    |
+| 1.44             | 2025-03-22                     | More debug logging, add /source_hash API.                                            |
 | 1.41 - 1.43      | 2025-02 - 2025-03              | Better crash handling, style touchups, dependency updates, many needed improvements. |
 | 1.3              | 2024-12-07                     | Dark mode, React 19.                                                                 |
 | 1.2              | 2024-11-30                     | Hotfix.                                                                              |
