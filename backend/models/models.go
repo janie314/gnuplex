@@ -42,3 +42,9 @@ type Track struct {
 	Type     string `json:"type"`
 	Selected bool   `json:"selected"`
 }
+
+type Settings struct {
+	gorm.Model
+	Key   string `gorm:"uniqueIndex"`
+	Value string
+}

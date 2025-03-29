@@ -37,6 +37,9 @@ func Init(path string, verbose bool) (*DB, error) {
 	if err := db.ORM.AutoMigrate(&models.FileExtension{}); err != nil {
 		return nil, err
 	}
+	if err := db.ORM.AutoMigrate(&models.Settings{}); err != nil {
+		return nil, err
+	}
 	return &db, nil
 }
 
