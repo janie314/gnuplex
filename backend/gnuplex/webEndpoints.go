@@ -73,7 +73,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash stri
 		media, err := gnuplex.GetNowPlaying()
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, "")
+			c.JSON(http.StatusOK, nil)
 		} else {
 			c.JSON(http.StatusOK, media)
 		}
