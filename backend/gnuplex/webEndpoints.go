@@ -69,11 +69,44 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash stri
 			c.Status(http.StatusOK)
 		}
 	})
+	type MediaStateRes struct {
+		Media *models.MediaItem `json:"media"`
+		Vol   int               `json:"vol"`
+		Pos   int               `json:"pos"`
+	}
+	gnuplex.Router.GET("/api/mediastate", func(c *gin.Context) {
+		media, err := gnuplex.GetNowPlaying()
+		if err != nil && err.Error() == "property unavailable" {
+			c.JSON(http.StatusOK, nil)
+			return
+		} else if err != nil {
+			c.String(http.StatusInternalServerError, "b86797b6-661f-483b-bb38-d7b44f6b76c0 some problem")
+			return
+		}
+		vol, err := gnuplex.MPV.GetVol()
+		if err != nil && err.Error() == "property unavailable" {
+			c.JSON(http.StatusOK, nil)
+			return
+		} else if err != nil {
+			c.String(http.StatusInternalServerError, "52fc3831-c30a-4394-ab73-304b278268b7 some problem")
+			return
+		}
+		pos, err := gnuplex.MPV.GetPos()
+		if err != nil && err.Error() == "property unavailable" {
+			c.JSON(http.StatusOK, nil)
+			return
+		} else if err != nil {
+			c.String(http.StatusInternalServerError, "571f951a-78ad-48d3-a881-ca06664e3ecb some problem")
+			return
+		}
+		c.JSON(http.StatusOK, MediaStateRes{Media: media, Pos: pos, Vol: vol})
+	})
 	gnuplex.Router.GET("/api/nowplaying", func(c *gin.Context) {
 		media, err := gnuplex.GetNowPlaying()
-		if err != nil {
-			log.Println(err)
+		if err != nil && err.Error() == "property unavailable" {
 			c.JSON(http.StatusOK, nil)
+		} else if err != nil {
+			c.String(http.StatusInternalServerError, "32fcc13d-4e12-4db1-ab1f-79a2828e1874 some problem")
 		} else {
 			c.JSON(http.StatusOK, media)
 		}
@@ -236,7 +269,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash stri
 		}
 	})
 	gnuplex.Router.GET("/api/sub", func(c *gin.Context) {
-		res, err := gnuplex.GetSubs()
+		res, err := gnuplex.GetSubTracks()
 		if err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)
