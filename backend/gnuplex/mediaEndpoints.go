@@ -76,7 +76,7 @@ func (gnuplex *GNUPlex) processScanLibBatch(batch []models.MediaItem, lastScanUU
 
 // Returns the currently playing MediaItem
 func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
-	path, err := gnuplex.MPV.GetNowPlaying()
+	path, err := gnuplex.MPV.GetCurrentFilepath()
 	if err != nil {
 		return nil, err
 	}
@@ -146,8 +146,8 @@ func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
 	}
 }
 
-// Cycle subtitle track.
-func (gnuplex *GNUPlex) GetSubs() ([]models.Track, error) {
+// Returns available subtitle tracks.
+func (gnuplex *GNUPlex) GetSubTracks() ([]models.Track, error) {
 	tracks, err := gnuplex.MPV.GetTracks()
 	if err != nil {
 		return nil, err

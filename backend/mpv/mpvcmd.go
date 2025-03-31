@@ -128,7 +128,7 @@ func (mpv *MPV) Pause() error {
 	)
 }
 
-func (mpv *MPV) GetNowPlaying() (string, error) {
+func (mpv *MPV) GetCurrentFilepath() (string, error) {
 	return processMPVGetResult[string](mpv.GetCmd([]string{"get_property", "path"}))
 }
 

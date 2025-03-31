@@ -8,7 +8,7 @@ function Medialist(props: {
   paginationOffset: number | null;
   setPaginationOffset: React.Dispatch<React.SetStateAction<number>> | null;
 }) {
-  if (props.mediaItems.length === 0) {
+  if (props.mediaItems === null || props.mediaItems.length === 0) {
     return null;
   }
   return (
