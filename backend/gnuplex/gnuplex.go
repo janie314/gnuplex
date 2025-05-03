@@ -13,11 +13,15 @@ import (
 )
 
 type GNUPlex struct {
-	DB        *db.DB
-	Port      int
-	Router    *gin.Engine
+	DB     *db.DB
+	Port   int
+	Router *gin.Engine
+	MPV    *mpv.MPV
+	State  *State
+}
+
+type State struct {
 	PlayQueue [](*models.MediaItem)
-	MPV       *mpv.MPV
 }
 
 // Initialize a GNUPlex instance.
@@ -40,6 +44,7 @@ func Init(wg *sync.WaitGroup, verbose bool, dbPath, staticFiles string, port int
 	}
 	gnuplex.DB = db
 	gnuplex.Port = port
+	gnuplex.State = &State{PlayQueue: []*models.MediaItem{}}
 	return gnuplex, nil
 }
 
