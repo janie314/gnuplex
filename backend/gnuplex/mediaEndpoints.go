@@ -76,7 +76,7 @@ func (gnuplex *GNUPlex) processScanLibBatch(batch []models.MediaItem, lastScanUU
 
 // Returns the currently playing MediaItem
 func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
-	path, err := gnuplex.MPV.GetNowPlaying()
+	path, err := gnuplex.MPV.GetCurrentFilepath()
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 		return err
 	}
 	if mediaItem != nil {
-		gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
+		gnuplex.State.PlayQueue = []*models.MediaItem{mediaItem}
 	}
 	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
 		return err
@@ -108,7 +108,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlayByPath(path string) error {
 		return err
 	}
 	if mediaItem != nil {
-		gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
+		gnuplex.State.PlayQueue = []*models.MediaItem{mediaItem}
 	}
 	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
 		return err
@@ -129,7 +129,7 @@ func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
 	var mediaItem *models.MediaItem
 	gnuplex.DB.ORM.First(&mediaItem, id)
 	if mediaItem != nil {
-		gnuplex.PlayQueue = append(gnuplex.PlayQueue, mediaItem)
+		gnuplex.State.PlayQueue = append(gnuplex.State.PlayQueue, mediaItem)
 	}
 	gnuplex.MPV.QueueMedia(mediaItem.Path)
 	return mediaItem
@@ -146,8 +146,8 @@ func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
 	}
 }
 
-// Cycle subtitle track.
-func (gnuplex *GNUPlex) GetSubs() ([]models.Track, error) {
+// Returns available subtitle tracks.
+func (gnuplex *GNUPlex) GetSubTracks() ([]models.Track, error) {
 	tracks, err := gnuplex.MPV.GetTracks()
 	if err != nil {
 		return nil, err
