@@ -16,6 +16,10 @@ sh <(curl -sL https://gnuplex.janie.page/install.sh)
 
 This will prompt you for a directory in your PATH, then install GNUPlex there.
 
+3. Now you can run `./gnuplex` from your installation directory and navigate to
+   `https://localhost:40000/`. To run GNUPlex persistently, run
+   `systemctl --user enable --now gnuplex`.
+
 To update GNUPlex:
 
 ```shell
