@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 echo "Installing GNUPlex..."
+printf "\n"
 # dependencies
 echo "checking if git exists"
 command -v git
@@ -22,4 +23,9 @@ echo "Installing systemd user service..."
 mkdir -p "$HOME/.config/systemd/user"
 install_dir_replace=$(echo "$install_dir" | sed -e 's~/~\\/~g')
 cat "$install_dir/gnuplex-code/install_files/gnuplex.service" | sed -e "s/__DIR__/$install_dir_replace/" >"$HOME/.config/systemd/user/gnuplex.service"
-echo "Done. To turn on GNUPlex, run: systemctl --user enable --now gnuplex"
+printf "\n"
+echo "Done."
+printf "\n\n" 
+echo "To use GNUPlex locally, run \`"$install_dir/gnuplex"\` and navigate to http://localhost:40000/."
+printf "\n\n" 
+echo "To run GNUPlex persistently, run \`systemctl --user enable --now gnuplex\`"
