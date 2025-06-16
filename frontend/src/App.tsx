@@ -72,7 +72,8 @@ function App() {
       updateURL = true;
     }
     if (updateURL) {
-      window.location.search = urlParams.toString();
+      const newURL = `${window.location.pathname}?${urlParams.toString()}`;
+      window.history.pushState({}, "", newURL);
     }
     API.getMediaItems(searchQueryDebounced, paginationOffset * 1000).then(
       (res) => {
