@@ -5,7 +5,7 @@ go 1.23
 require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/google/uuid v1.6.0
-	github.com/reugn/go-quartz v0.14.0
+	github.com/reugn/go-quartz v0.15.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.0
 )
