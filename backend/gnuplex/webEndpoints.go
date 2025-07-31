@@ -229,7 +229,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash stri
 	})
 	gnuplex.Router.POST("/api/scanlib", func(c *gin.Context) {
 		if err := gnuplex.ScanLib(); err != nil {
-			log.Println(err)
+			log.Println("Error 49374385-17c5-4348-a2c2-d6566fe53692: ", err)
 			c.Status(http.StatusInternalServerError)
 		} else {
 			c.Status(http.StatusOK)
