@@ -40,7 +40,8 @@ func (gnuplex *GNUPlex) ScanLib() error {
 		if (err == nil) && dir.IsDir() {
 			if err = filepath.WalkDir(mediaDir.Path, func(path string, entry fs.DirEntry, err error) error {
 				if err != nil {
-					return err
+					log.Println("Error 62b2b0e2-25d7-49db-a31a-5785c145229f: file read issue for ", path, ": ", err)
+					return nil
 				} else if !entry.IsDir() {
 					ext := strings.ToLower(path[strings.LastIndex(path, ".")+1:])
 					if _, match := fileExtH[ext]; !match {
