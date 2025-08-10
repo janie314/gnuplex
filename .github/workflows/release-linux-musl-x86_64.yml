@@ -8,7 +8,7 @@ on:
       - "backend/consts/version.go"
 
 jobs:
-  update-release:
+  update-release-linux-musl-x86_64:
     runs-on: alpine-latest
     steps:
       - name: Checkout main
