@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: setup ruby
-        uses: ruby/setup-ruby@v1
+      - name: setup uv
+        uses: astral-sh/setup-uv@v6
         with:
-          bundler-cache: true
+          enable-cache: true
       - name: setup bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -37,8 +37,7 @@ jobs:
           git merge main -X theirs --allow-unrelated-histories
       - name: build gnuplex
         run: |
-          bundle install
-          bundle exec rake build
+          uv run make.py build
       - name: update release branch
         run: |
           umask 077
