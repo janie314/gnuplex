@@ -1,4 +1,4 @@
-name: Update Release Branch for linux-glibc-x86_64 on Version Change
+name: Update Release Branch for linux-musl-x86_64 on Version Change
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   update-release:
-    runs-on: ubuntu-latest
+    runs-on: alpine-latest
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
