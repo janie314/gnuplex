@@ -33,7 +33,7 @@ jobs:
           git remote set-url origin git@github.com:janie314/gnuplex.git
           git config user.name "deploy.yml workflow"
           git config user.email "x@example.com"
-          git checkout release
+          git checkout release-linux-glibc-x86_64
           git merge main -X theirs --allow-unrelated-histories
       - name: build gnuplex
         run: |
