@@ -2,7 +2,6 @@ import os
 import subprocess
 import sys
 import signal
-import shutil
 from pathlib import Path
 import hashlib
 
@@ -19,8 +18,11 @@ def source_hash():
 
 
 def run(cmd, **kwargs):
-    print(f"Running: {cmd}")
-    subprocess.run(cmd, shell=True, check=True, **kwargs)
+    print(f"+ {cmd}")
+    res = subprocess.run(cmd, shell=True, check=True, **kwargs)
+    if res.returncode != 0:
+        print("cmd failed. exiting...")
+        os.exit(res.returncode)
 
 
 def dev():
