@@ -10,7 +10,7 @@ jobs:
     name: testing and linting this branch
     steps:
       - name: check out this repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
       - name: setup ruby
