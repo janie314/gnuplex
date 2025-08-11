@@ -28,6 +28,8 @@ jobs:
         with:
           go-version: "^1.23.2"
           cache-dependency-path: backend/go.sum
+      - name: setup docker
+        uses: docker/setup-docker-action@v4
       - name: merge main into release
         run: |
           git remote set-url origin git@github.com:janie314/gnuplex.git
