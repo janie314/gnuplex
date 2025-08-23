@@ -69,5 +69,13 @@
   },
   "files": {
     "ignoreUnknown": true
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["frontend/src/index.css"],
+      "linter": {
+        "enabled": false
+      }
+    }
+  ]
 }
