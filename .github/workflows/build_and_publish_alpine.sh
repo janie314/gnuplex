@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "$1" >>/tmp/gnuplex-deploy
+umask 077
+echo "$1" >/tmp/gnuplex-deploy
 
 apk add uv git go curl bash openssh
 

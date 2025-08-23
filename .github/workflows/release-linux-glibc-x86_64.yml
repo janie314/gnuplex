@@ -41,7 +41,7 @@ jobs:
       - name: update release branch
         run: |
           umask 077
-          echo "${{ secrets.GNUPLEX_DEPLOY }}" >>/tmp/gnuplex-deploy
+          echo "${{ secrets.GNUPLEX_DEPLOY }}" >/tmp/gnuplex-deploy
           version_output=$(./backend/bin/gnuplex -version)
           git add .
           git commit -m "$version_output"
