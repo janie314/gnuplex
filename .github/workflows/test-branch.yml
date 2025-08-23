@@ -17,6 +17,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - name: setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
       - name: setup bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -28,8 +32,7 @@ jobs:
           cache-dependency-path: backend/go.sum
       - name: compile the go backend
         run: |
-          bundle
-          bundle exec rake go_build_ci
+          uv run make.py go_build_ci
       - name: check go formatting
         working-directory: backend
         run: |
@@ -38,12 +41,12 @@ jobs:
         run: |
           bun i
           bun run biome ci --verbose
-      - name: lint ruby code
+      - name: lint python
         run: |
-          bundle exec rubocop
+          uv run ruff check
       - name: compile the frontend
         run: |
-          bundle exec rake frontend_build
+          uv run make.py frontend_build
       - name: check for TODO string instances
         run: |
           git ls-files | grep -v test-branch\.yml | xargs grep -Ii todo | wc -l | xargs ruby -e 'exit ARGV[0].to_i == 0'

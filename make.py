@@ -1,9 +1,9 @@
+import hashlib
 import os
+import signal
 import subprocess
 import sys
-import signal
 from pathlib import Path
-import hashlib
 
 
 def source_hash():
@@ -87,7 +87,8 @@ def go_build():
     os.chdir(os.path.dirname(__file__))
     target = os.environ.get("TARGET", "bin/gnuplex")
     run(
-        f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} -X main.Platform={platform()}" .'
+        f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} '
+        + f'-X main.Platform={platform()}" .'
     )
 
 
