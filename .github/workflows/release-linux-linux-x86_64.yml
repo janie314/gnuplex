@@ -1,4 +1,4 @@
-name: Update Release Branch for linux-glibc-x86_64 on Version Change
+name: Update Release Branch for linux-x86_64 on Version Change
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
           git remote set-url origin git@github.com:janie314/gnuplex.git
           git config user.name "deploy.yml workflow"
           git config user.email "x@example.com"
-          git checkout release-linux-glibc-x86_64
+          git checkout release-linux-x86_64
           git merge main -X theirs --allow-unrelated-histories
       - name: build gnuplex
         run: |
@@ -46,4 +46,4 @@ jobs:
           version_output=$(./backend/bin/gnuplex -version)
           git add .
           git commit -m "$version_output"
-          GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy" git push origin release-linux-glibc-x86_64
+          GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy" git push origin release-linux-x86_64
