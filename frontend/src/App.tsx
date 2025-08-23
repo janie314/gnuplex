@@ -7,12 +7,6 @@ import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
 
-interface IMPVRes {
-  data?: number | string;
-  request_id: number;
-  error: string;
-}
-
 function App() {
   // Media player state info
   const [subs, setSubs] = useState<SubTrack[] | null>([]);

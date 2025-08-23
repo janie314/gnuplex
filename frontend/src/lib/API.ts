@@ -1,9 +1,3 @@
-interface IMPVRes {
-  data?: number | string;
-  request_id: number;
-  error: string;
-}
-
 interface MediaDir {
   Path: string;
   LastScanned: string;

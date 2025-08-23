@@ -23,12 +23,12 @@ function Medialist(props: {
       </div>
       {props.mediaItems
         .filter((mediaItem) => mediaItem !== null)
-        .map((mediaItem, i: number) => (
+        .map((mediaItem, _i: number) => (
           <input
             type="button"
             className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
             key={props.subtitle + mediaItem.ID}
-            onClick={(e) => API.setNowPlaying(mediaItem)}
+            onClick={(_e) => API.setNowPlaying(mediaItem)}
             value={mediaItem.Path}
           />
         ))}
