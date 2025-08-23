@@ -15,8 +15,9 @@ function PageSelector(props: {
       className="select select-sm select-bordered ml-2"
       value={props.paginationOffset}
       onChange={(e) => {
-        //@ts-ignore
-        props.setPaginationOffset((Number(e.target.value) || 0) * 1000);
+        if (props.setPaginationOffset) {
+          props.setPaginationOffset((Number(e.target.value) || 0) * 1000);
+        }
       }}
     >
       {[...new Array(Math.ceil(props.mediaItemCount / 1000)).keys()].map(
