@@ -1,4 +1,4 @@
-name: Update Release Branch for linux-x86_64 on Version Change
+name: Update release-linux-musl-x86_64 on version change
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - "backend/consts/version.go"
 
 jobs:
-  update-release-linux-glibc-x86_64:
+  update-release-linux-musl-x86_64:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -30,13 +30,6 @@ jobs:
           cache-dependency-path: backend/go.sum
       - name: setup docker
         uses: docker/setup-docker-action@v4
-      - name: merge main into release
-        run: |
-          git remote set-url origin git@github.com:janie314/gnuplex.git
-          git config user.name "release workflow"
-          git config user.email "x@example.com"
-          git checkout release-linux-musl-x86_64
-          git merge main -X theirs --allow-unrelated-histories
       - name: create alpine build
         run: |
           docker run -v $(realpath .github/workflows):/mnt/build:z alpine:edge sh /mnt/build/build_and_publish_alpine.sh "${{ secrets.GNUPLEX_DEPLOY }}"
