@@ -51,4 +51,4 @@ jobs:
           rm /tmp/gnuplex-deploy
       - name: create alpine build
         run: |
-          docker run -it -v $(realpath .github/workflows):/mnt/build:z alpine:edge sh /mnt/build/go_build.sh "${{ secrets.GNUPLEX_DEPLOY }}"
+          docker run -v $(realpath .github/workflows):/mnt/build:z alpine:edge sh /mnt/build/go_build.sh "${{ secrets.GNUPLEX_DEPLOY }}"
