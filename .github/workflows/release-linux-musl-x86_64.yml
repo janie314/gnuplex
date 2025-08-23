@@ -11,6 +11,10 @@ jobs:
   update-release-linux-musl-x86_64:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: setup docker
         uses: docker/setup-docker-action@v4
       - name: create alpine build
