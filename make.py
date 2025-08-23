@@ -18,9 +18,14 @@ def source_hash():
 
 
 def platform():
-    s = subprocess.check_output("uname -s", shell=True).decode().strip()
-    m = subprocess.check_output("uname -m", shell=True).decode().strip()
-    return f"{s}-{m}".lower()
+    os = subprocess.check_output("uname -s", shell=True).decode().strip()
+    arch = subprocess.check_output("uname -m", shell=True).decode().strip()
+    libc = (
+        "musl"
+        if "musl" in subprocess.check_output("ldd /bin/ls", shell=True).decode().strip()
+        else "glibc"
+    )
+    return f"{os}-{libc}-{arch}".lower()
 
 
 def run(cmd, **kwargs):
