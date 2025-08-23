@@ -94,7 +94,7 @@ function MediadirsConfigPopup(props: {
       </div>
     );
   }
-  return <></>;
+  return null;
 }
 
 export { MediadirsConfigPopup };
