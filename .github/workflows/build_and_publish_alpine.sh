@@ -6,6 +6,10 @@ echo "$1" >/tmp/gnuplex-deploy
 
 apk add uv git go curl bash openssh
 
+curl -fsSL https://bun.sh/install | bash
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 export GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy -o StrictHostKeyChecking=no"
 
 git clone git@github.com:janie314/gnuplex.git
