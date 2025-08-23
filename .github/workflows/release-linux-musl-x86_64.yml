@@ -1,4 +1,4 @@
-name: Update Release Branch for linux-x86_64 on Version Change
+name: Update release-linux-musl-x86_64 on version change
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - "backend/consts/version.go"
 
 jobs:
-  update-release-linux-glibc-x86_64:
+  update-release-linux-musl-x86_64:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
