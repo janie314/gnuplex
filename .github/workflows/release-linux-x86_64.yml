@@ -49,3 +49,6 @@ jobs:
           git commit -m "$version_output"
           GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy" git push origin release-linux-x86_64
           rm /tmp/gnuplex-deploy
+      - name: create alpine build
+        run: |
+          docker run -it -v $(realpath .github/workflows):/mnt/build:z alpine:edge sh /mnt/build/go_build.sh "${{ secrets.GNUPLEX_DEPLOY }}"

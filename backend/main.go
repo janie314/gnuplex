@@ -18,8 +18,9 @@ import (
 	"github.com/reugn/go-quartz/quartz"
 )
 
-// Set by Ldflag at compile time (see Rakefile's go_build task)
+// Set by Ldflag at compile time (see make.py's go_build task)
 var SourceHash string
+var Platform string
 
 func main() {
 	/*
@@ -98,6 +99,7 @@ func printVersion() {
 	var version consts.VersionInfo
 	version.SourceHash = SourceHash
 	version.Version = consts.Version
+	version.Platform = Platform
 	res, err := json.Marshal(version)
 	if err != nil {
 		log.Fatalln("678f5d62-8c22-42bc-b25a-c5903b533312 failed to turn version info into JSON")

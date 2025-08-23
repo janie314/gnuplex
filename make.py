@@ -17,6 +17,12 @@ def source_hash():
     return sha.hexdigest()
 
 
+def platform():
+    s = subprocess.check_output("uname -s", shell=True).decode().strip()
+    m = subprocess.check_output("uname -m", shell=True).decode().strip()
+    return f"{s}-{m}".lower()
+
+
 def run(cmd, **kwargs):
     print(f"+ {cmd}")
     res = subprocess.run(cmd, shell=True, check=True, **kwargs)
@@ -81,7 +87,7 @@ def go_build():
     os.chdir(os.path.dirname(__file__))
     target = os.environ.get("TARGET", "bin/gnuplex")
     run(
-        f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()}" .'
+        f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} -X main.Platform={platform()}" .'
     )
 
 
@@ -119,6 +125,7 @@ TASKS = {
     "build": build,
     "go_build_current": go_build_current,
     "go_source_hash": go_source_hash,
+    "platform": platform,
 }
 
 
