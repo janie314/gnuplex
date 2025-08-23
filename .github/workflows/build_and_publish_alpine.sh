@@ -3,7 +3,7 @@ set -e
 
 echo "$1" >>/tmp/gnuplex-deploy
 
-apk add uv git go curl bash
+apk add uv git go curl bash openssh
 
 export GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy"
 
