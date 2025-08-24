@@ -78,7 +78,9 @@ func (gnuplex *GNUPlex) processScanLibBatch(batch []models.MediaItem, lastScanUU
 // Returns the currently playing MediaItem
 func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
 	path, err := gnuplex.MPV.GetNowPlaying()
-	if err != nil {
+	if err != nil && err.Error() == "property unavailable" {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
 	return gnuplex.DB.GetMediaItemByPath(path)
