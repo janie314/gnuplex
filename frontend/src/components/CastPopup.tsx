@@ -29,7 +29,6 @@ function CastPopup(props: {
             <span className="header mr-1">Add to Library</span>
             <input
               type="checkbox"
-              id="boxy"
               className="ml-1"
               checked={addToLib}
               onChange={(e) => setAddToLib(e.target.checked)}
