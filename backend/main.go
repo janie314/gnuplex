@@ -54,7 +54,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform)
 	if err != nil {
 		log.Fatal(err)
 	}
