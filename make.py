@@ -63,7 +63,7 @@ def dev_compiled():
     os.chdir(os.path.dirname(__file__))
     os.makedirs("tmp", exist_ok=True)
     procs = [
-        subprocess.Popen("caddy run", shell=True),
+        subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
         subprocess.Popen(
             "./backend/bin/gnuplex -verbose -static_files ./backend/static", shell=True
         ),
@@ -98,9 +98,11 @@ def go_build():
 
 
 def go_build_ci():
-    backend = Path(__file__).parent / "backend"
-    os.chdir(backend)
-    run(f'go build -o /tmp/gnuplex -ldflags "-X main.SourceHash={source_hash()}" .')
+    run(
+        "go build -C backend -o /tmp/gnuplex"
+        + f' -ldflags "-X main.SourceHash={source_hash()}'
+        + f' -X main.Platform={platform()}" .'
+    )
 
 
 def build():
