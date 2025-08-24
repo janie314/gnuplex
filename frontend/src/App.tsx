@@ -34,15 +34,22 @@ function App() {
 
   useEffect(() => {
     // Poll media player state from the backend
-    window.setInterval(() => {
-      API.getPos().then((res) => {
-        setPos(res);
-        setStartPos(res);
-      });
-      API.getTimeRemaining().then((res) => setTimeRemaining(res));
-      API.getVol().then((res) => setVol(res));
-      API.getNowPlaying().then((res) => setNowPlaying(res));
-      API.getSubTracks().then((res) => setSubs(res));
+    window.setInterval(async () => {
+      const res = await API.getNowPlaying();
+      setNowPlaying(res);
+      if (res === null) {
+        setTimeRemaining(0);
+        setVol(0);
+        setSubs(null);
+      } else {
+        API.getTimeRemaining().then((res) => setTimeRemaining(res));
+        API.getVol().then((res) => setVol(res));
+        API.getSubTracks().then((res) => setSubs(res));
+        API.getPos().then((res) => {
+          setPos(res);
+          setStartPos(res);
+        });
+      }
     }, 2000);
   }, []);
 

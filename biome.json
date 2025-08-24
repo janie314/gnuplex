@@ -1,56 +1,16 @@
 {
   "linter": {
-    "includes": [
-      "**",
-      "!**/app/assets/builds/**",
-      "!**/backend/public/assets/**",
-      "!**/backend/static/**",
-      "!**/app/assets/stylesheets/application.tailwind.css",
-      "!**/config/provision/production.json",
-      "!**/vendor/**",
-      "!**/node_modules",
-      "!**/frontend/node_modules",
-      "!**/dist",
-      "!**/doc",
-      "!**/.yardoc"
-    ],
     "rules": {
-      "complexity": {
-        "noStaticOnlyClass": "off"
-      },
       "correctness": {
         "useExhaustiveDependencies": "off"
       },
-      "style": {
-        "noParameterAssign": "error",
-        "useAsConstAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "noUselessElse": "error"
+      "complexity": {
+        "noStaticOnlyClass": "off"
+      },
+      "suspicious": {
+        "noUnknownAtRules": "off"
       }
     }
-  },
-  "formatter": {
-    "includes": [
-      "**",
-      "!**/app/assets/builds/**",
-      "!**/app/assets/stylesheets/application.tailwind.css",
-      "!**/backend/public/assets/**",
-      "!**/backend/static/**",
-      "!**/vendor/**",
-      "!**/dist",
-      "!**/doc",
-      "!**/package.json",
-      "!**/node_modules",
-      "!**/frontend/node_modules",
-      "!**/.yardoc",
-      "!**/config/provision/production.json"
-    ]
   },
   "css": {
     "formatter": {
@@ -67,7 +27,14 @@
       "indentStyle": "space"
     }
   },
-  "files": {
-    "ignoreUnknown": true
-  }
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "overrides": [
+    {
+      "includes": ["frontend/src/index.css"]
+    }
+  ]
 }
