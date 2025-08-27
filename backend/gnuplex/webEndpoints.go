@@ -120,7 +120,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		} else if err = gnuplex.MPV.SetVol(body.Vol); err != nil {
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {
-			c.Status(http.StatusOK)
+			c.JSON(http.StatusOK, true)
 		}
 	})
 	gnuplex.Router.GET("/api/mediadirs", func(c *gin.Context) {

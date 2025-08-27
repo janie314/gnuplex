@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -31,6 +31,7 @@ function App() {
     new URLSearchParams(window.location.search).get("search") || "",
   );
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
+  const dummyAudio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     // Poll media player state from the backend
@@ -51,10 +52,35 @@ function App() {
         });
       }
     }, 2000);
+
+    // Media Session API integration
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "playing";
+      navigator.mediaSession.setActionHandler("play", () => {
+        API.play();
+        dummyAudio.current?.play();
+      });
+      navigator.mediaSession.setActionHandler("pause", () => {
+        API.pause();
+        dummyAudio.current?.pause();
+      });
+    }
   }, []);
 
   useEffect(() => {
     API.getLast25Played().then((res) => setLast25(res));
+
+    // Set Media Session metadata when nowPlaying changes
+    if ("mediaSession" in navigator) {
+      if (nowPlaying?.Path) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: nowPlaying.Path,
+          artist: "GNUPlex",
+        });
+      } else {
+        navigator.mediaSession.metadata = null;
+      }
+    }
   }, [nowPlaying]);
 
   // Refresh browser's search URL parameter when the search input changes
@@ -90,6 +116,12 @@ function App() {
 
   return (
     <>
+      {/** biome-ignore lint/a11y/useMediaCaption: just a dummy element to trigger mediacontrols */}
+      <audio
+        ref={dummyAudio}
+        src="data:audio/flac;base64,ZkxhQwAAACIQABAAAAALAAANCsRA8AAGuqibG+h8a1ef3iNBUV9NgsAIhAAAKCAAAAByZWZlcmVuY2UgbGliRkxBQyAxLjQuMyAyMDIzMDYyMwAAAAD/+MkIAJUAAAAhvf/4yQgBkgAAAE3F//jJCAKbAAAA+U3/+MkIA5wAAACVNf/4yQgEiQAAABBY//jJCAWOAAAAfCD/+MkIBocAAADIqP/4yQgHgAAAAKTQ//jJCAitAAAAQnf/+MkICaoAAAAuD//4yQgKowAAAJqH//jJCAukAAAA9v//+MkIDLEAAABzkv/4yQgNtgAAAB/q//jJCA6/AAAAq2L/+MkID7gAAADHGv/4yQgQ5QAAAOYp//jJCBHiAAAAilH/+MkIEusAAAA+2f/4yQgT7AAAAFKh//jJCBT5AAAA18z/+MkIFf4AAAC7tP/4yQgW9wAAAA88//jJCBfwAAAAY0T/+MkIGN0AAACF4//4yQgZ2gAAAOmb//jJCBrTAAAAXRP/+MkIG9QAAAAxa//4yQgcwQAAALQG//jJCB3GAAAA2H7/+MkIHs8AAABs9v/4yQgfyAAAAACO//jJCCB1AAAALpD/+MkIIXIAAABC6P/4yQgiewAAAPZg//jJCCN8AAAAmhj/+MkIJGkAAAAfdf/4yQglbgAAAHMN//jJCCZnAAAAx4X/+MkIJ2AAAACr/f/4yQgoTQAAAE1a//jJCClKAAAAISL/+MkIKkMAAACVqv/4yQgrRAAAAPnS//jJCCxRAAAAfL//+MkILVYAAAAQx//4yQguXwAAAKRP//jJCC9YAAAAyDf/+MkIMAUAAADpBP/4yQgxAgAAAIV8//jJCDILAAAAMfT/+MkIMwwAAABdjP/4yQg0GQAAANjh//jJCDUeAAAAtJn/+MkINhcAAAAAEf/4yQg3EAAAAGxp//jJCDg9AAAAis7/+MkIOToAAADmtv/4yQg6MwAAAFI+//jJCDs0AAAAPkb/+MkIPCEAAAC7K//4yQg9JgAAANdT//jJCD4vAAAAY9v/+MkIPygAAAAPo//4yQhAUgAAAFOf//jJCEFVAAAAP+f/+MkIQlwAAACLb//4yQhDWwAAAOcX//jJCEROAAAAYnr/+MkIRUkAAAAOAv/4yQhGQAAAALqK//jJCEdHAAAA1vL/+MkISGoAAAAwVf/4yQhJbQAAAFwt//jJCEpkAAAA6KX/+MkIS2MAAACE3f/4yQhMdgAAAAGw//jJCE1xAAAAbcj/+MkITngAAADZQP/4yQhPfwAAALU4//jJCFAiAAAAlAv/+MkIUSUAAAD4c//4yQhSLAAAAEz7//jJCFMrAAAAIIP/+MkIVD4AAACl7v/4yQhVOQAAAMmW//jJCFYwAAAAfR7/+MkIVzcAAAARZv/4yQhYGgAAAPfB//jJCFkdAAAAm7n/+MkIWhQAAAAvMf/4yQhbEwAAAENJ//jJCFwGAAAAxiT/+MkIXQEAAACqXP/4yQheCAAAAB7U//jJCF8PAAAAcqz/+MkIYLIAAABcsv/4yQhhtQAAADDK//jJCGK8AAAAhEL/+MkIY7sAAADoOv/4yQhkrgAAAG1X//jJCGWpAAAAAS//+MkIZqAAAAC1p//4yQhnpwAAANnf//jJCGiKAAAAP3j/+MkIaY0AAABTAP/4yQhqhAAAAOeI//h5CGsKp7YAAACQ/A=="
+        style={{ display: "none" }}
+      />
       <div
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100 dark:bg-stone-950 text:white"
         style={{
@@ -112,6 +144,7 @@ function App() {
             startPos={startPos}
             timeRemaining={timeRemaining}
             subs={subs}
+            dummyAudio={dummyAudio}
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
