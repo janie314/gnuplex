@@ -54,7 +54,7 @@ func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []b
 		log.Println("7b289386-c838-457d-8545-2f56bddb3746 MPV reported error in API call:", err)
 		return defaultVal, err
 	} else if res.Error != "success" {
-		log.Println("b8d14416-bbec-4297-ada8-3d13bf9c6e79 MPV reported error in API Call:", err)
+		// Don't report this type of error- this error reporting should be handled at the application layer
 		return defaultVal, errors.New(res.Error)
 	}
 	return res.Data, nil
