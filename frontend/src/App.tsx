@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -31,6 +31,7 @@ function App() {
     new URLSearchParams(window.location.search).get("search") || "",
   );
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
+  const dummyAudio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     // Poll media player state from the backend
@@ -51,10 +52,37 @@ function App() {
         });
       }
     }, 2000);
+
+    // Media Session API integration
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "playing";
+      navigator.mediaSession.setActionHandler("play", () => {
+        API.play();
+        dummyAudio.current?.play();
+        navigator.mediaSession.playbackState = "playing";
+      });
+      navigator.mediaSession.setActionHandler("pause", () => {
+        API.pause();
+        dummyAudio.current?.pause();
+        navigator.mediaSession.playbackState = "paused";
+      });
+    }
   }, []);
 
   useEffect(() => {
     API.getLast25Played().then((res) => setLast25(res));
+
+    // Set Media Session metadata when nowPlaying changes
+    if ("mediaSession" in navigator) {
+      if (nowPlaying?.Path) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: nowPlaying.Path,
+          artist: "GNUPlex",
+        });
+      } else {
+        navigator.mediaSession.metadata = null;
+      }
+    }
   }, [nowPlaying]);
 
   // Refresh browser's search URL parameter when the search input changes
@@ -90,6 +118,14 @@ function App() {
 
   return (
     <>
+      {/** biome-ignore lint/a11y/useMediaCaption: just a dummy element to trigger mediacontrols */}
+      <audio
+        ref={dummyAudio}
+        src="loop.ogg"
+        autoPlay
+        loop
+        style={{ display: "none" }}
+      />
       <div
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100 dark:bg-stone-950 text:white"
         style={{
@@ -112,6 +148,7 @@ function App() {
             startPos={startPos}
             timeRemaining={timeRemaining}
             subs={subs}
+            dummyAudio={dummyAudio}
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
