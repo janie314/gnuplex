@@ -14,15 +14,18 @@ function MediaControls(props: {
   vol: number;
   setVol: React.Dispatch<React.SetStateAction<number>>;
   subs: SubTrack[] | null;
+  dummyAudio: React.RefObject<HTMLAudioElement | null>;
 }) {
-  console.log(play);
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
       <div className="mr-1">
         <button
           type="button"
           className="p-2 w-8 btn-standard"
-          onClick={() => API.play()}
+          onClick={() => {
+            API.play();
+            props.dummyAudio.current?.play();
+          }}
         >
           <img src={play} alt="Play icon" />
         </button>
@@ -31,7 +34,10 @@ function MediaControls(props: {
         <button
           type="button"
           className="p-2 w-8 btn-standard"
-          onClick={() => API.pause()}
+          onClick={() => {
+            API.pause();
+            props.dummyAudio.current?.pause();
+          }}
         >
           <img src={pause} alt="Pause icon" />
         </button>
