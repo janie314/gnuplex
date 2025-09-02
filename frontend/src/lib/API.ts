@@ -69,6 +69,15 @@ class API {
     }).then((res) => res.json());
   }
 
+  public static async getPaused(): Promise<boolean> {
+    return await fetch("/api/paused")
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error("failed to get paused state", e);
+        return 0;
+      });
+  }
+
   public static async getVol(): Promise<number> {
     return await fetch("/api/vol")
       .then((res) => res.json())
