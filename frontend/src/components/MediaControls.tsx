@@ -1,7 +1,11 @@
+import { useState } from "react";
 import pause from "../assets/pause.svg";
 import play from "../assets/play.svg";
 import { API, type SubTrack } from "../lib/API";
+import { secondsToTimeComponents } from "../lib/Helpers";
+import { PosInputPopup } from "./PosInputPopup";
 import { SubSelector } from "./SubSelector";
+import { VolInputPopup } from "./VolInputPopup";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;
@@ -16,6 +20,8 @@ function MediaControls(props: {
   subs: SubTrack[] | null;
   dummyAudio: React.RefObject<HTMLAudioElement | null>;
 }) {
+  const [posInputPopup, setPosInputPopup] = useState(false);
+  const [volInputPopup, setVolInputPopup] = useState(false);
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
       <div className="mr-1">
@@ -55,7 +61,13 @@ function MediaControls(props: {
             onMouseUp={() => API.setPos(props.pos)}
             onTouchCancel={() => API.setPos(props.pos)}
           />
-          <span className="mx-1 dark:text-white">{timeFormat(props.pos)}</span>
+          <button
+            type="button"
+            className="btn-subtle"
+            onClick={() => setPosInputPopup(true)}
+          >
+            {timeFormat(props.pos)}
+          </button>
         </div>
 
         <div className="flex flex-row mt-3">
@@ -70,9 +82,28 @@ function MediaControls(props: {
             onMouseUp={() => API.setVol(props.vol)}
             onTouchCancel={() => API.setVol(props.vol)}
           />
-          <span className="mx-1 dark:text-white">{props.vol}</span>
+          <button
+            type="button"
+            className="btn-subtle"
+            onClick={() => setVolInputPopup(true)}
+          >
+            {props.vol}
+          </button>
         </div>
       </div>
+      <PosInputPopup
+        visible={posInputPopup}
+        setPosInputPopup={setPosInputPopup}
+        currentPos={props.pos}
+        maxPos={props.startPos + props.timeRemaining}
+        setPos={props.setPos}
+      />
+      <VolInputPopup
+        visible={volInputPopup}
+        setVolInputPopup={setVolInputPopup}
+        currentVol={props.vol}
+        setVol={props.setVol}
+      />
       <div className="flex flex-row justify-center mt-3 p-1">
         <SubSelector subs={props.subs} />
         <input
@@ -95,13 +126,11 @@ function MediaControls(props: {
 }
 
 function timeFormat(n: number) {
-  const secs = Math.floor(n % 60);
-  const mins = Math.floor(((n - secs) % 3600) / 60);
-  const hrs = Math.floor((n - 60 * mins - secs) / 3600);
-  if (hrs === 0) {
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  const { hours, minutes, seconds } = secondsToTimeComponents(n);
+  if (hours === 0) {
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   }
-  return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
 export { MediaControls };
