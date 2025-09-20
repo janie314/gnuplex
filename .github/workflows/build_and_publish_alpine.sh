@@ -6,10 +6,6 @@ echo "$1" >/tmp/gnuplex-deploy
 
 apk add uv git curl bash openssh
 
-curl -fsSL https://bun.sh/install | bash
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
 cd /usr/local/bin
 wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
 tar xvzf go*.gz
@@ -29,7 +25,7 @@ git pull origin release-linux-musl-x86_64
 
 git merge main -X theirs --allow-unrelated-histories
 
-uv run make.py build
+uv run make.py go_build
 version_output=$(./backend/bin/gnuplex -version)
 git add .
 git commit -m "$version_output"
