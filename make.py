@@ -87,7 +87,6 @@ def frontend_build():
 
 def go_build():
     """Build the Go backend"""
-    os.chdir(os.path.dirname(__file__))
     target = os.environ.get("TARGET", "bin/gnuplex")
     run(
         f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} '
