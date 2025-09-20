@@ -35,5 +35,4 @@ version_output=$(./backend/bin/gnuplex -version)
 git add .
 git commit -m "$version_output"
 
-exit
 git push origin release-linux-musl-x86_64
