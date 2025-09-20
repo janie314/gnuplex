@@ -1,7 +1,10 @@
-import pause from "../assets/pause.svg";
-import play from "../assets/play.svg";
 import { API, type SubTrack } from "../lib/API";
 import { SubSelector } from "./SubSelector";
+import { PosInputPopup } from "./PosInputPopup";
+import { VolInputPopup } from "./VolInputPopup";
+import { useState } from "react";
+import pause from "../assets/pause.svg";
+import play from "../assets/play.svg";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;
@@ -16,6 +19,8 @@ function MediaControls(props: {
   subs: SubTrack[] | null;
   dummyAudio: React.RefObject<HTMLAudioElement | null>;
 }) {
+  const [posInputPopup, setPosInputPopup] = useState(false);
+  const [volInputPopup, setVolInputPopup] = useState(false);
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
       <div className="mr-1">
@@ -55,7 +60,13 @@ function MediaControls(props: {
             onMouseUp={() => API.setPos(props.pos)}
             onTouchCancel={() => API.setPos(props.pos)}
           />
-          <span className="mx-1 dark:text-white">{timeFormat(props.pos)}</span>
+          <button
+            type="button"
+            className="btn-subtle"
+            onClick={() => setPosInputPopup(true)}
+          >
+            {timeFormat(props.pos)}
+          </button>
         </div>
 
         <div className="flex flex-row mt-3">
@@ -70,9 +81,28 @@ function MediaControls(props: {
             onMouseUp={() => API.setVol(props.vol)}
             onTouchCancel={() => API.setVol(props.vol)}
           />
-          <span className="mx-1 dark:text-white">{props.vol}</span>
+          <button
+            type="button"
+            className="btn-subtle"
+            onClick={() => setVolInputPopup(true)}
+          >
+            {props.vol}
+          </button>
         </div>
       </div>
+      <PosInputPopup
+        visible={posInputPopup}
+        setPosInputPopup={setPosInputPopup}
+        currentPos={props.pos}
+        maxPos={props.startPos + props.timeRemaining}
+        setPos={props.setPos}
+      />
+      <VolInputPopup
+        visible={volInputPopup}
+        setVolInputPopup={setVolInputPopup}
+        currentVol={props.vol}
+        setVol={props.setVol}
+      />
       <div className="flex flex-row justify-center mt-3 p-1">
         <SubSelector subs={props.subs} />
         <input
