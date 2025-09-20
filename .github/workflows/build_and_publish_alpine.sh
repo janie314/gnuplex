@@ -4,7 +4,7 @@ set -e
 umask 077
 echo "$1" >/tmp/gnuplex-deploy
 
-apk add uv git curl bash openssh
+apk add uv git curl bash openssh gcc musl-dev
 
 cd /usr/local/bin
 wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
@@ -25,6 +25,7 @@ git pull origin release-linux-musl-x86_64
 
 git merge main -X theirs --allow-unrelated-histories
 
+export CGO_ENABLED=1
 uv run make.py go_build
 version_output=$(./backend/bin/gnuplex -version)
 git add .
