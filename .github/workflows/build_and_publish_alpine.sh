@@ -4,7 +4,7 @@ set -e
 umask 077
 echo "$1" >/tmp/gnuplex-deploy
 
-apk add uv git curl bash openssh
+apk add uv git curl bash openssh gcc
 
 cd /usr/local/bin
 wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
