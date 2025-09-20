@@ -19,4 +19,4 @@ jobs:
         uses: docker/setup-docker-action@v4
       - name: create alpine build
         run: |
-          docker run -v $(realpath .github/workflows):/mnt/build:z alpine:edge sh /mnt/build/build_and_publish_alpine.sh "${{ secrets.GNUPLEX_DEPLOY }}"
+          docker run -v $(realpath .github/workflows):/mnt/build:z alpine:3 sh /mnt/build/build_and_publish_alpine.sh "${{ secrets.GNUPLEX_DEPLOY }}"
