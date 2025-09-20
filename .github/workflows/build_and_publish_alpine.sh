@@ -4,7 +4,7 @@ set -e
 umask 077
 echo "$1" >/tmp/gnuplex-deploy
 
-apk add git curl bash openssh
+apk add uv git curl bash openssh
 
 curl -fsSL https://bun.sh/install | bash
 export BUN_INSTALL="$HOME/.bun"
