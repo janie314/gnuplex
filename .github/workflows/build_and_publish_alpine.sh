@@ -30,7 +30,7 @@ git pull origin release-linux-musl-x86_64
 git merge main -X theirs --allow-unrelated-histories
 
 export CGO_ENABLED=1
-uv run make.py go_build
+uv run make.py build
 version_output=$(./backend/bin/gnuplex -version)
 git add .
 git commit -m "$version_output"
