@@ -1,10 +1,10 @@
-import pause from "../assets/pause.svg";
-import play from "../assets/play.svg";
 import { API, type SubTrack } from "../lib/API";
 import { SubSelector } from "./SubSelector";
 import { PosInputPopup } from "./PosInputPopup";
 import { VolInputPopup } from "./VolInputPopup";
 import { useState } from "react";
+import pause from "../assets/pause.svg";
+import play from "../assets/play.svg";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;

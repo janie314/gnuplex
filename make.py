@@ -20,11 +20,7 @@ def source_hash():
 def platform():
     os = subprocess.check_output("uname -s", shell=True).decode().strip()
     arch = subprocess.check_output("uname -m", shell=True).decode().strip()
-    libc = (
-        "musl"
-        if "musl" in subprocess.check_output("ldd /bin/ls", shell=True).decode().strip()
-        else "glibc"
-    )
+    libc = "musl" if "musl" in subprocess.check_output("ldd /bin/ls", shell=True).decode().strip() else "glibc"
     return f"{os}-{libc}-{arch}".lower()
 
 
@@ -66,9 +62,7 @@ def dev_compiled():
     os.makedirs("tmp", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
-        subprocess.Popen(
-            "./backend/bin/gnuplex -verbose -static_files ./backend/static", shell=True
-        ),
+        subprocess.Popen("./backend/bin/gnuplex -verbose -static_files ./backend/static", shell=True),
     ]
 
     def cleanup(signum, frame):
@@ -132,6 +126,23 @@ def go_source_hash():
     print(source_hash())
 
 
+def fmt():
+    """Format this repo"""
+    run("go fmt -C backend")
+    run("bun run biome format --write")
+    run("bun run biome lint --write")
+    run("uv run ruff format")
+    run("uv run ruff check --fix")
+
+
+def lint():
+    """Format this repo"""
+    run("bun run biome format --write")
+    run("bun run biome lint --write")
+    run("uv run ruff format")
+    run("uv run ruff check --fix")
+
+
 TASKS = {
     "dev": dev,
     "dev_compiled": dev_compiled,
@@ -141,6 +152,7 @@ TASKS = {
     "build": build,
     "go_build_current": go_build_current,
     "go_source_hash": go_source_hash,
+    "fmt": fmt,
 }
 
 
