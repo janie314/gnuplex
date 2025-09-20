@@ -45,6 +45,18 @@ function App() {
       } else {
         API.getTimeRemaining().then((res) => setTimeRemaining(res));
         API.getVol().then((res) => setVol(res));
+        API.getPaused().then((res) => {
+          if (!("mediaSession" in navigator)) {
+            return;
+          }
+          if (res) {
+            dummyAudio.current?.pause();
+            navigator.mediaSession.playbackState = "paused";
+          } else {
+            dummyAudio.current?.play();
+            navigator.mediaSession.playbackState = "playing";
+          }
+        });
         API.getSubTracks().then((res) => setSubs(res));
         API.getPos().then((res) => {
           setPos(res);
@@ -54,34 +66,39 @@ function App() {
     }, 2000);
 
     // Media Session API integration
-    if ("mediaSession" in navigator) {
-      navigator.mediaSession.playbackState = "playing";
-      navigator.mediaSession.setActionHandler("play", () => {
-        API.play();
-        dummyAudio.current?.play();
-        navigator.mediaSession.playbackState = "playing";
-      });
-      navigator.mediaSession.setActionHandler("pause", () => {
-        API.pause();
-        dummyAudio.current?.pause();
-        navigator.mediaSession.playbackState = "paused";
-      });
+    if (!("mediaSession" in navigator)) {
+      return;
     }
+
+    navigator.mediaSession.playbackState = "playing";
+    navigator.mediaSession.setActionHandler("play", () => {
+      API.play();
+      dummyAudio.current?.play();
+      navigator.mediaSession.playbackState = "playing";
+    });
+    navigator.mediaSession.setActionHandler("pause", () => {
+      API.pause();
+      dummyAudio.current?.pause();
+      navigator.mediaSession.playbackState = "paused";
+    });
   }, []);
 
   useEffect(() => {
     API.getLast25Played().then((res) => setLast25(res));
 
     // Set Media Session metadata when nowPlaying changes
-    if ("mediaSession" in navigator) {
-      if (nowPlaying?.Path) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: nowPlaying.Path,
-          artist: "GNUPlex",
-        });
-      } else {
-        navigator.mediaSession.metadata = null;
-      }
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+
+    if (nowPlaying?.Path) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: nowPlaying.Path,
+        artist: "GNUPlex",
+      });
+    } else {
+      navigator.mediaSession.metadata = null;
+      dummyAudio.current?.pause();
     }
   }, [nowPlaying]);
 

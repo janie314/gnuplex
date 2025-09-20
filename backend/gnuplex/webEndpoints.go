@@ -102,7 +102,15 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			c.Status(http.StatusOK)
 		}
 	})
-
+	gnuplex.Router.GET("/api/paused", func(c *gin.Context) {
+		paused, err := gnuplex.MPV.GetPaused()
+		if err != nil {
+			log.Println("Error 64ea9c3a-81d9-4102-ae82-5edd137e21e5: ,", err)
+			c.JSON(http.StatusInternalServerError, 0)
+		} else {
+			c.JSON(http.StatusOK, paused)
+		}
+	})
 	gnuplex.Router.GET("/api/vol", func(c *gin.Context) {
 		vol, err := gnuplex.MPV.GetVol()
 		if err != nil {

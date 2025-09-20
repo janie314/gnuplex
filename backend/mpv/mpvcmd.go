@@ -32,7 +32,7 @@ type MPVResponseInt struct {
 	Data int `json:"data"`
 }
 
-type MPVGetResult[T string | int | float64 | []models.Track] struct {
+type MPVGetResult[T bool | string | int | float64 | []models.Track] struct {
 	Data      T      `json:"data"`
 	RequestId int    `json:"request_id"`
 	Error     string `json:"error"`
@@ -43,7 +43,7 @@ type MPVSetResult struct {
 	Error     string `json:"error"`
 }
 
-func processMPVGetResult[T string | int | float64 | []models.Track](resBytes []byte, err error) (T, error) {
+func processMPVGetResult[T bool | string | int | float64 | []models.Track](resBytes []byte, err error) (T, error) {
 	var defaultVal T
 	if err != nil {
 		return defaultVal, err
@@ -126,6 +126,10 @@ func (mpv *MPV) Pause() error {
 	return processMPVSetResult(
 		mpv.SetCmd([]interface{}{"set_property", "pause", true}),
 	)
+}
+
+func (mpv *MPV) GetPaused() (bool, error) {
+	return processMPVGetResult[bool](mpv.GetCmd([]string{"get_property", "pause"}))
 }
 
 func (mpv *MPV) GetNowPlaying() (string, error) {
