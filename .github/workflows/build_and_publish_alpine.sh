@@ -6,10 +6,9 @@ echo "$1" >/tmp/gnuplex-deploy
 
 apk add git curl bash openssh
 
-curl -LsSf https://astral.sh/uv/install.sh | sh
 curl -fsSL https://bun.sh/install | bash
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$HOME/.local/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 cd /usr/local/bin
 wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
