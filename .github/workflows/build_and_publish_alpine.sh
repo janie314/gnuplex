@@ -4,7 +4,7 @@ set -e
 umask 077
 echo "$1" >/tmp/gnuplex-deploy
 
-apk add uv git curl bash openssh gcc musl-dev
+apk add uv git curl bash openssh gcc musl-dev libstdc++ unzip
 
 cd /usr/local/bin
 wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
@@ -12,6 +12,10 @@ tar xvzf go*.gz
 mv go godir
 ln -s godir/bin/go .
 ln -s godir/bin/gofmt .
+
+wget https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64-musl.zip
+unzip bun-linux-x64-musl.zip
+mv bun-linux-x64-musl/bun .
 
 export GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy -o StrictHostKeyChecking=no"
 
