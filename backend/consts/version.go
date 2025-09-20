@@ -1,7 +1,7 @@
 package consts
 
 const (
-	Version = "1758409589"
+	Version = "1758409930"
 )
 
 type VersionInfo struct {
