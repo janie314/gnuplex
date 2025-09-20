@@ -10,8 +10,8 @@ cd /usr/local/bin
 wget https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
 tar xvzf go*.gz
 mv go godir
-ln -s go/bin/go .
-ln -s go/bin/gofmt .
+ln -s godir/bin/go .
+ln -s godir/bin/gofmt .
 
 export GIT_SSH_COMMAND="ssh -i /tmp/gnuplex-deploy -o StrictHostKeyChecking=no"
 
