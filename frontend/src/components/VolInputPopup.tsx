@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Popup.css";
 import { API } from "../lib/API";
 
@@ -9,6 +9,10 @@ function VolInputPopup(props: {
   setVol: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [vol, setVol] = useState(props.currentVol);
+
+  useEffect(() => {
+    setVol(props.currentVol);
+  }, [props.visible]);
 
   if (props.visible) {
     return (
