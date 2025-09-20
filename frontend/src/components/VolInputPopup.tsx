@@ -22,7 +22,7 @@ function VolInputPopup(props: {
             min={0}
             max={120}
             onChange={(e) => {
-              setVol(e.target.valueAsNumber);
+              setVol(Math.min(120, Math.max(0, e.target.valueAsNumber || 0)));
             }}
           />
         </div>

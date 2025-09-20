@@ -62,7 +62,7 @@ function MediaControls(props: {
           />
           <button
             type="button"
-            className="mx-1 dark:text-white hover:text-cyan-800"
+            className="btn-subtle"
             onClick={() => setPosInputPopup(true)}
           >
             {timeFormat(props.pos)}
@@ -83,7 +83,7 @@ function MediaControls(props: {
           />
           <button
             type="button"
-            className="mx-1 dark:text-white hover:text-cyan-800"
+            className="btn-subtle"
             onClick={() => setVolInputPopup(true)}
           >
             {props.vol}
