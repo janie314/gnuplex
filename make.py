@@ -106,16 +106,6 @@ def build():
     go_build()
 
 
-def go_build_current():
-    """Exits with status 0 if the repo's go build is up to date, and status 1 otherwise"""
-    exe = Path(__file__).parent / "backend/bin/gnuplex"
-    if not exe.exists():
-        sys.exit(1)
-    build_hash = subprocess.check_output([str(exe), "-source_hash"]).decode().strip()
-    if source_hash() != build_hash:
-        sys.exit(1)
-
-
 def go_source_hash():
     """Prints a unique hash for the repo's current source code"""
     print(source_hash())
@@ -138,7 +128,6 @@ TASKS = {
     "go_build": go_build,
     "go_build_ci": go_build_ci,
     "build": build,
-    "go_build_current": go_build_current,
     "go_source_hash": go_source_hash,
     "fmt": fmt,
 }
