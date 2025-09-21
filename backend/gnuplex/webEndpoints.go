@@ -282,9 +282,11 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			log.Println("Error 993a427d-e32d-48bc-8387-fe93840671f0: ,", err)
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else if upgraded {
+			log.Println("Upgraded and going into shutdown")
 			c.Status(http.StatusOK)
 			gnuplex.Wg.Done()
 		} else {
+			log.Println("Already up to date")
 			c.Status(http.StatusOK)
 		}
 	})
