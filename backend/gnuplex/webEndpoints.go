@@ -42,7 +42,7 @@ type SubBody struct {
 }
 
 // Initialize the web server's HTTP Endpoints
-func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, platform string) {
+func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, platform, exe string) {
 	gnuplex.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
@@ -274,6 +274,15 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			log.Println("Error fa1eb88e-1642-4c09-9f02-1ca49432a8d5: ,", err)
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {
+			c.Status(http.StatusOK)
+		}
+	})
+	gnuplex.Router.POST("/api/upgrade", func(c *gin.Context) {
+		if err := UpgradeGNUPlex(exe); err != nil {
+			log.Println("Error 993a427d-e32d-48bc-8387-fe93840671f0: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			gnuplex.Wg.Done()
 			c.Status(http.StatusOK)
 		}
 	})

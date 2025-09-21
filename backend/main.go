@@ -6,11 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"gnuplex/consts"
+	"gnuplex/gnuplex"
 	server "gnuplex/gnuplex"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +39,10 @@ func main() {
 	flag.Parse()
 	// Some flags that subvert the main daemon process
 	if *upgrade {
-		upgradeGNUPlex(exe)
+		if err := gnuplex.UpgradeGNUPlex(exe); err != nil {
+			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 could not upgrade GNUPlex")
+		}
+		os.Exit(0)
 	}
 	if *version {
 		printVersion()
@@ -54,7 +56,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform, exe)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,19 +82,6 @@ func main() {
 	}
 	// Main execution
 	wg.Wait()
-}
-
-func upgradeGNUPlex(exe string) {
-	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		log.Fatalln("f0ac0db2-c77e-4bb4-94b4-7b98931d6379 Failed to upgrade GNUPlex", err)
-	} else {
-		fmt.Println("Successfully upgraded! Now run `systemctl --user restart gnuplex`.")
-		os.Exit(0)
-	}
 }
 
 func printVersion() {
