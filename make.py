@@ -34,7 +34,6 @@ def run(cmd, **kwargs):
 
 def dev():
     """Run a local development server (with hot frontend reloading)"""
-    os.chdir(os.path.dirname(__file__))
     run("bun i --cwd frontend")
     os.makedirs("tmp", exist_ok=True)
     procs = [
@@ -58,7 +57,6 @@ def dev():
 
 def dev_compiled():
     """Run a local development server against a compiled frontend/backend"""
-    os.chdir(os.path.dirname(__file__))
     os.makedirs("tmp", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
@@ -80,7 +78,6 @@ def dev_compiled():
 
 def frontend_build():
     """Build the static frontend files"""
-    os.chdir(os.path.dirname(__file__))
     run("bun i --cwd frontend")
     run("bun run --cwd frontend build")
 
@@ -109,17 +106,6 @@ def build():
     go_build()
 
 
-def go_build_current():
-    """Exits with status 0 if the repo's go build is up to date, and status 1 otherwise"""
-    os.chdir(os.path.dirname(__file__))
-    exe = Path(__file__).parent / "backend/bin/gnuplex"
-    if not exe.exists():
-        sys.exit(1)
-    build_hash = subprocess.check_output([str(exe), "-source_hash"]).decode().strip()
-    if source_hash() != build_hash:
-        sys.exit(1)
-
-
 def go_source_hash():
     """Prints a unique hash for the repo's current source code"""
     print(source_hash())
@@ -142,7 +128,6 @@ TASKS = {
     "go_build": go_build,
     "go_build_ci": go_build_ci,
     "build": build,
-    "go_build_current": go_build_current,
     "go_source_hash": go_source_hash,
     "fmt": fmt,
 }
@@ -151,10 +136,10 @@ TASKS = {
 def main():
     if len(sys.argv) < 2:
         print("Available tasks:")
-        for t in TASKS:
+        for t in sorted(TASKS):
             print(f"\t{t:25s}\t{TASKS[t].__doc__ or ''}")
         sys.exit(1)
-    task = sys.argv[1]
+    task = sys.argv[1].lower()
     if task not in TASKS:
         print(f"Unknown task: {task}")
         sys.exit(1)
