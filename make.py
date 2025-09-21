@@ -24,6 +24,10 @@ def platform():
     return f"{os}-{libc}-{arch}".lower()
 
 
+def go_version():
+    return ".".join(subprocess.check_output("go version", shell=True).decode().strip().split(" ")[2:]).replace("/", "-")
+
+
 def run(cmd, **kwargs):
     print(f"+ {cmd}")
     res = subprocess.run(cmd, shell=True, check=True, **kwargs)
@@ -87,7 +91,9 @@ def go_build():
     target = os.environ.get("TARGET", "bin/gnuplex")
     run(
         f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} '
-        + f'-X main.Platform={platform()}" .'
+        + f"-X main.Platform={platform()} "
+        + f"-X main.GoVersion={go_version()} "
+        + '" .'
     )
 
 
