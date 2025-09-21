@@ -39,7 +39,7 @@ func main() {
 	flag.Parse()
 	// Some flags that subvert the main daemon process
 	if *upgrade {
-		if err := gnuplex.UpgradeGNUPlex(exe); err != nil {
+		if err := gnuplex.UpgradeGNUPlex(exe, true); err != nil {
 			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 could not upgrade GNUPlex")
 		}
 		os.Exit(0)

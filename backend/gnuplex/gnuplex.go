@@ -59,15 +59,15 @@ func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 }
 
 // Upgrade GNUPlex
-func UpgradeGNUPlex(exe string) error {
+func UpgradeGNUPlex(exe string, interactive bool) error {
 	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
 		return err
-	} else {
+	} else if interactive {
 		fmt.Println("Successfully upgraded! Now run `systemctl --user restart gnuplex`.")
-		return nil
 	}
+	return nil
 }
