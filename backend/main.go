@@ -6,11 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"gnuplex/consts"
+	"gnuplex/gnuplex"
 	server "gnuplex/gnuplex"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +39,10 @@ func main() {
 	flag.Parse()
 	// Some flags that subvert the main daemon process
 	if *upgrade {
-		upgradeGNUPlex(exe)
+		if _, err := gnuplex.UpgradeGNUPlex(exe, true); err != nil {
+			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 could not upgrade GNUPlex")
+		}
+		os.Exit(0)
 	}
 	if *version {
 		printVersion()
@@ -54,7 +56,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform, exe)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,7 +69,7 @@ func main() {
 		log.Fatal("c98500e1-42f4-4c5d-ad2c-cedd4e4712b0 Failed to initialize cron scheduler", err)
 	}
 	sched.Start(ctx)
-	scanLibTrigger, err := quartz.NewCronTrigger("0 15 10 * * ?")
+	scanLibTrigger, err := quartz.NewCronTrigger("0 15 1 * * *")
 	if err != nil {
 		log.Fatalln("9d9da752-4415-48ce-beec-0d8c703dd012 Failed to initialize cron scheduler", err)
 	}
@@ -78,21 +80,35 @@ func main() {
 	if err != nil {
 		log.Fatalln("638eded7-2ad6-45b5-a13f-a99ad4642ff5 Failed to initialize cron scheduler", err)
 	}
+	updateTrigger, err := quartz.NewCronTrigger("0 15 2 * * *")
+	if err != nil {
+		log.Fatalln("2c007cd2-c363-44a5-81dd-6701a5487c9f Failed to initialize cron scheduler", err)
+	}
+	updateJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
+		path, err := server.GetNowPlaying()
+		if err != nil {
+			log.Println("857034c0-a7db-4aa8-8cdf-00d0b6d811c2 Failed to retrive NowPlaying")
+			return 0, err
+		}
+		if path != nil {
+			log.Println("Not upgrading; something is playing")
+		}
+		upgraded, err := gnuplex.UpgradeGNUPlex(exe, false)
+		if err != nil {
+			return 0, err
+		}
+		if upgraded {
+			log.Println("Upgraded GNUPlex. Quitting")
+			server.Wg.Done()
+		}
+		return 0, nil
+	})
+	err = sched.ScheduleJob(quartz.NewJobDetail(updateJob, quartz.NewJobKey("update")), updateTrigger)
+	if err != nil {
+		log.Fatalln("6b379896-04c0-47e4-8655-a23f1126602a Failed to initialize cron scheduler", err)
+	}
 	// Main execution
 	wg.Wait()
-}
-
-func upgradeGNUPlex(exe string) {
-	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		log.Fatalln("f0ac0db2-c77e-4bb4-94b4-7b98931d6379 Failed to upgrade GNUPlex", err)
-	} else {
-		fmt.Println("Successfully upgraded! Now run `systemctl --user restart gnuplex`.")
-		os.Exit(0)
-	}
 }
 
 func printVersion() {
