@@ -70,7 +70,7 @@ function MediaControls(props: {
           </button>
         </div>
 
-        <div className="flex flex-row mt-3">
+        <div className="flex flex-row items-center mt-3">
           <span className="mx-1 dark:text-white">Vol</span>
           <input
             type="range"
