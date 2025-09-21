@@ -59,15 +59,27 @@ func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 }
 
 // Upgrade GNUPlex
-func UpgradeGNUPlex(exe string, interactive bool) error {
+//
+// The boolean in the return code represents whether we should quit or not
+func UpgradeGNUPlex(exe string, interactive bool) (bool, error) {
+	out, err := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull", "--dry-run", "--stat").Output()
+	if err != nil {
+		return false, err
+	}
+	if len(out) == 0 {
+		if interactive {
+			fmt.Println("Nothing to upgrade")
+		}
+		return false, nil
+	}
 	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
-		return err
+		return false, err
 	} else if interactive {
 		fmt.Println("Successfully upgraded! Now run `systemctl --user restart gnuplex`.")
 	}
-	return nil
+	return true, nil
 }
