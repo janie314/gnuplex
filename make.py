@@ -139,7 +139,7 @@ def main():
         for t in sorted(TASKS):
             print(f"\t{t:25s}\t{TASKS[t].__doc__ or ''}")
         sys.exit(1)
-    task = sys.argv[1]
+    task = sys.argv[1].lower()
     if task not in TASKS:
         print(f"Unknown task: {task}")
         sys.exit(1)
