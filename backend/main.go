@@ -20,6 +20,7 @@ import (
 // Set by Ldflag at compile time (see make.py's go_build task)
 var SourceHash string
 var Platform string
+var GoVersion string
 
 func main() {
 	/*
@@ -56,7 +57,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform, exe)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform, GoVersion, exe)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -116,6 +117,7 @@ func printVersion() {
 	version.SourceHash = SourceHash
 	version.Version = consts.Version
 	version.Platform = Platform
+	version.GoVersion = GoVersion
 	res, err := json.Marshal(version)
 	if err != nil {
 		log.Fatalln("678f5d62-8c22-42bc-b25a-c5903b533312 failed to turn version info into JSON")

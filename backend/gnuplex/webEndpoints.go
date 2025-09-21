@@ -42,7 +42,7 @@ type SubBody struct {
 }
 
 // Initialize the web server's HTTP Endpoints
-func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, platform, exe string) {
+func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, platform, goVersion, exe string) {
 	gnuplex.Router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
@@ -51,7 +51,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 	})
 	gnuplex.Router.Static("/home", staticFiles)
 	gnuplex.Router.GET("/api/version", func(c *gin.Context) {
-		c.JSON(http.StatusOK, consts.VersionInfo{Version: consts.Version, SourceHash: sourceHash, Platform: platform})
+		c.JSON(http.StatusOK, consts.VersionInfo{Version: consts.Version, SourceHash: sourceHash, Platform: platform, GoVersion: goVersion})
 	})
 	gnuplex.Router.POST("/api/play", func(c *gin.Context) {
 		if err := gnuplex.MPV.Play(); err != nil {
