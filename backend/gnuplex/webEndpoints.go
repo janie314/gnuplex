@@ -278,11 +278,13 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		}
 	})
 	gnuplex.Router.POST("/api/upgrade", func(c *gin.Context) {
-		if err := UpgradeGNUPlex(exe, false); err != nil {
+		if upgraded, err := UpgradeGNUPlex(exe, false); err != nil {
 			log.Println("Error 993a427d-e32d-48bc-8387-fe93840671f0: ,", err)
 			c.String(http.StatusInternalServerError, "some problem doing that")
-		} else {
+		} else if upgraded {
+			c.Status(http.StatusOK)
 			gnuplex.Wg.Done()
+		} else {
 			c.Status(http.StatusOK)
 		}
 	})
