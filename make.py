@@ -34,7 +34,6 @@ def run(cmd, **kwargs):
 
 def dev():
     """Run a local development server (with hot frontend reloading)"""
-    os.chdir(os.path.dirname(__file__))
     run("bun i --cwd frontend")
     os.makedirs("tmp", exist_ok=True)
     procs = [
@@ -58,7 +57,6 @@ def dev():
 
 def dev_compiled():
     """Run a local development server against a compiled frontend/backend"""
-    os.chdir(os.path.dirname(__file__))
     os.makedirs("tmp", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
@@ -80,7 +78,6 @@ def dev_compiled():
 
 def frontend_build():
     """Build the static frontend files"""
-    os.chdir(os.path.dirname(__file__))
     run("bun i --cwd frontend")
     run("bun run --cwd frontend build")
 
@@ -111,7 +108,6 @@ def build():
 
 def go_build_current():
     """Exits with status 0 if the repo's go build is up to date, and status 1 otherwise"""
-    os.chdir(os.path.dirname(__file__))
     exe = Path(__file__).parent / "backend/bin/gnuplex"
     if not exe.exists():
         sys.exit(1)
