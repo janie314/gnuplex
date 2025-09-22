@@ -75,6 +75,7 @@ func main() {
 		log.Fatalln("9d9da752-4415-48ce-beec-0d8c703dd012 Failed to initialize cron scheduler", err)
 	}
 	scanLibJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
+		log.Println("running ScanLib job")
 		return 0, server.ScanLib()
 	})
 	err = sched.ScheduleJob(quartz.NewJobDetail(scanLibJob, quartz.NewJobKey("scanlib")), scanLibTrigger)
@@ -86,20 +87,21 @@ func main() {
 		log.Fatalln("2c007cd2-c363-44a5-81dd-6701a5487c9f Failed to initialize cron scheduler", err)
 	}
 	updateJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
+		log.Println("running update job")
 		path, err := server.GetNowPlaying()
 		if err != nil {
 			log.Println("857034c0-a7db-4aa8-8cdf-00d0b6d811c2 Failed to retrive NowPlaying")
 			return 0, err
 		}
 		if path != nil {
-			log.Println("Not upgrading; something is playing")
+			log.Println("Not updating; something is playing")
 		}
 		upgraded, err := gnuplex.UpgradeGNUPlex(exe, false)
 		if err != nil {
 			return 0, err
 		}
 		if upgraded {
-			log.Println("Upgraded GNUPlex. Quitting")
+			log.Println("Updated GNUPlex. Quitting")
 			server.Wg.Done()
 		}
 		return 0, nil
