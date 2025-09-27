@@ -64,8 +64,8 @@ func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 // The boolean in the return code represents whether we upgraded or not
 func UpgradeGNUPlex(exe string, interactive bool) (bool, error) {
 	cwd := filepath.Join(filepath.Dir(exe), "../..")
-	if err := exec.Command("git", "-C", cwd, "fetch", "main").Run(); err != nil {
-		return false, err
+	if err := exec.Command("git", "-C", cwd, "fetch", "origin", "main").Run(); err != nil {
+		return false, fmt.Errorf("fetch failed %v", err)
 	}
 	local, err := exec.Command("git", "-C", cwd, "rev-parse", "main").Output()
 	if err != nil {
