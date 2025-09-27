@@ -41,7 +41,7 @@ func main() {
 	// Some flags that subvert the main daemon process
 	if *upgrade {
 		if _, err := gnuplex.UpgradeGNUPlex(exe, true); err != nil {
-			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 could not upgrade GNUPlex")
+			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 could not upgrade GNUPlex: %v", err)
 		}
 		os.Exit(0)
 	}

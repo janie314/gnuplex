@@ -1,6 +1,7 @@
 package gnuplex
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -60,19 +61,27 @@ func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 
 // Upgrade GNUPlex
 //
-// The boolean in the return code represents whether we should quit or not
+// The boolean in the return code represents whether we upgraded or not
 func UpgradeGNUPlex(exe string, interactive bool) (bool, error) {
-	out, err := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull", "--dry-run", "--stat").Output()
+	cwd := filepath.Join(filepath.Dir(exe), "../..")
+	if err := exec.Command("git", "-C", cwd, "fetch", "origin", "main").Run(); err != nil {
+		return false, fmt.Errorf("fetch failed %v", err)
+	}
+	local, err := exec.Command("git", "-C", cwd, "rev-parse", "main").Output()
 	if err != nil {
 		return false, err
 	}
-	if len(out) == 0 {
+	remote, err := exec.Command("git", "-C", cwd, "rev-parse", "origin/main").Output()
+	if err != nil {
+		return false, err
+	}
+	if bytes.Equal(local, remote) {
 		if interactive {
 			fmt.Println("Nothing to upgrade")
 		}
 		return false, nil
 	}
-	cmd := exec.Command("git", "-C", filepath.Join(filepath.Dir(exe), "../.."), "pull")
+	cmd := exec.Command("git", "-C", cwd, "pull", "origin")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
