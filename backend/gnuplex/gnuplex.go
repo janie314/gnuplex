@@ -64,14 +64,19 @@ func (server *GNUPlex) Run(wg *sync.WaitGroup) error {
 // The boolean in the return code represents whether we upgraded or not
 func UpgradeGNUPlex(exe string, interactive bool) (bool, error) {
 	cwd := filepath.Join(filepath.Dir(exe), "../..")
-	if err := exec.Command("git", "-C", cwd, "fetch", "origin", "main").Run(); err != nil {
+	branchB, err := exec.Command("git", "-C", cwd, "branch", "--show-current").Output()
+	if err != nil {
+		return false, fmt.Errorf("19c5e798-666b-4aae-818b-56061645ca9f git problem %v", err)
+	}
+	branch := string(branchB)
+	if err := exec.Command("git", "-C", cwd, "fetch", "origin", branch).Run(); err != nil {
 		return false, fmt.Errorf("fetch failed %v", err)
 	}
-	local, err := exec.Command("git", "-C", cwd, "rev-parse", "main").Output()
+	local, err := exec.Command("git", "-C", cwd, "rev-parse", branch).Output()
 	if err != nil {
 		return false, err
 	}
-	remote, err := exec.Command("git", "-C", cwd, "rev-parse", "origin/main").Output()
+	remote, err := exec.Command("git", "-C", cwd, "rev-parse", "origin/"+branch).Output()
 	if err != nil {
 		return false, err
 	}
@@ -81,7 +86,7 @@ func UpgradeGNUPlex(exe string, interactive bool) (bool, error) {
 		}
 		return false, nil
 	}
-	cmd := exec.Command("git", "-C", cwd, "pull", "origin")
+	cmd := exec.Command("git", "-C", cwd, "pull", "origin", branch)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
