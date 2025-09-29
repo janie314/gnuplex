@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"gnuplex/db"
@@ -68,7 +69,7 @@ func UpgradeGNUPlex(exe string, interactive bool) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("19c5e798-666b-4aae-818b-56061645ca9f git problem %v", err)
 	}
-	branch := string(branchB)
+	branch := strings.TrimSpace(string(branchB))
 	if err := exec.Command("git", "-C", cwd, "fetch", "origin", branch).Run(); err != nil {
 		return false, fmt.Errorf("fetch failed %v", err)
 	}
