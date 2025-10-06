@@ -3,6 +3,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 
@@ -117,6 +118,12 @@ def go_source_hash():
     print(source_hash())
 
 
+def bump_version():
+    """Bump the version of this repo"""
+    ver = str(int(time.time()))
+    run('sed -E -i -e "s/Version = \\"[0-9]+\\"/Version = \\"' + ver + '\\"/" backend/consts/version.go')
+
+
 def fmt():
     """Format/lint this repo"""
     run("go fmt -C backend")
@@ -136,6 +143,7 @@ TASKS = {
     "build": build,
     "go_source_hash": go_source_hash,
     "fmt": fmt,
+    "bump_version": bump_version,
 }
 
 
