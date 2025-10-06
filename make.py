@@ -121,8 +121,7 @@ def go_source_hash():
 def bump_version():
     """Bump the version of this repo"""
     ver = str(int(time.time()))
-    cmd = 'sed -E -i -e "s/Version = \\"[0-9]+\\"/Version = \\"' + ver + '\\"/" backend/consts/version.go'
-    run(cmd)
+    run('sed -E -i -e "s/Version = \\"[0-9]+\\"/Version = \\"' + ver + '\\"/" backend/consts/version.go')
 
 
 def fmt():
