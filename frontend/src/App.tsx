@@ -34,6 +34,13 @@ function App() {
   const dummyAudio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
+    // Escape key to quit out of windows
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setMediaDirInputPopupVisible(false);
+        setCastPopupVisible(false);
+      }
+    });
     // Poll media player state from the backend
     window.setInterval(async () => {
       const res = await API.getNowPlaying();
