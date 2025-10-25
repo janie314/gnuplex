@@ -15,6 +15,9 @@
   "css": {
     "formatter": {
       "indentStyle": "space"
+    },
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "json": {
@@ -32,9 +35,5 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
-  "overrides": [
-    {
-      "includes": ["frontend/src/index.css"]
-    }
-  ]
+  "overrides": [{}]
 }
