@@ -56,6 +56,10 @@ function App() {
           if (!("mediaSession" in navigator)) {
             return;
           }
+          // Only do media controls on mobile devices
+          if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            return;
+          }
           if (res) {
             dummyAudio.current?.pause();
             navigator.mediaSession.playbackState = "paused";
