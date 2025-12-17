@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@biomejs/biome": "2.3.9",
+    "@biomejs/biome": "2.3.10",
     "biome": "^0.3.3"
   }
 }
