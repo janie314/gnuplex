@@ -33,6 +33,8 @@ function App() {
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
   const dummyAudio = useRef<HTMLAudioElement>(null);
 
+  const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   useEffect(() => {
     // Escape key to quit out of windows
     window.addEventListener("keydown", (e) => {
@@ -53,11 +55,7 @@ function App() {
         API.getTimeRemaining().then((res) => setTimeRemaining(res));
         API.getVol().then((res) => setVol(res));
         API.getPaused().then((res) => {
-          if (!("mediaSession" in navigator)) {
-            return;
-          }
-          // Only do media controls on mobile devices
-          if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          if (!("mediaSession" in navigator) || !mobile) {
             return;
           }
           if (res) {
@@ -77,18 +75,24 @@ function App() {
     }, 2000);
 
     // Media Session API integration
-    if (!("mediaSession" in navigator)) {
+    if (!("mediaSession" in navigator) || !mobile) {
       return;
     }
 
     navigator.mediaSession.playbackState = "playing";
     navigator.mediaSession.setActionHandler("play", () => {
       API.play();
+      if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        return;
+      }
       dummyAudio.current?.play();
       navigator.mediaSession.playbackState = "playing";
     });
     navigator.mediaSession.setActionHandler("pause", () => {
       API.pause();
+      if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        return;
+      }
       dummyAudio.current?.pause();
       navigator.mediaSession.playbackState = "paused";
     });
@@ -97,8 +101,7 @@ function App() {
   useEffect(() => {
     API.getLast25Played().then((res) => setLast25(res));
 
-    // Set Media Session metadata when nowPlaying changes
-    if (!("mediaSession" in navigator)) {
+    if (!("mediaSession" in navigator) || !mobile) {
       return;
     }
 
@@ -146,14 +149,18 @@ function App() {
 
   return (
     <>
-      {/** biome-ignore lint/a11y/useMediaCaption: just a dummy element to trigger mediacontrols */}
-      <audio
-        ref={dummyAudio}
-        src="loop.ogg"
-        autoPlay
-        loop
-        style={{ display: "none" }}
-      />
+      {mobile ? (
+        <>
+          {/** biome-ignore lint/a11y/useMediaCaption: just a dummy element to trigger mediacontrols */}
+          <audio
+            ref={dummyAudio}
+            src="loop.ogg"
+            autoPlay
+            loop
+            style={{ display: "none" }}
+          />
+        </>
+      ) : null}
       <div
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100 dark:bg-stone-950 text:white"
         style={{
