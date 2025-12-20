@@ -27,6 +27,12 @@ jobs:
       - name: compile the go backend
         run: |
           uv run make.py go_build_ci
+      - name: install shellcheck
+        run: |
+          sudo apt install -y shellcheck
+      - name: run shellcheck
+        run: |
+          find -name '*.sh' -and -not -path '*/node_modules/*' | xargs shellcheck
       - name: check go formatting
         working-directory: backend
         run: |
