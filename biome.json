@@ -1,40 +1,40 @@
 {
-	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-	"linter": {
-		"rules": {
-			"correctness": {
-				"useExhaustiveDependencies": "off"
-			},
-			"complexity": {
-				"noStaticOnlyClass": "off"
-			},
-			"suspicious": {
-				"noUnknownAtRules": "off"
-			}
-		}
-	},
-	"css": {
-		"formatter": {
-			"indentStyle": "space"
-		},
-		"parser": {
-			"tailwindDirectives": true
-		}
-	},
-	"json": {
-		"formatter": {
-			"indentStyle": "space"
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"indentStyle": "space"
-		}
-	},
-	"vcs": {
-		"enabled": true,
-		"clientKind": "git",
-		"useIgnoreFile": true
-	},
-	"overrides": [{}]
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "linter": {
+    "rules": {
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "complexity": {
+        "noStaticOnlyClass": "off"
+      },
+      "suspicious": {
+        "noUnknownAtRules": "off"
+      }
+    }
+  },
+  "css": {
+    "formatter": {
+      "indentStyle": "space"
+    },
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "json": {
+    "formatter": {
+      "indentStyle": "space"
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "indentStyle": "space"
+    }
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "overrides": [{}]
 }
