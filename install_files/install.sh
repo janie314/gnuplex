@@ -1,17 +1,17 @@
 #!/bin/sh
 set -e
-PATH="PATH:$HOME/.local/bin"
+PATH="$PATH:$HOME/.local/bin"
 echo "installing GNUPlex..."
 # dependencies
 echo "checking if GNUPlex exists; quitting if so. run \`gnuplex -upgrade\` to update GNUPlex instead"
-if command -v gnuplex 1>/dev/null
+if command -v gnuplex
 then
   exit 1
 fi
 echo "checking if git exists; quitting if not"
 command -v git 
 echo "checking if curl exists; quitting if not"
-command -v curl 1>/dev/null
+command -v curl
 # continue
 echo "All needed commands exist, continuing..."
 printf "Install dir (default %s/.local/bin): " "$HOME"
@@ -53,6 +53,6 @@ then
   printf "\n\n"
   echo "Start GNUPlex ad-hoc with \`$install_dir/gnuplex"\`
 else
-  echo "To start GNUPlex, run \`"$install_dir/gnuplex"\` and navigate to http://localhost:40000/."
+  echo "To start GNUPlex, run \`$install_dir/gnuplex\` and navigate to http://localhost:40000/."
 fi
 printf "\n\n" 
