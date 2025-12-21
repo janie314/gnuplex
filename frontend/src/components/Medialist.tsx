@@ -1,3 +1,4 @@
+import type { LongPressFns } from "@uidotdev/usehooks";
 import { API, type MediaItem } from "../lib/API";
 import { PageSelector } from "./Medialist/PageSelector";
 
@@ -7,10 +8,12 @@ function Medialist(props: {
   mediaItemCount: number | null;
   paginationOffset: number | null;
   setPaginationOffset: React.Dispatch<React.SetStateAction<number>> | null;
+  longPressHook: LongPressFns;
 }) {
   if (props.mediaItems.length === 0 || props.mediaItems[0] === null) {
     return null;
   }
+
   return (
     <div className="w-full flex flex-col mb-2 pl-2 whitespace-pre=wrap">
       <div className="flex flex-row align-center mb-1">
@@ -30,6 +33,7 @@ function Medialist(props: {
             key={props.subtitle + mediaItem.ID}
             onClick={(_e) => API.setNowPlaying(mediaItem)}
             value={mediaItem.Path}
+            {...props.longPressHook}
           />
         ))}
     </div>
