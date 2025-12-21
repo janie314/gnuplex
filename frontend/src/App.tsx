@@ -41,6 +41,12 @@ function App() {
       console.log("opening??");
     },
     {
+      onStart: () => {
+        console.log("starting...");
+      },
+      onFinish: () => {
+        console.log("i finished baby");
+      },
       threshold: 500,
     },
   );
