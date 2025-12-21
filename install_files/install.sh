@@ -40,12 +40,12 @@ git clone -b "release-linux-$libc-x86_64" https://github.com/janie314/gnuplex.gi
 cd "$install_dir"
 ln -s gnuplex-code/backend/bin/gnuplex .
 # systemd service
-if command -v journalctl 1>/dev/null
+if command -v journalctl
 then
   echo "Installing systemd user service..."
   mkdir -p "$HOME/.config/systemd/user"
   install_dir_replace=$(echo "$install_dir" | sed -e 's~/~\\/~g')
-  cat "$install_dir/gnuplex-code/install_files/gnuplex.service" | sed -e "s/__DIR__/$install_dir_replace/" >"$HOME/.config/systemd/user/gnuplex.service"
+  sed -e "s/__DIR__/$install_dir_replace/" "$install_dir/gnuplex-code/install_files/gnuplex.service" >"$HOME/.config/systemd/user/gnuplex.service"
   printf "\n"
   echo "Done."
   printf "\n\n" 
