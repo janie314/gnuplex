@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
-import { useDebounce } from "@uidotdev/usehooks";
+import { useDebounce, useLongPress } from "@uidotdev/usehooks";
 import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
@@ -34,6 +34,16 @@ function App() {
   const dummyAudio = useRef<HTMLAudioElement>(null);
 
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  // hook for long press for queueing in the Medialist component
+  const longPress = useLongPress(
+    () => {
+      console.log("opening??");
+    },
+    {
+      threshold: 500,
+    },
+  );
 
   useEffect(() => {
     // Escape key to quit out of windows
@@ -200,6 +210,7 @@ function App() {
             mediaItemCount={null}
             paginationOffset={null}
             setPaginationOffset={null}
+            longPressHook={longPress}
           />
           <Medialist
             mediaItems={last25}
@@ -207,6 +218,7 @@ function App() {
             mediaItemCount={null}
             paginationOffset={null}
             setPaginationOffset={null}
+            longPressHook={longPress}
           />
           <Medialist
             mediaItems={mediaItems}
@@ -214,6 +226,7 @@ function App() {
             mediaItemCount={mediaItemCount}
             paginationOffset={paginationOffset}
             setPaginationOffset={setPaginationOffset}
+            longPressHook={longPress}
           />
         </div>
       </div>
