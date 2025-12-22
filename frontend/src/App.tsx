@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
-import { useDebounce, useLongPress } from "@uidotdev/usehooks";
+import { useDebounce } from "@uidotdev/usehooks";
 import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
@@ -18,6 +18,8 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [mediaItemCount, setMediaItemCount] = useState(0);
+  const [queueingTargetMediaItem, setQueueingTargetMediaItem] =
+    useState<MediaItem | null>(null);
   const [paginationOffset, setPaginationOffset] = useState(
     Number(new URLSearchParams(window.location.search).get("offset") || 0) /
       1000,
@@ -28,7 +30,6 @@ function App() {
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
     useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
-  const [queuePopupVisible, setQueuePopupVisible] = useState(false);
 
   // URL params
   const [searchQuery, setSearchQuery] = useState(
@@ -41,19 +42,6 @@ function App() {
 
   // Whether or not we're on a mobile browser
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  // Hook for long press for queueing in the Medialist component
-  const longPress = useLongPress(() => {}, {
-    onFinish: (e) => {
-      console.log(e);
-      console.log("i finished baby");
-    },
-    onCancel: (e) => {
-      console.log(e);
-      console.log("i canceled baby");
-    },
-    threshold: 500,
-  });
 
   useEffect(() => {
     // Escape key to quit out of windows
@@ -218,7 +206,7 @@ function App() {
             mediaItemCount={null}
             paginationOffset={null}
             setPaginationOffset={null}
-            longPressHook={longPress}
+            setQueueingTargetMediaItem={setQueueingTargetMediaItem}
           />
           <Medialist
             mediaItems={last25}
@@ -226,7 +214,7 @@ function App() {
             mediaItemCount={null}
             paginationOffset={null}
             setPaginationOffset={null}
-            longPressHook={longPress}
+            setQueueingTargetMediaItem={setQueueingTargetMediaItem}
           />
           <Medialist
             mediaItems={mediaItems}
@@ -234,7 +222,7 @@ function App() {
             mediaItemCount={mediaItemCount}
             paginationOffset={paginationOffset}
             setPaginationOffset={setPaginationOffset}
-            longPressHook={longPress}
+            setQueueingTargetMediaItem={setQueueingTargetMediaItem}
           />
         </div>
       </div>
@@ -249,10 +237,12 @@ function App() {
         closeHook={refreshMediaItems}
       />
       <QueuePopup
-        visible={queuePopupVisible}
-        mediaItem={}
-        setQueuePopup={setQueuePopupVisible}
-        closeHook={refreshMediaItems}
+        visible={queueingTargetMediaItem !== null}
+        mediaItem={queueingTargetMediaItem}
+        closeHook={() => {
+          setQueueingTargetMediaItem(null);
+          refreshMediaItems();
+        }}
       />
     </>
   );

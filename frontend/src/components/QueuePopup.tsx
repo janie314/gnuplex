@@ -3,7 +3,6 @@ import { API, type MediaItem } from "../lib/API";
 
 function QueuePopup(props: {
   visible: boolean;
-  setQueuePopup: React.Dispatch<React.SetStateAction<boolean>>;
   mediaItem: MediaItem | null;
   closeHook: () => void;
 }) {
@@ -37,7 +36,6 @@ function QueuePopup(props: {
             className="btn-standard"
             onClick={() => {
               props.closeHook();
-              props.setQueuePopup(false);
             }}
           />
         </div>
