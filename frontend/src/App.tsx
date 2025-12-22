@@ -49,6 +49,7 @@ function App() {
       if (e.key === "Escape") {
         setMediaDirInputPopupVisible(false);
         setCastPopupVisible(false);
+        setQueueingTargetMediaItem(null);
       }
     });
     // Poll media player state from the backend
