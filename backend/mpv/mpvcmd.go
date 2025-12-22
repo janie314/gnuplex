@@ -149,16 +149,6 @@ func (mpv *MPV) SetNowPlaying(filepath string, playNext, playLast bool) error {
 	return errors.New("GetNowPlaying called incorrectly; need to specify a mode")
 }
 
-func (mpv *MPV) ReplaceQueueAndPlay(filepath string) error {
-	return processMPVSetResult(mpv.SetCmd([]interface{}{"loadfile", filepath}))
-}
-
-func (mpv *MPV) QueueMedia(filepath string) error {
-	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"}),
-	)
-}
-
 func (mpv *MPV) GetVol() (int, error) {
 	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "volume"}))
 	if err != nil {
