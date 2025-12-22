@@ -16,21 +16,19 @@ function QueuePopup(props: {
             className="btn-standard mr-1"
             onClick={() => {
               if (props.mediaItem) {
-                API.playMedia(props.mediaItem);
+                API.playMedia(props.mediaItem, true, false);
               }
             }}
-          />{" "}
-          <input
-            type="button"
-            value="Queue Next"
-            className="btn-standard mr-1"
-            onClick={() => {}}
           />
           <input
             type="button"
-            value="Queue Last"
+            value="Play Last"
             className="btn-standard mr-1"
-            onClick={() => {}}
+            onClick={() => {
+              if (props.mediaItem) {
+                API.playMedia(props.mediaItem, false, true);
+              }
+            }}
           />
           <input
             type="button"
