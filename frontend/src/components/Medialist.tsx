@@ -1,6 +1,6 @@
 import type { MediaItem } from "../lib/API";
-import { PageSelector } from "./Medialist/PageSelector";
 import { MediaItemButton } from "./Medialist/MediaItemButton";
+import { PageSelector } from "./Medialist/PageSelector";
 
 function Medialist(props: {
   mediaItems: (MediaItem | null)[];
