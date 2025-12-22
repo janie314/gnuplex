@@ -36,20 +36,15 @@ function App() {
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   // hook for long press for queueing in the Medialist component
-  const longPress = useLongPress(
-    () => {
-      console.log("opening??");
+  const longPress = useLongPress(() => {}, {
+    onFinish: () => {
+      console.log("i finished baby");
     },
-    {
-      onStart: () => {
-        console.log("starting...");
-      },
-      onFinish: () => {
-        console.log("i finished baby");
-      },
-      threshold: 500,
+    onCancel: () => {
+      console.log("i canceled baby");
     },
-  );
+    threshold: 500,
+  });
 
   useEffect(() => {
     // Escape key to quit out of windows
