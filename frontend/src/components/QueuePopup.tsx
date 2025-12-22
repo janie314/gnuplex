@@ -16,7 +16,7 @@ function QueuePopup(props: {
             className="btn-standard mr-1"
             onClick={() => {
               if (props.mediaItem) {
-                API.setNowPlaying(props.mediaItem);
+                API.playMedia(props.mediaItem);
               }
             }}
           />{" "}
