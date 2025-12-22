@@ -86,8 +86,8 @@ func (gnuplex *GNUPlex) GetNowPlaying() (*models.MediaItem, error) {
 	return gnuplex.DB.GetMediaItemByPath(path)
 }
 
-// Replace the current queue with a MediaItem from the library (by ID).
-func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
+// Play a MediaItem from the library (by ID).
+func (gnuplex *GNUPlex) PlayById(id models.MediaItemId, playNext, playLast bool) error {
 	var mediaItem *models.MediaItem
 	if err := gnuplex.DB.ORM.First(&mediaItem, id).Error; err != nil {
 		return err
@@ -95,7 +95,7 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	if mediaItem != nil {
 		gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
 	}
-	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
+	if err := gnuplex.MPV.SetNowPlaying(mediaItem.Path, playNext, playLast); err != nil {
 		return err
 	}
 	if err := gnuplex.DB.UpdateLastPlayed(mediaItem); err != nil {
@@ -104,48 +104,36 @@ func (gnuplex *GNUPlex) ReplaceQueueAndPlay(id models.MediaItemId) error {
 	return nil
 }
 
-// Replace the current queue with a MediaItem from the library (by path/URL).
-func (gnuplex *GNUPlex) ReplaceQueueAndPlayByPath(path string) error {
-	var mediaItem *models.MediaItem
-	if err := gnuplex.DB.ORM.First(&mediaItem, "path = ?", path).Error; err != nil {
-		return err
-	}
-	if mediaItem != nil {
-		gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
-	}
-	if err := gnuplex.MPV.ReplaceQueueAndPlay(mediaItem.Path); err != nil {
-		return err
-	}
-	if err := gnuplex.DB.UpdateLastPlayed(mediaItem); err != nil {
-		return err
+// Play a MediaItem from the library (by path/URL).
+func (gnuplex *GNUPlex) playByPath(path string, tempUrl, playNext, playLast bool) error {
+	if tempUrl {
+		return gnuplex.MPV.SetNowPlaying(path, true, false)
+	} else {
+		var mediaItem *models.MediaItem
+		if err := gnuplex.DB.ORM.First(&mediaItem, "path = ?", path).Error; err != nil {
+			return err
+		}
+		if mediaItem != nil {
+			gnuplex.PlayQueue = []*models.MediaItem{mediaItem}
+		}
+		if err := gnuplex.MPV.SetNowPlaying(mediaItem.Path, playNext, playLast); err != nil {
+			return err
+		}
+		if err := gnuplex.DB.UpdateLastPlayed(mediaItem); err != nil {
+			return err
+		}
 	}
 	return nil
-}
-
-// Replace the current queue with a cast URL, without adding that URL to the library.
-func (gnuplex *GNUPlex) ReplaceQueueAndCastTempUrl(url string) error {
-	return gnuplex.MPV.ReplaceQueueAndPlay(url)
-}
-
-// Add a MediaItem to the end of the current queue.
-func (gnuplex *GNUPlex) QueueLast(id models.MediaItemId) *models.MediaItem {
-	var mediaItem *models.MediaItem
-	gnuplex.DB.ORM.First(&mediaItem, id)
-	if mediaItem != nil {
-		gnuplex.PlayQueue = append(gnuplex.PlayQueue, mediaItem)
-	}
-	gnuplex.MPV.QueueMedia(mediaItem.Path)
-	return mediaItem
 }
 
 // Cast a URL to the media player. `temp` determines whether or not it should be added to your library.
-func (gnuplex *GNUPlex) Cast(url string, temp bool) error {
-	if temp {
-		return gnuplex.ReplaceQueueAndCastTempUrl(url)
+func (gnuplex *GNUPlex) Cast(url string, tempUrl, playNext, playLast bool) error {
+	if tempUrl {
+		return gnuplex.playByPath(url, true, playNext, playLast)
 	} else if err := gnuplex.DB.AddMediaItemURL(url); err != nil {
 		return err
 	} else {
-		return gnuplex.ReplaceQueueAndPlayByPath(url)
+		return gnuplex.playByPath(url, tempUrl, playNext, playLast)
 	}
 }
 

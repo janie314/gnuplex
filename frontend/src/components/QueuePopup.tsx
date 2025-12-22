@@ -37,8 +37,7 @@ function QueuePopup(props: {
             value="Cancel"
             className="btn-standard"
             onClick={() => {
-              setVol(props.currentVol);
-              props.setVolInputPopup(false);
+              props.setQueuePopup(false);
             }}
           />
         </div>
