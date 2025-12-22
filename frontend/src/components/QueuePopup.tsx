@@ -9,11 +9,11 @@ function QueuePopup(props: {
   if (props.visible) {
     return (
       <div className="popup bg-white dark:bg-stone-800 m-5">
-        <div className="flex flex-row">
+        <div className="flex flex-col">
           <input
             type="button"
-            value="Play Next"
-            className="btn-standard mr-1"
+            value="Play"
+            className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
@@ -22,8 +22,18 @@ function QueuePopup(props: {
           />
           <input
             type="button"
-            value="Play Last"
-            className="btn-standard mr-1"
+            value="Queue Next"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              if (props.mediaItem) {
+                API.playMedia(props.mediaItem, true, false);
+              }
+            }}
+          />
+          <input
+            type="button"
+            value="Queue Last"
+            className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, false, true);
@@ -33,7 +43,7 @@ function QueuePopup(props: {
           <input
             type="button"
             value="Cancel"
-            className="btn-standard"
+            className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               props.closeHook();
             }}
