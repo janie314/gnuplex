@@ -1,6 +1,6 @@
-import type { LongPressFns } from "@uidotdev/usehooks";
 import type { MediaItem } from "../lib/API";
 import { PageSelector } from "./Medialist/PageSelector";
+import { MediaItemButton } from "./Medialist/MediaItemButton";
 
 function Medialist(props: {
   mediaItems: (MediaItem | null)[];
@@ -8,7 +8,9 @@ function Medialist(props: {
   mediaItemCount: number | null;
   paginationOffset: number | null;
   setPaginationOffset: React.Dispatch<React.SetStateAction<number>> | null;
-  longPressHook: LongPressFns;
+  setQueueingTargetMediaItem: React.Dispatch<
+    React.SetStateAction<MediaItem | null>
+  >;
 }) {
   if (props.mediaItems.length === 0 || props.mediaItems[0] === null) {
     return null;
@@ -27,12 +29,10 @@ function Medialist(props: {
       {props.mediaItems
         .filter((mediaItem) => mediaItem !== null)
         .map((mediaItem, _i: number) => (
-          <input
-            type="button"
-            className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
-            key={props.subtitle + mediaItem.ID}
-            value={mediaItem.Path}
-            {...props.longPressHook}
+          <MediaItemButton
+            key={`mediaitem-${mediaItem.Path}`}
+            mediaItem={mediaItem}
+            setQueueingTargetMediaItem={props.setQueueingTargetMediaItem}
           />
         ))}
     </div>
