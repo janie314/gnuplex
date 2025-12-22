@@ -177,10 +177,6 @@ class API {
     )) as MediaItem[];
   }
 
-  public static sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   public static async getSubTracks() {
     return (await fetch("/api/sub").then((res) => res.json())) as
       | SubTrack[]
