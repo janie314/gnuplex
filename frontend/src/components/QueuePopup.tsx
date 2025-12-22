@@ -5,6 +5,7 @@ function QueuePopup(props: {
   visible: boolean;
   setQueuePopup: React.Dispatch<React.SetStateAction<boolean>>;
   mediaItem: MediaItem | null;
+  closeHook: () => void;
 }) {
   if (props.visible) {
     return (
@@ -35,6 +36,7 @@ function QueuePopup(props: {
             value="Cancel"
             className="btn-standard"
             onClick={() => {
+              props.closeHook();
               props.setQueuePopup(false);
             }}
           />
