@@ -30,6 +30,8 @@ interface Version {
   source_hash: string;
 }
 
+const headers = { "Content-Type": "application/json" };
+
 class API {
   public static async play() {
     return await fetch("/api/play", { method: "POST" });
@@ -40,57 +42,37 @@ class API {
   }
 
   public static async getPos(): Promise<number> {
-    return await fetch("/api/pos")
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error("failed to get pos", e);
-        return 0;
-      });
+    return await fetch("/api/pos").then((res) => res.json());
   }
 
   public static async getTimeRemaining(): Promise<number> {
-    return await fetch("/api/timeremaining")
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error("failed to get time remaining", e);
-        return 0;
-      });
+    return await fetch("/api/timeremaining").then((res) => res.json());
   }
 
-  public static async getVersion() {
-    return (await fetch("/api/version").then((res) => res.json())) as Version;
+  public static async getVersion(): Promise<Version> {
+    return await fetch("/api/version").then((res) => res.json());
   }
 
   public static async setPos(pos: number) {
     return await fetch("/api/pos", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ pos }),
     }).then((res) => res.json());
   }
 
   public static async getPaused(): Promise<boolean> {
-    return await fetch("/api/paused")
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error("failed to get paused state", e);
-        return 0;
-      });
+    return await fetch("/api/paused").then((res) => res.json());
   }
 
   public static async getVol(): Promise<number> {
-    return await fetch("/api/vol")
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error("failed to get vol", e);
-        return 0;
-      });
+    return await fetch("/api/vol").then((res) => res.json());
   }
 
   public static async setVol(vol: number) {
     return await fetch("/api/vol", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ vol }),
     }).then((res) => res.json());
   }
@@ -101,41 +83,34 @@ class API {
     )) as MediaItem | null;
   }
 
-  public static async setNowPlaying(mediaItem: MediaItem) {
-    return await fetch("/api/nowplaying", {
+  public static async playMedia(
+    mediaItem: MediaItem,
+    play_next: boolean,
+    play_last: boolean,
+  ) {
+    return await fetch("/api/playmedia", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: mediaItem.ID }),
+      headers,
+      body: JSON.stringify({ id: mediaItem.ID, play_next, play_last }),
     });
   }
 
   public static async cast(url: string, temp: boolean) {
     return await fetch("/api/cast", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ url, temp }),
     });
   }
 
   public static async getMediadirs(): Promise<MediaDir[]> {
-    return await fetch("/api/mediadirs")
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return [];
-      });
+    return await fetch("/api/mediadirs").then((res) => res.json());
   }
 
   public static async setMediadirs(mediadirs: string[]) {
     return await fetch("/api/mediadirs", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(mediadirs),
     });
   }
@@ -153,43 +128,38 @@ class API {
   public static async setFileExts(file_exts: string[]) {
     return await fetch("/api/file_exts", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(file_exts),
     });
   }
 
-  public static async getMediaItems(search: string, paginationOffset: number) {
+  public static async getMediaItems(
+    search: string,
+    paginationOffset: number,
+  ): Promise<MediaItemRes> {
     const param = search || "";
-    return (await fetch(
+    return await fetch(
       `/api/mediaitems?search=${encodeURIComponent(param)}&offset=${encodeURIComponent(paginationOffset)}`,
-    ).then((res) => res.json())) as MediaItemRes;
+    ).then((res) => res.json());
   }
 
   public static async scanLib() {
     return await fetch("/api/scanlib", { method: "POST" });
   }
 
-  public static async getLast25Played() {
-    return (await fetch("/api/last25").then((res) =>
-      res.json(),
-    )) as MediaItem[];
+  public static async getLast25Played(): Promise<MediaItem[]> {
+    return await fetch("/api/last25").then((res) => res.json());
   }
 
-  public static async getSubTracks() {
-    return (await fetch("/api/sub").then((res) => res.json())) as
-      | SubTrack[]
-      | null;
+  public static async getSubTracks(): Promise<SubTrack[] | null> {
+    return await fetch("/api/sub").then((res) => res.json());
   }
 
   public static async setSubTrack(id: number) {
     const body = id === -1 ? { visible: false } : { visible: true, id };
     return await fetch("/api/sub", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify(body),
     });
   }
