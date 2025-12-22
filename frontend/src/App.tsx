@@ -6,6 +6,7 @@ import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
+import { QueuePopup } from "./components/QueuePopup";
 
 function App() {
   // Media player state info
@@ -22,25 +23,33 @@ function App() {
       1000,
   );
   const [last25, setLast25] = useState<MediaItem[]>([]);
+
   // UI popups' visibility
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
     useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
+  const [queuePopupVisible, setQueuePopupVisible] = useState(false);
+
   // URL params
   const [searchQuery, setSearchQuery] = useState(
     new URLSearchParams(window.location.search).get("search") || "",
   );
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
+
+  // Dummy audio component for media controls
   const dummyAudio = useRef<HTMLAudioElement>(null);
 
+  // Whether or not we're on a mobile browser
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  // hook for long press for queueing in the Medialist component
+  // Hook for long press for queueing in the Medialist component
   const longPress = useLongPress(() => {}, {
-    onFinish: () => {
+    onFinish: (e) => {
+      console.log(e);
       console.log("i finished baby");
     },
-    onCancel: () => {
+    onCancel: (e) => {
+      console.log(e);
       console.log("i canceled baby");
     },
     threshold: 500,
@@ -89,7 +98,6 @@ function App() {
     if (!("mediaSession" in navigator) || !mobile) {
       return;
     }
-
     navigator.mediaSession.playbackState = "playing";
     navigator.mediaSession.setActionHandler("play", () => {
       API.play();
@@ -153,7 +161,6 @@ function App() {
       },
     );
   }
-
   useEffect(() => {
     refreshMediaItems();
   }, [searchQueryDebounced, paginationOffset]);
@@ -239,6 +246,12 @@ function App() {
       <CastPopup
         visible={castPopupVisible}
         setCastPopup={setCastPopupVisible}
+        closeHook={refreshMediaItems}
+      />
+      <QueuePopup
+        visible={queuePopupVisible}
+        mediaItem={}
+        setQueuePopup={setQueuePopupVisible}
         closeHook={refreshMediaItems}
       />
     </>
