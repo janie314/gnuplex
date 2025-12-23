@@ -88,12 +88,12 @@ func main() {
 	}
 	updateJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
 		log.Println("running update job")
-		path, err := server.GetNowPlaying()
+		paths, err := server.GetNowPlaying()
 		if err != nil {
 			log.Println("857034c0-a7db-4aa8-8cdf-00d0b6d811c2 Failed to retrive NowPlaying")
 			return 0, err
 		}
-		if path != nil {
+		if len(paths) != 0 {
 			log.Println("Not updating; something is playing")
 		}
 		upgraded, err := gnuplex.UpgradeGNUPlex(exe, false)
