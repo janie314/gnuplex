@@ -1,5 +1,5 @@
-import { useLongPress } from "@uidotdev/usehooks";
 import { API, type MediaItem } from "../../lib/API";
+import { useLongPress } from "../../lib/useLongPress";
 
 function MediaItemButton(props: {
   mediaItem: MediaItem;
@@ -7,14 +7,13 @@ function MediaItemButton(props: {
     React.SetStateAction<MediaItem | null>
   >;
 }) {
-  const longPress = useLongPress(() => {}, {
-    onFinish: () => {
-      props.setQueueingTargetMediaItem(props.mediaItem);
-    },
-    onCancel: () => {
+  const longPressHandlers = useLongPress({
+    onShortClick: () => {
       API.playMedia(props.mediaItem, true, false);
     },
-    threshold: 500,
+    onLongPress: () => {
+      API.playMedia(props.mediaItem, false, true);
+    },
   });
 
   return (
@@ -22,7 +21,7 @@ function MediaItemButton(props: {
       type="button"
       className="inline-block w-screen max-w-screen-md text-left hover:bg-cyan-200 hover:dark:bg-cyan-700 p-1 border-lightgray dark:border-stone-800 border-t-2 whitespace-break-spaces break-words dark:bg-stone-950 dark:text-slate-200"
       value={props.mediaItem.Path}
-      {...longPress}
+      {...longPressHandlers}
     />
   );
 }
