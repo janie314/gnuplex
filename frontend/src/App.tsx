@@ -15,7 +15,7 @@ function App() {
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
-  const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
+  const [nowPlaying, setNowPlaying] = useState<MediaItem[]>([]);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [mediaItemCount, setMediaItemCount] = useState(0);
   const [queueingTargetMediaItem, setQueueingTargetMediaItem] =
@@ -55,7 +55,7 @@ function App() {
     // Poll media player state from the backend
     window.setInterval(async () => {
       const res = await API.getNowPlaying();
-      setNowPlaying(res);
+      setNowPlaying(res || []);
       if (res === null) {
         setTimeRemaining(0);
         setVol(0);
@@ -113,9 +113,9 @@ function App() {
       return;
     }
 
-    if (nowPlaying?.Path) {
+    if (nowPlaying?.[0]?.Path) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: nowPlaying.Path,
+        title: nowPlaying[0].Path,
         artist: "GNUPlex",
       });
     } else {
@@ -202,7 +202,7 @@ function App() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <Medialist
-            mediaItems={[nowPlaying]}
+            mediaItems={nowPlaying}
             subtitle="Now Playing"
             mediaItemCount={null}
             paginationOffset={null}

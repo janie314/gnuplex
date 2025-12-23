@@ -78,9 +78,9 @@ class API {
   }
 
   public static async getNowPlaying() {
-    return (await fetch("/api/nowplaying").then((res) =>
-      res.json(),
-    )) as MediaItem | null;
+    return (await fetch("/api/nowplaying").then((res) => res.json())) as
+      | MediaItem[]
+      | null;
   }
 
   public static async playMedia(

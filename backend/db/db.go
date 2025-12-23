@@ -133,15 +133,15 @@ func (db *DB) GetMediaItems(search string, offset int) ([]models.MediaItem, int6
 	return mediaItems, count, nil
 }
 
-func (db *DB) GetMediaItemByPath(path string) (*models.MediaItem, error) {
-	var mediaItem models.MediaItem
+func (db *DB) GetMediaItemsByPaths(paths []string) ([]models.MediaItem, error) {
+	var mediaItems []models.MediaItem
 	err := db.ORM.
-		Where("path = ?", path).
-		First(&mediaItem).Error
+		Where("path in ?", paths).
+		Find(&mediaItems).Error
 	if err != nil {
 		return nil, err
 	}
-	return &mediaItem, nil
+	return mediaItems, nil
 }
 
 func (db *DB) DeleteMediaItem(mediaItem *models.MediaItem) error {
