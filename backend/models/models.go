@@ -16,6 +16,7 @@ type MediaItem struct {
 	Temp         bool   `gorm:"default:false"`
 	Type         MediaItemType
 	LastScanUUID string `gorm:"index:,default:''"`
+	QueueId      int    `gorm:"-:all" json:"queue_id,omitempty"`
 }
 
 type MediaItemId uint
