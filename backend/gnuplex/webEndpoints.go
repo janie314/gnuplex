@@ -10,13 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MediaActionBody struct {
-	Id models.MediaItemId `json:"id"`
+type PlayMediaBody struct {
+	Id       models.MediaItemId `json:"id"`
+	PlayNext bool               `json:"play_next"`
+	PlayLast bool               `json:"play_last"`
 }
 
 type CastBody struct {
-	Url  string `json:"url"`
-	Temp bool   `json:"temp"`
+	Url      string `json:"url"`
+	Temp     bool   `json:"temp"`
+	PlayNext bool   `json:"play_next"`
+	PlayLast bool   `json:"play_last"`
 }
 
 type VolBody struct {
@@ -78,12 +82,12 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			c.JSON(http.StatusOK, media)
 		}
 	})
-	gnuplex.Router.POST("/api/nowplaying", func(c *gin.Context) {
-		body := MediaActionBody{}
+	gnuplex.Router.POST("/api/playmedia", func(c *gin.Context) {
+		body := PlayMediaBody{}
 		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
 			log.Println("Error 2cd6e6a1-a62e-4336-83bb-b41c3e95f2ce: ,", err)
 			c.String(http.StatusBadRequest, "bad body format")
-		} else if err = gnuplex.ReplaceQueueAndPlay(body.Id); err != nil {
+		} else if err = gnuplex.PlayById(body.Id, body.PlayNext, body.PlayLast); err != nil {
 			log.Println("Error 2423754f-7a36-467a-86de-7fc05fb7a9b2: ,", err)
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {
@@ -95,7 +99,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
 			log.Println("Error 0bf4554b-ac42-487f-9468-fee0b1e002bd: ,", err)
 			c.String(http.StatusBadRequest, "bad body format")
-		} else if err = gnuplex.Cast(body.Url, body.Temp); err != nil {
+		} else if err = gnuplex.Cast(body.Url, body.Temp, body.PlayNext, body.PlayLast); err != nil {
 			log.Println("Error 65365414-ca17-4885-a50f-8584dd758512: ,", err)
 			c.String(http.StatusInternalServerError, "some problem doing that")
 		} else {

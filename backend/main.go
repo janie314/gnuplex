@@ -32,6 +32,7 @@ func main() {
 	dbPath := flag.String("db_path", "gnuplex.sqlite3", "Path to sqlite DB.")
 	port := flag.Int("port", 40000, "HTTP server's port.")
 	upgrade := flag.Bool("upgrade", false, "Upgrade GNUPlex.")
+	mpvConfigDir := flag.String("config_dir", "./mpv_config", "Directory containing config files and Lua scripts for mpv")
 	exe, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
@@ -41,12 +42,15 @@ func main() {
 	// Some flags that subvert the main daemon process
 	if *upgrade {
 		if _, err := gnuplex.UpgradeGNUPlex(exe, true); err != nil {
-			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 could not upgrade GNUPlex: %v", err)
+			log.Fatalf("7a7233a9-262a-4bf6-8229-43855d3852d2 Could not upgrade GNUPlex: %v", err)
 		}
 		os.Exit(0)
 	}
 	if *version {
 		printVersion()
+	}
+	if _, err := os.ReadDir(*mpvConfigDir); err != nil {
+		log.Fatalln("a895ec8b-8a76-48e9-a20e-3a7d562a10ca Could not read the -mpv_config directory ", *mpvConfigDir, err)
 	}
 	fmt.Println("GNUPlex Version " + consts.Version)
 	if *prod {
@@ -88,12 +92,12 @@ func main() {
 	}
 	updateJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
 		log.Println("running update job")
-		path, err := server.GetNowPlaying()
+		paths, err := server.GetNowPlaying()
 		if err != nil {
 			log.Println("857034c0-a7db-4aa8-8cdf-00d0b6d811c2 Failed to retrive NowPlaying")
 			return 0, err
 		}
-		if path != nil {
+		if len(paths) != 0 {
 			log.Println("Not updating; something is playing")
 		}
 		upgraded, err := gnuplex.UpgradeGNUPlex(exe, false)

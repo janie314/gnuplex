@@ -23,10 +23,10 @@ func Init(path string, verbose bool) (*DB, error) {
 	orm, err := gorm.Open(sqlite.Open(path), &gorm.Config{
 		Logger: logger.Default.LogMode(logLevel),
 	})
-	db := DB{ORM: orm}
 	if err != nil {
 		return nil, err
 	}
+	db := DB{ORM: orm}
 	// migrations
 	if err := db.ORM.AutoMigrate(&models.MediaItem{}); err != nil {
 		return nil, err
@@ -56,15 +56,16 @@ func (db *DB) GetFileExts() ([]models.FileExtension, error) {
 
 // Set the list of configured file extensions to exclude from media scans.
 func (db *DB) SetFileExts(mediadirs []string) error {
-	err := db.ORM.Unscoped().Where("1 = 1").Delete(&models.FileExtension{}).Error
-	if err != nil {
+	if err := db.ORM.Unscoped().Where("1 = 1").Delete(&models.FileExtension{}).Error; err != nil {
 		return err
 	}
 	for _, dir := range mediadirs {
-		db.ORM.Clauses(clause.OnConflict{DoNothing: true}).
-			Create(&models.FileExtension{Extension: strings.ToLower(dir)})
+		if err := db.ORM.Clauses(clause.OnConflict{DoNothing: true}).
+			Create(&models.FileExtension{Extension: strings.ToLower(dir)}).Error; err != nil {
+			return err
+		}
 	}
-	return err
+	return nil
 }
 
 // Get the list of configured directories to scan for MediaItems.
@@ -92,8 +93,7 @@ func (db *DB) SetMediadirs(mediaDirs []string) error {
 	}
 	for _, dir := range mediaDirsDB {
 		if _, ok := mediaDirsH[dir.Path]; !ok {
-			err := db.ORM.Unscoped().Delete(&dir).Error
-			if err != nil {
+			if err := db.ORM.Unscoped().Delete(&dir).Error; err != nil {
 				return err
 			}
 		}
@@ -133,15 +133,14 @@ func (db *DB) GetMediaItems(search string, offset int) ([]models.MediaItem, int6
 	return mediaItems, count, nil
 }
 
-func (db *DB) GetMediaItemByPath(path string) (*models.MediaItem, error) {
-	var mediaItem models.MediaItem
-	err := db.ORM.
-		Where("path = ?", path).
-		First(&mediaItem).Error
-	if err != nil {
+func (db *DB) GetMediaItemsByPaths(paths []string) ([]models.MediaItem, error) {
+	var mediaItems []models.MediaItem
+	if err := db.ORM.
+		Where("path in ?", paths).
+		Find(&mediaItems).Error; err != nil {
 		return nil, err
 	}
-	return &mediaItem, nil
+	return mediaItems, nil
 }
 
 func (db *DB) DeleteMediaItem(mediaItem *models.MediaItem) error {
