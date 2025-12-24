@@ -34,6 +34,7 @@ type MPVResponseInt struct {
 
 type PlaylistEntry struct {
 	Filename string `json:"filename"`
+	Id       int    `json:"id"`
 }
 
 type MPVGetResult[T bool | string | int | float64 | []models.Track | []PlaylistEntry] struct {
