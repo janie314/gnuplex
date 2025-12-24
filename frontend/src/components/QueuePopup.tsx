@@ -4,6 +4,9 @@ import { API, type MediaItem } from "../lib/API";
 function QueuePopup(props: {
   visible: boolean;
   mediaItem: MediaItem | null;
+  setQueueingTargetMediaItem: React.Dispatch<
+    React.SetStateAction<MediaItem | null>
+  >;
   closeHook: () => void;
 }) {
   if (props.visible) {
@@ -18,6 +21,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
               }
+              props.setQueueingTargetMediaItem(null);
             }}
           />
           <input
@@ -28,6 +32,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
               }
+              props.setQueueingTargetMediaItem(null);
             }}
           />
           <input
@@ -38,6 +43,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, false, true);
               }
+              props.setQueueingTargetMediaItem(null);
             }}
           />
           <input
@@ -46,6 +52,7 @@ function QueuePopup(props: {
             className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               props.closeHook();
+              props.setQueueingTargetMediaItem(null);
             }}
           />
         </div>

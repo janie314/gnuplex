@@ -12,7 +12,7 @@ function MediaItemButton(props: {
       API.playMedia(props.mediaItem, true, false);
     },
     onLongPress: () => {
-      API.playMedia(props.mediaItem, false, true);
+      props.setQueueingTargetMediaItem(props.mediaItem);
     },
   });
 

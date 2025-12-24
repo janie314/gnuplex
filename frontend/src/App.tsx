@@ -240,8 +240,8 @@ function App() {
       <QueuePopup
         visible={queueingTargetMediaItem !== null}
         mediaItem={queueingTargetMediaItem}
+        setQueueingTargetMediaItem={setQueueingTargetMediaItem}
         closeHook={() => {
-          setQueueingTargetMediaItem(null);
           refreshMediaItems();
         }}
       />
