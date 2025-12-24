@@ -65,7 +65,7 @@ def dev_compiled():
     os.makedirs("tmp", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
-        subprocess.Popen("./backend/bin/gnuplex -verbose -static_files ./backend/static", shell=True),
+        subprocess.Popen("./backend/bin/gnuplex -verbose -static_files ./backend/static -config_dir ./backend/mpv_config", shell=True),
     ]
 
     def cleanup(signum, frame):
