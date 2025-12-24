@@ -51,7 +51,10 @@ function CastPopup(props: {
             type="button"
             value="Cancel"
             className="btn-standard"
-            onClick={() => props.setCastPopup(false)}
+            onClick={() => {
+              props.closeHook();
+              props.setCastPopup(false);
+            }}
           />
         </div>
       </div>

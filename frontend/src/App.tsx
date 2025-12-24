@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
-import { useDebounce } from "@uidotdev/usehooks";
 import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
+import { QueuePopup } from "./components/QueuePopup";
+import { useDebounce } from "./lib/useDebounce";
 
 function App() {
   // Media player state info
@@ -14,25 +15,32 @@ function App() {
   const [startPos, setStartPos] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [vol, setVol] = useState(0);
-  const [nowPlaying, setNowPlaying] = useState<MediaItem | null>(null);
+  const [nowPlaying, setNowPlaying] = useState<MediaItem[]>([]);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [mediaItemCount, setMediaItemCount] = useState(0);
+  const [queueingTargetMediaItem, setQueueingTargetMediaItem] =
+    useState<MediaItem | null>(null);
   const [paginationOffset, setPaginationOffset] = useState(
     Number(new URLSearchParams(window.location.search).get("offset") || 0) /
       1000,
   );
   const [last25, setLast25] = useState<MediaItem[]>([]);
+
   // UI popups' visibility
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
     useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
+
   // URL params
   const [searchQuery, setSearchQuery] = useState(
     new URLSearchParams(window.location.search).get("search") || "",
   );
   const searchQueryDebounced = useDebounce(searchQuery, 1000);
+
+  // Dummy audio component for media controls
   const dummyAudio = useRef<HTMLAudioElement>(null);
 
+  // Whether or not we're on a mobile browser
   const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   useEffect(() => {
@@ -41,12 +49,13 @@ function App() {
       if (e.key === "Escape") {
         setMediaDirInputPopupVisible(false);
         setCastPopupVisible(false);
+        setQueueingTargetMediaItem(null);
       }
     });
     // Poll media player state from the backend
     window.setInterval(async () => {
       const res = await API.getNowPlaying();
-      setNowPlaying(res);
+      setNowPlaying(res || []);
       if (res === null) {
         setTimeRemaining(0);
         setVol(0);
@@ -78,7 +87,6 @@ function App() {
     if (!("mediaSession" in navigator) || !mobile) {
       return;
     }
-
     navigator.mediaSession.playbackState = "playing";
     navigator.mediaSession.setActionHandler("play", () => {
       API.play();
@@ -105,9 +113,9 @@ function App() {
       return;
     }
 
-    if (nowPlaying?.Path) {
+    if (nowPlaying?.[0]?.Path) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: nowPlaying.Path,
+        title: nowPlaying[0].Path,
         artist: "GNUPlex",
       });
     } else {
@@ -142,7 +150,6 @@ function App() {
       },
     );
   }
-
   useEffect(() => {
     refreshMediaItems();
   }, [searchQueryDebounced, paginationOffset]);
@@ -195,11 +202,12 @@ function App() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <Medialist
-            mediaItems={[nowPlaying]}
+            mediaItems={nowPlaying}
             subtitle="Now Playing"
             mediaItemCount={null}
             paginationOffset={null}
             setPaginationOffset={null}
+            setQueueingTargetMediaItem={setQueueingTargetMediaItem}
           />
           <Medialist
             mediaItems={last25}
@@ -207,6 +215,7 @@ function App() {
             mediaItemCount={null}
             paginationOffset={null}
             setPaginationOffset={null}
+            setQueueingTargetMediaItem={setQueueingTargetMediaItem}
           />
           <Medialist
             mediaItems={mediaItems}
@@ -214,6 +223,7 @@ function App() {
             mediaItemCount={mediaItemCount}
             paginationOffset={paginationOffset}
             setPaginationOffset={setPaginationOffset}
+            setQueueingTargetMediaItem={setQueueingTargetMediaItem}
           />
         </div>
       </div>
@@ -226,6 +236,14 @@ function App() {
         visible={castPopupVisible}
         setCastPopup={setCastPopupVisible}
         closeHook={refreshMediaItems}
+      />
+      <QueuePopup
+        visible={queueingTargetMediaItem !== null}
+        mediaItem={queueingTargetMediaItem}
+        setQueueingTargetMediaItem={setQueueingTargetMediaItem}
+        closeHook={() => {
+          refreshMediaItems();
+        }}
       />
     </>
   );

@@ -1,17 +1,17 @@
 #!/bin/sh
 set -e
-PATH="PATH:$HOME/.local/bin"
+PATH="$PATH:$HOME/.local/bin"
 echo "installing GNUPlex..."
 # dependencies
 echo "checking if GNUPlex exists; quitting if so. run \`gnuplex -upgrade\` to update GNUPlex instead"
-if command -v gnuplex 1>/dev/null
+if command -v gnuplex
 then
   exit 1
 fi
 echo "checking if git exists; quitting if not"
 command -v git 
 echo "checking if curl exists; quitting if not"
-command -v curl 1>/dev/null
+command -v curl
 # continue
 echo "All needed commands exist, continuing..."
 printf "Install dir (default %s/.local/bin): " "$HOME"
@@ -40,12 +40,12 @@ git clone -b "release-linux-$libc-x86_64" https://github.com/janie314/gnuplex.gi
 cd "$install_dir"
 ln -s gnuplex-code/backend/bin/gnuplex .
 # systemd service
-if command -v journalctl 1>/dev/null
+if command -v journalctl
 then
   echo "Installing systemd user service..."
   mkdir -p "$HOME/.config/systemd/user"
   install_dir_replace=$(echo "$install_dir" | sed -e 's~/~\\/~g')
-  cat "$install_dir/gnuplex-code/install_files/gnuplex.service" | sed -e "s/__DIR__/$install_dir_replace/" >"$HOME/.config/systemd/user/gnuplex.service"
+  sed -e "s/__DIR__/$install_dir_replace/" "$install_dir/gnuplex-code/install_files/gnuplex.service" >"$HOME/.config/systemd/user/gnuplex.service"
   printf "\n"
   echo "Done."
   printf "\n\n" 
@@ -53,6 +53,6 @@ then
   printf "\n\n"
   echo "Start GNUPlex ad-hoc with \`$install_dir/gnuplex"\`
 else
-  echo "To start GNUPlex, run \`"$install_dir/gnuplex"\` and navigate to http://localhost:40000/."
+  echo "To start GNUPlex, run \`$install_dir/gnuplex\` and navigate to http://localhost:40000/."
 fi
 printf "\n\n" 

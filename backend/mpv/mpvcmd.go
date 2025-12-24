@@ -32,7 +32,12 @@ type MPVResponseInt struct {
 	Data int `json:"data"`
 }
 
-type MPVGetResult[T bool | string | int | float64 | []models.Track] struct {
+type PlaylistEntry struct {
+	Filename string `json:"filename"`
+	Id       int    `json:"id"`
+}
+
+type MPVGetResult[T bool | string | int | float64 | []models.Track | []PlaylistEntry] struct {
 	Data      T      `json:"data"`
 	RequestId int    `json:"request_id"`
 	Error     string `json:"error"`
@@ -43,7 +48,7 @@ type MPVSetResult struct {
 	Error     string `json:"error"`
 }
 
-func processMPVGetResult[T bool | string | int | float64 | []models.Track](resBytes []byte, err error) (T, error) {
+func processMPVGetResult[T bool | string | int | float64 | []models.Track | []PlaylistEntry](resBytes []byte, err error) (T, error) {
 	var defaultVal T
 	if err != nil {
 		return defaultVal, err
@@ -132,24 +137,21 @@ func (mpv *MPV) GetPaused() (bool, error) {
 	return processMPVGetResult[bool](mpv.GetCmd([]string{"get_property", "pause"}))
 }
 
-func (mpv *MPV) GetNowPlaying() (string, error) {
-	return processMPVGetResult[string](mpv.GetCmd([]string{"get_property", "path"}))
+func (mpv *MPV) GetNowPlaying() ([]PlaylistEntry, error) {
+	return processMPVGetResult[[]PlaylistEntry](mpv.GetCmd([]string{"get_property", "playlist"}))
 }
 
-func (mpv *MPV) SetNowPlaying(filepath string) error {
-	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"loadfile", filepath}),
-	)
-}
-
-func (mpv *MPV) ReplaceQueueAndPlay(filepath string) error {
-	return processMPVSetResult(mpv.SetCmd([]interface{}{"loadfile", filepath}))
-}
-
-func (mpv *MPV) QueueMedia(filepath string) error {
-	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"}),
-	)
+func (mpv *MPV) SetNowPlaying(filepath string, playNext, playLast bool) error {
+	if playNext {
+		return processMPVSetResult(
+			mpv.SetCmd([]interface{}{"loadfile", filepath, "insert-next-play"}),
+		)
+	} else if playLast {
+		return processMPVSetResult(
+			mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"}),
+		)
+	}
+	return errors.New("GetNowPlaying called incorrectly; need to specify a mode")
 }
 
 func (mpv *MPV) GetVol() (int, error) {
