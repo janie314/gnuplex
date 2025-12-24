@@ -87,7 +87,24 @@ func (gnuplex *GNUPlex) GetNowPlaying() ([]models.MediaItem, error) {
 	for _, entry := range playlist {
 		paths = append(paths, entry.Filename)
 	}
-	return gnuplex.DB.GetMediaItemsByPaths(paths)
+	mediaItems, err := gnuplex.DB.GetMediaItemsByPaths(paths)
+	if err != nil {
+		return nil, err
+	}
+	// Create a map for quick lookup and preserve playlist order with QueueIds
+	mediaMap := make(map[string]*models.MediaItem)
+	for i := range mediaItems {
+		mediaMap[mediaItems[i].Path] = &mediaItems[i]
+	}
+	// Rebuild the slice in the order from the playlist
+	var orderedItems []models.MediaItem
+	for _, entry := range playlist {
+		if item, exists := mediaMap[entry.Filename]; exists {
+			item.QueueId = entry.Id
+			orderedItems = append(orderedItems, *item)
+		}
+	}
+	return orderedItems, nil
 }
 
 // Play a MediaItem from the library (by ID).
