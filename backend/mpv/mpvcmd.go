@@ -213,11 +213,17 @@ func (mpv *MPV) Ping() (int, error) {
 
 func (mpv *MPV) SetFilter(filter string) error {
 	filterCmd := ""
-	switch filter {
+	switch strings.ToLower(strings.TrimSpace(filter)) {
 	case "bw":
 		filterCmd = "lavfi=[format=gray]"
 	case "grainy":
 		filterCmd = "scale=480:trunc(ow/a/2)*2,setsar=1:1,eq=saturation=0.8,noise=alls=20:allf=t+u"
+	case "mirror":
+		filterCmd = "lavfi=[split[back][front];[back]hflip[back];[front][back]hstack]"
+	case "8bit":
+		filterCmd = "lavfi=[scale=iw/20:-1,scale=iw*20:-1:flags=neighbor]"
+	case "sepia":
+		filterCmd = "lavfi=[colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131,eq=contrast=1.1:brightness=-0.02]"
 	}
 	return processMPVSetResult(
 		mpv.SetCmd([]any{"set_property", "vf", filterCmd}),

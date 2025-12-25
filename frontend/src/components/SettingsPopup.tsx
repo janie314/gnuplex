@@ -24,6 +24,30 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
           />
           <input
             type="button"
+            value="8-Bit Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("8bit");
+            }}
+          />{" "}
+          <input
+            type="button"
+            value="Mirror Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("mirror");
+            }}
+          />
+          <input
+            type="button"
+            value="Sepia Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("sepia");
+            }}
+          />
+          <input
+            type="button"
             value="Reset Filter"
             className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
