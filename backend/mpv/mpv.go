@@ -16,6 +16,7 @@ import (
 )
 
 type MPV struct {
+	ConfigDir    string
 	Conn         *net.UnixConn
 	Mu           *sync.Mutex
 	Process      *os.Process
@@ -37,10 +38,10 @@ func (mpv *MPV) restartProcess() error {
 	}
 	mpvSocketPath := path.Join("/tmp", fmt.Sprintf("mpvsocket-%s", uuid.New().String()))
 	var cmd *exec.Cmd
-	if !mpv.Verbose {
-		cmd = exec.Command("mpv", "--idle=yes", fmt.Sprintf("--input-ipc-server=%s", mpvSocketPath), "--fs", "--save-position-on-quit")
+	if mpv.Verbose {
+		cmd = exec.Command("mpv", "-v", fmt.Sprintf("--config-dir=%s", mpv.ConfigDir), fmt.Sprintf("--input-ipc-server=%s", mpvSocketPath))
 	} else {
-		cmd = exec.Command("mpv", "--idle=yes", "-v", fmt.Sprintf("--input-ipc-server=%s", mpvSocketPath), "--fs", "--save-position-on-quit")
+		cmd = exec.Command("mpv", fmt.Sprintf("--config-dir=%s", mpv.ConfigDir), fmt.Sprintf("--input-ipc-server=%s", mpvSocketPath))
 	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -85,8 +86,9 @@ func (mpv *MPV) runProcessSupervisor(wg *sync.WaitGroup) {
 	}
 }
 
-func Init(wg *sync.WaitGroup, verbose bool) (*MPV, error) {
+func Init(wg *sync.WaitGroup, verbose bool, configDir string) (*MPV, error) {
 	var mpv MPV
+	mpv.ConfigDir = configDir
 	mpv.Mu = &sync.Mutex{}
 	mpv.RestartCount = 0
 	mpv.Verbose = verbose
