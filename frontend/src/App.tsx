@@ -6,8 +6,8 @@ import { MediaControls } from "./components/MediaControls";
 import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
 import { QueuePopup } from "./components/QueuePopup";
-import { useDebounce } from "./lib/useDebounce";
 import { SettingsPopup } from "./components/SettingsPopup";
+import { useDebounce } from "./lib/useDebounce";
 
 function App() {
   // Media player state info
