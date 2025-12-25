@@ -45,6 +45,10 @@ type SubBody struct {
 	ID      int64 `json:"id,omitempty"`
 }
 
+type FilterBody struct {
+	Filter string `json:"filter"`
+}
+
 // Initialize the web server's HTTP Endpoints
 func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, platform, goVersion, exe string) {
 	gnuplex.Router.GET("/", func(c *gin.Context) {
@@ -293,5 +297,19 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			log.Println("Already up to date")
 			c.Status(http.StatusOK)
 		}
+	})
+	gnuplex.Router.POST("/api/filter", func(c *gin.Context) {
+		body := FilterBody{}
+		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
+			log.Println("Error 0d997332-2815-43b4-9415-689e9a681cb8: ,", err)
+			c.String(http.StatusBadRequest, "bad body format")
+			return
+		}
+		if err := gnuplex.MPV.SetFilter(body.Filter); err != nil {
+			log.Println("Error 20e52d4e-a82c-4d42-b4b8-16dcde63daf4: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+		c.Status(http.StatusOK)
 	})
 }

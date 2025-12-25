@@ -163,6 +163,14 @@ class API {
       body: JSON.stringify(body),
     });
   }
+
+  public static async setFilter(filter: string) {
+    return await fetch("/api/filter", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ filter }),
+    });
+  }
 }
 
 export { type MediaDir, type MediaItem, type SubTrack, API };
