@@ -11,6 +11,7 @@ function MediaControls(props: {
   mediadirInputPopup: boolean;
   setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
   setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  setSettingsPopup: React.Dispatch<React.SetStateAction<boolean>>;
   startPos: number;
   pos: number;
   setPos: React.Dispatch<React.SetStateAction<number>>;
@@ -119,6 +120,12 @@ function MediaControls(props: {
           className="btn-standard"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
+        />
+        <input
+          type="button"
+          className="btn-standard ml-1"
+          value="⚙"
+          onClick={() => props.setSettingsPopup(true)}
         />
       </div>
     </div>
