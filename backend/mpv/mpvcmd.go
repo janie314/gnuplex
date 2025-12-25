@@ -133,6 +133,21 @@ func (mpv *MPV) Pause() error {
 	)
 }
 
+func (mpv *MPV) PlayPause() error {
+	return processMPVSetResult(
+		mpv.SetCmd([]any{"cycle", "pause"}),
+	)
+}
+
+func (mpv *MPV) Skip() error {
+	if err := processMPVSetResult(
+		mpv.SetCmd([]any{"playlist-next"}),
+	); err != nil {
+		return err
+	}
+	return processMPVSetResult(mpv.SetCmd([]any{"playlist-remove", "current"}))
+}
+
 func (mpv *MPV) GetPaused() (bool, error) {
 	return processMPVGetResult[bool](mpv.GetCmd([]string{"get_property", "pause"}))
 }
