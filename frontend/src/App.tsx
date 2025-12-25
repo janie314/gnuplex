@@ -7,6 +7,7 @@ import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
 import { QueuePopup } from "./components/QueuePopup";
 import { useDebounce } from "./lib/useDebounce";
+import { SettingsPopup } from "./components/SettingsPopup";
 
 function App() {
   // Media player state info
@@ -30,6 +31,7 @@ function App() {
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
     useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
+  const [settingsPopupVisible, setSettingsPopupVisible] = useState(false);
 
   // URL params
   const [searchQuery, setSearchQuery] = useState(
@@ -50,6 +52,7 @@ function App() {
         setMediaDirInputPopupVisible(false);
         setCastPopupVisible(false);
         setQueueingTargetMediaItem(null);
+        setSettingsPopupVisible(false);
       }
     });
     // Poll media player state from the backend
@@ -183,6 +186,7 @@ function App() {
             mediadirInputPopup={mediaDirInputPopupVisible}
             setMediadirInputPopup={setMediaDirInputPopupVisible}
             setCastPopup={setCastPopupVisible}
+            setSettingsPopup={setSettingsPopupVisible}
             vol={vol}
             setVol={setVol}
             pos={pos}
@@ -243,6 +247,12 @@ function App() {
         setQueueingTargetMediaItem={setQueueingTargetMediaItem}
         closeHook={() => {
           refreshMediaItems();
+        }}
+      />{" "}
+      <SettingsPopup
+        visible={settingsPopupVisible}
+        closeHook={() => {
+          setSettingsPopupVisible(false);
         }}
       />
     </>

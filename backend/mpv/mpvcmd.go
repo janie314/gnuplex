@@ -123,13 +123,13 @@ func (mpv *MPV) SetCmd(cmd []interface{}) ([]byte, error) {
  */
 func (mpv *MPV) Play() error {
 	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"set_property", "pause", false}),
+		mpv.SetCmd([]any{"set_property", "pause", false}),
 	)
 }
 
 func (mpv *MPV) Pause() error {
 	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"set_property", "pause", true}),
+		mpv.SetCmd([]any{"set_property", "pause", true}),
 	)
 }
 
@@ -144,11 +144,11 @@ func (mpv *MPV) GetNowPlaying() ([]PlaylistEntry, error) {
 func (mpv *MPV) SetNowPlaying(filepath string, playNext, playLast bool) error {
 	if playNext {
 		return processMPVSetResult(
-			mpv.SetCmd([]interface{}{"loadfile", filepath, "insert-next-play"}),
+			mpv.SetCmd([]any{"loadfile", filepath, "insert-next-play"}),
 		)
 	} else if playLast {
 		return processMPVSetResult(
-			mpv.SetCmd([]interface{}{"loadfile", filepath, "append-play"}),
+			mpv.SetCmd([]any{"loadfile", filepath, "append-play"}),
 		)
 	}
 	return errors.New("GetNowPlaying called incorrectly; need to specify a mode")
@@ -164,7 +164,7 @@ func (mpv *MPV) GetVol() (int, error) {
 
 func (mpv *MPV) SetVol(vol int) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"set_property", "volume", vol}),
+		mpv.SetCmd([]any{"set_property", "volume", vol}),
 	)
 }
 
@@ -187,7 +187,7 @@ func (mpv *MPV) GetTimeRemaining() (int, error) {
 
 func (mpv *MPV) SetPos(pos int) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"set_property", "time-pos", pos}),
+		mpv.SetCmd([]any{"set_property", "time-pos", pos}),
 	)
 }
 
@@ -197,16 +197,29 @@ func (mpv *MPV) GetTracks() ([]models.Track, error) {
 
 func (mpv *MPV) SetSubVisibility(visible bool) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"set_property", "sub-visibility", visible}),
+		mpv.SetCmd([]any{"set_property", "sub-visibility", visible}),
 	)
 }
 
 func (mpv *MPV) SetSubTrack(trackID int64) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]interface{}{"set_property", "sid", trackID}),
+		mpv.SetCmd([]any{"set_property", "sid", trackID}),
 	)
 }
 
 func (mpv *MPV) Ping() (int, error) {
 	return processMPVGetResult[int](mpv.GetCmd([]string{"get_property", "pid"}))
+}
+
+func (mpv *MPV) SetFilter(filter string) error {
+	filterCmd := ""
+	switch filter {
+	case "bw":
+		filterCmd = "lavfi=[format=gray]"
+	case "grainy":
+		filterCmd = "scale=480:trunc(ow/a/2)*2,setsar=1:1,eq=saturation=0.8,noise=alls=20:allf=t+u"
+	}
+	return processMPVSetResult(
+		mpv.SetCmd([]any{"set_property", "vf", filterCmd}),
+	)
 }
