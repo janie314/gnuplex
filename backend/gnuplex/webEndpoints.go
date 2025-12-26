@@ -77,6 +77,22 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			c.Status(http.StatusOK)
 		}
 	})
+	gnuplex.Router.POST("/api/playpause", func(c *gin.Context) {
+		if err := gnuplex.MPV.PlayPause(); err != nil {
+			log.Println("Error 3ce8b6d4-d6ff-4906-a7ff-84b1d404ab52: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
+	gnuplex.Router.POST("/api/skip", func(c *gin.Context) {
+		if err := gnuplex.MPV.Skip(); err != nil {
+			log.Println("Error e54c3719-7cbb-4a7a-8d98-6ad58c7411f9: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
 	gnuplex.Router.GET("/api/nowplaying", func(c *gin.Context) {
 		media, err := gnuplex.GetNowPlaying()
 		if err != nil {

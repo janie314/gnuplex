@@ -41,6 +41,14 @@ class API {
     return await fetch("/api/pause", { method: "POST" });
   }
 
+  public static async playpause() {
+    return await fetch("/api/playpause", { method: "POST" });
+  }
+
+  public static async skip() {
+    return await fetch("/api/skip", { method: "POST" });
+  }
+
   public static async getPos(): Promise<number> {
     return await fetch("/api/pos").then((res) => res.json());
   }

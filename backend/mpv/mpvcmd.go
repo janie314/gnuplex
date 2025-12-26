@@ -7,6 +7,7 @@ import (
 	"gnuplex/models"
 	"log"
 	"strings"
+	"time"
 )
 
 /*
@@ -35,6 +36,7 @@ type MPVResponseInt struct {
 type PlaylistEntry struct {
 	Filename string `json:"filename"`
 	Id       int    `json:"id"`
+	Current  bool   `json:"current"`
 }
 
 type MPVGetResult[T bool | string | int | float64 | []models.Track | []PlaylistEntry] struct {
@@ -133,12 +135,40 @@ func (mpv *MPV) Pause() error {
 	)
 }
 
+func (mpv *MPV) PlayPause() error {
+	return processMPVSetResult(
+		mpv.SetCmd([]any{"cycle", "pause"}),
+	)
+}
+
+func (mpv *MPV) Skip() error {
+	if err := processMPVSetResult(
+		mpv.SetCmd([]any{"playlist-next"}),
+	); err != nil {
+		return err
+	}
+	time.Sleep(10 * time.Millisecond)
+	for {
+		if playlist, err := mpv.GetNowPlaying(); err != nil {
+			return err
+		} else if len(playlist) == 0 || playlist[0].Current {
+			return nil
+		} else if err := mpv.DeletePlaylistEntry(0); err != nil {
+			return err
+		}
+	}
+}
+
 func (mpv *MPV) GetPaused() (bool, error) {
 	return processMPVGetResult[bool](mpv.GetCmd([]string{"get_property", "pause"}))
 }
 
 func (mpv *MPV) GetNowPlaying() ([]PlaylistEntry, error) {
 	return processMPVGetResult[[]PlaylistEntry](mpv.GetCmd([]string{"get_property", "playlist"}))
+}
+
+func (mpv *MPV) DeletePlaylistEntry(id int) error {
+	return processMPVSetResult(mpv.SetCmd([]any{"playlist-remove", id}))
 }
 
 func (mpv *MPV) SetNowPlaying(filepath string, playNext, playLast bool) error {
