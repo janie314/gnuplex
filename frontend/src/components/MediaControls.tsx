@@ -20,6 +20,7 @@ function MediaControls(props: {
   setVol: React.Dispatch<React.SetStateAction<number>>;
   subs: SubTrack[] | null;
   dummyAudio: React.RefObject<HTMLAudioElement | null>;
+  skipHook: () => void;
 }) {
   const [posInputPopup, setPosInputPopup] = useState(false);
   const [volInputPopup, setVolInputPopup] = useState(false);
@@ -49,6 +50,7 @@ function MediaControls(props: {
           className="p-2 w-8 btn-standard"
           onClick={() => {
             API.skip();
+            props.skipHook();
           }}
         >
           <img src={skip} alt="Skip icon" />

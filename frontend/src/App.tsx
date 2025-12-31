@@ -195,6 +195,7 @@ function App() {
             timeRemaining={timeRemaining}
             subs={subs}
             dummyAudio={dummyAudio}
+            skipHook={() => setPos(0)}
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
