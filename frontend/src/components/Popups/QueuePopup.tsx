@@ -4,11 +4,12 @@ import { API, type MediaItem } from "../../lib/API";
 function QueuePopup(props: {
   visible: boolean;
   mediaItem: MediaItem | null;
+  queueIndex?: number | null;
   setQueueingTargetMediaItem: React.Dispatch<
     React.SetStateAction<MediaItem | null>
   >;
+  setQueueIndex: React.Dispatch<React.SetStateAction<number | null>>;
   closeHook: () => void;
-  includeQueueDeleteButton: boolean;
 }) {
   if (props.visible) {
     return (
@@ -25,6 +26,22 @@ function QueuePopup(props: {
               props.setQueueingTargetMediaItem(null);
             }}
           />
+
+          {props.queueIndex !== null && props.queueIndex !== undefined ? (
+            <input
+              type="button"
+              value="Remove from Queue"
+              className="btn-standard m-1 min-w-[11ch]"
+              onClick={() => {
+                if (props.mediaItem && props.queueIndex) {
+                  API.deleteQueueEntry(props.queueIndex);
+                  props.setQueueIndex(null);
+                }
+                props.setQueueingTargetMediaItem(null);
+              }}
+            />
+          ) : null}
+
           <input
             type="button"
             value="Queue Next"

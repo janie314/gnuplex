@@ -3,9 +3,11 @@ import { useLongPress } from "../../lib/useLongPress";
 
 function MediaItemButton(props: {
   mediaItem: MediaItem;
+  queueIndex?: number;
   setQueueingTargetMediaItem: React.Dispatch<
     React.SetStateAction<MediaItem | null>
   >;
+  setQueueIndex?: React.Dispatch<React.SetStateAction<number | null>>;
 }) {
   const longPressHandlers = useLongPress({
     onShortClick: () => {
@@ -13,6 +15,9 @@ function MediaItemButton(props: {
     },
     onLongPress: () => {
       props.setQueueingTargetMediaItem(props.mediaItem);
+      if (props.setQueueIndex && props.queueIndex) {
+        props.setQueueIndex(props.queueIndex);
+      }
     },
   });
 
