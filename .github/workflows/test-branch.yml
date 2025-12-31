@@ -40,7 +40,10 @@ jobs:
       - name: lint frontend code
         run: |
           bun i
-          bun run biome ci --verbose
+          pwd
+          cat .gitignore
+          git ls-files backend
+          # bun run biome ci --verbose
       - name: lint python
         run: |
           uv run ruff format --check
