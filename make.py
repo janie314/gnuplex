@@ -1,3 +1,4 @@
+import glob
 import hashlib
 import os
 import signal
@@ -37,8 +38,18 @@ def run(cmd, **kwargs):
         os.exit(res.returncode)
 
 
+def remove_sockets():
+    """Clean up stale mpv socket files from /tmp"""
+    for socket in glob.glob("/tmp/mpvsocket-*"):
+        try:
+            os.remove(socket)
+        except OSError as e:
+            print(f"Failed to remove {socket}: {e}")
+
+
 def dev():
     """Run a local development server (with hot frontend reloading)"""
+    remove_sockets()
     run("bun i --cwd frontend")
     os.makedirs("tmp", exist_ok=True)
     procs = [
@@ -62,6 +73,7 @@ def dev():
 
 def dev_compiled():
     """Run a local development server against a compiled frontend/backend"""
+    remove_sockets()
     os.makedirs("tmp", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
