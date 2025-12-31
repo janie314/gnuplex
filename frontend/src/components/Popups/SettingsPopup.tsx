@@ -1,5 +1,5 @@
 import "./Popup.css";
-import { API } from "../lib/API";
+import { API } from "../../lib/API";
 
 function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
   if (props.visible) {

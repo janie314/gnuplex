@@ -328,4 +328,23 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		}
 		c.Status(http.StatusOK)
 	})
+	gnuplex.Router.DELETE("/api/queue_entry", func(c *gin.Context) {
+		queueIndex := -1
+		if err := c.ShouldBindBodyWithJSON(&queueIndex); err != nil {
+			log.Println("Error b155c4cb-fdc1-4a0f-b812-9fb8cb42ba89: ,", err)
+			c.String(http.StatusBadRequest, "bad body format")
+			return
+		}
+		if queueIndex < 0 {
+			log.Println("/api/queue_entry: negative index passed", queueIndex)
+			c.String(http.StatusBadRequest, "negative index passed")
+			return
+		}
+		if err := gnuplex.MPV.DeleteQueueEntry(queueIndex); err != nil {
+			log.Println("Error c29d1263-5c40-4909-bbbb-d5772c34f2ce: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+		c.Status(http.StatusOK)
+	})
 }
