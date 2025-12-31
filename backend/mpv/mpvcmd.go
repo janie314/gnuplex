@@ -123,7 +123,7 @@ func (mpv *MPV) setCmd(cmd []interface{}) ([]byte, error) {
 	return mpv.unixMsg(jsonData)
 }
 
-func (mpv *MPV) deletePlaylistEntry(id int) error {
+func (mpv *MPV) DeleteQueueEntry(id int) error {
 	return processMPVSetResult(mpv.setCmd([]any{"playlist-remove", id}))
 }
 
@@ -170,7 +170,7 @@ func (mpv *MPV) Skip() error {
 	if err != nil {
 		return err
 	}
-	return mpv.deletePlaylistEntry(0)
+	return mpv.DeleteQueueEntry(0)
 }
 
 func (mpv *MPV) GetPaused() (bool, error) {

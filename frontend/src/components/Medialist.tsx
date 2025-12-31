@@ -11,6 +11,7 @@ function Medialist(props: {
   setQueueingTargetMediaItem: React.Dispatch<
     React.SetStateAction<MediaItem | null>
   >;
+  setQueueIndex?: React.Dispatch<React.SetStateAction<number | null>>;
 }) {
   if (props.mediaItems.length === 0 || props.mediaItems[0] === null) {
     return null;
@@ -28,11 +29,13 @@ function Medialist(props: {
       </div>
       {props.mediaItems
         .filter((mediaItem) => mediaItem !== null)
-        .map((mediaItem, _i: number) => (
+        .map((mediaItem, i: number) => (
           <MediaItemButton
             key={`mediaitem-${mediaItem.Path}`}
             mediaItem={mediaItem}
             setQueueingTargetMediaItem={props.setQueueingTargetMediaItem}
+            queueIndex={i}
+            setQueueIndex={props.setQueueIndex}
           />
         ))}
     </div>

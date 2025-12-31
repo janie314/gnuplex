@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import "./Popup.css";
-import { API } from "../lib/API";
+import { API } from "../../lib/API";
 import {
   secondsToTimeComponents,
   timeComponentsToSeconds,
-} from "../lib/Helpers";
+} from "../../lib/Helpers";
 
 function PosInputPopup(props: {
   visible: boolean;

@@ -3,9 +3,9 @@ import playpause from "../assets/playpause.svg";
 import skip from "../assets/skip.svg";
 import { API, type SubTrack } from "../lib/API";
 import { secondsToTimeComponents } from "../lib/Helpers";
-import { PosInputPopup } from "./PosInputPopup";
+import { PosInputPopup } from "./Popups/PosInputPopup";
+import { VolInputPopup } from "./Popups/VolInputPopup";
 import { SubSelector } from "./SubSelector";
-import { VolInputPopup } from "./VolInputPopup";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;

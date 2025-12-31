@@ -179,6 +179,14 @@ class API {
       body: JSON.stringify({ filter }),
     });
   }
+
+  public static async deleteQueueEntry(queue_index: number) {
+    return await fetch("/api/queue_entry", {
+      method: "DELETE",
+      headers,
+      body: JSON.stringify(queue_index),
+    });
+  }
 }
 
 export { type MediaDir, type MediaItem, type SubTrack, API };

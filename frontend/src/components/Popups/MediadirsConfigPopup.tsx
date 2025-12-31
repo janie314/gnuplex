@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { API } from "../lib/API";
+import { API } from "../../lib/API";
 import "./Popup.css";
-import { WorkingSpinnerTSX } from "./WorkingSpinner";
+import { WorkingSpinnerTSX } from "../WorkingSpinner";
 
 function MediadirsConfigPopup(props: {
   visible: boolean;
