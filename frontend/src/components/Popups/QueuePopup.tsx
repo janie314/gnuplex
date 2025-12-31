@@ -1,5 +1,5 @@
 import "./Popup.css";
-import { API, type MediaItem } from "../lib/API";
+import { API, type MediaItem } from "../../lib/API";
 
 function QueuePopup(props: {
   visible: boolean;
@@ -8,6 +8,7 @@ function QueuePopup(props: {
     React.SetStateAction<MediaItem | null>
   >;
   closeHook: () => void;
+  includeQueueDeleteButton: boolean;
 }) {
   if (props.visible) {
     return (
