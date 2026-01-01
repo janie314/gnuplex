@@ -249,9 +249,10 @@ function App() {
         mediaItem={queueingTargetMediaItem}
         queueIndex={queueIndex}
         setQueueingTargetMediaItem={setQueueingTargetMediaItem}
-        setQueueIndex={setQueueIndex}
+        setPos={setPos}
         closeHook={() => {
           refreshMediaItems();
+          setQueueingTargetMediaItem(null);
           setQueueIndex(null);
         }}
       />{" "}

@@ -124,6 +124,9 @@ func (mpv *MPV) setCmd(cmd []interface{}) ([]byte, error) {
 }
 
 func (mpv *MPV) DeleteQueueEntry(id int) error {
+	if err := mpv.saveLastWatched(); err != nil {
+		return err
+	}
 	return processMPVSetResult(mpv.setCmd([]any{"playlist-remove", id}))
 }
 
