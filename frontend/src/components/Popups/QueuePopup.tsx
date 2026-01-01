@@ -8,7 +8,7 @@ function QueuePopup(props: {
   setQueueingTargetMediaItem: React.Dispatch<
     React.SetStateAction<MediaItem | null>
   >;
-  setQueueIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  setPos: React.Dispatch<React.SetStateAction<number>>;
   closeHook: () => void;
 }) {
   if (props.visible) {
@@ -23,7 +23,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
               }
-              props.setQueueingTargetMediaItem(null);
+              props.closeHook();
             }}
           />
 
@@ -33,11 +33,15 @@ function QueuePopup(props: {
               value="Remove from Queue"
               className="btn-standard m-1 min-w-[11ch]"
               onClick={() => {
-                if (props.mediaItem && props.queueIndex) {
+                if (
+                  props.mediaItem &&
+                  props.queueIndex !== null &&
+                  props.queueIndex !== undefined
+                ) {
                   API.deleteQueueEntry(props.queueIndex);
-                  props.setQueueIndex(null);
+                  props.setPos(0);
                 }
-                props.setQueueingTargetMediaItem(null);
+                props.closeHook();
               }}
             />
           ) : null}
@@ -50,7 +54,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
               }
-              props.setQueueingTargetMediaItem(null);
+              props.closeHook();
             }}
           />
           <input
@@ -61,7 +65,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, false, true);
               }
-              props.setQueueingTargetMediaItem(null);
+              props.closeHook();
             }}
           />
           <input
@@ -70,7 +74,6 @@ function QueuePopup(props: {
             className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               props.closeHook();
-              props.setQueueingTargetMediaItem(null);
             }}
           />
         </div>
