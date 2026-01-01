@@ -15,7 +15,7 @@ function MediaItemButton(props: {
     },
     onLongPress: () => {
       props.setQueueingTargetMediaItem(props.mediaItem);
-      if (props.setQueueIndex && props.queueIndex) {
+      if (props.setQueueIndex !== undefined && props.queueIndex !== undefined) {
         props.setQueueIndex(props.queueIndex);
       }
     },
