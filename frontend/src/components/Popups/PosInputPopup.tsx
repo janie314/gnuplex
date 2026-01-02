@@ -41,40 +41,43 @@ function PosInputPopup(props: {
           <span className="header mr-1">Position</span>
           <div className="flex gap-1">
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="bg-cyan-800 text-slate-100 border border-black text-sm font-mono font-bold p-1 w-16"
-              value={hours}
-              min={0}
+              value={String(hours).padStart(2, "0")}
               onChange={(e) => {
-                setHours(Math.max(0, e.target.valueAsNumber || 0));
+                const v = e.target.value.replace(/\D/g, "");
+                const n = v === "" ? 0 : parseInt(v, 10);
+                setHours(Math.max(0, n));
               }}
               title="Hours"
             />
             <span className="header">:</span>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="bg-cyan-800 text-slate-100 border border-black text-sm font-mono font-bold p-1 w-16"
-              value={minutes}
-              min={0}
-              max={59}
+              value={String(minutes).padStart(2, "0")}
               onChange={(e) => {
-                setMinutes(
-                  Math.min(59, Math.max(0, e.target.valueAsNumber || 0)),
-                );
+                const v = e.target.value.replace(/\D/g, "");
+                const n = v === "" ? 0 : parseInt(v, 10);
+                setMinutes(Math.min(59, Math.max(0, n)));
               }}
               title="Minutes"
             />
             <span className="header">:</span>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               className="bg-cyan-800 text-slate-100 border border-black text-sm font-mono font-bold p-1 w-16"
-              value={seconds}
-              min={0}
-              max={59}
+              value={String(seconds).padStart(2, "0")}
               onChange={(e) => {
-                setSeconds(
-                  Math.min(59, Math.max(0, e.target.valueAsNumber || 0)),
-                );
+                const v = e.target.value.replace(/\D/g, "");
+                const n = v === "" ? 0 : parseInt(v, 10);
+                setSeconds(Math.min(59, Math.max(0, n)));
               }}
               title="Seconds"
             />

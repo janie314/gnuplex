@@ -45,6 +45,22 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
             onClick={() => {
               API.setFilter("sepia");
             }}
+          />{" "}
+          <input
+            type="button"
+            value="Psychedelic Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("psychedelic");
+            }}
+          />
+          <input
+            type="button"
+            value="Tron Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("tron");
+            }}
           />
           <input
             type="button"

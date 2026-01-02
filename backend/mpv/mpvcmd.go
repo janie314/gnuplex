@@ -267,6 +267,10 @@ func (mpv *MPV) SetFilter(filter string) error {
 		filterCmd = "lavfi=[scale=iw/20:-1,scale=iw*20:-1:flags=neighbor]"
 	case "sepia":
 		filterCmd = "lavfi=[colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131,eq=contrast=1.1:brightness=-0.02]"
+	case "psychedelic":
+		filterCmd = "lavfi=[lagfun=decay=0.95]"
+	case "tron":
+		filterCmd = "lavfi=[edgedetect=low=0.1:high=0.4]"
 	}
 	return processMPVSetResult(
 		mpv.setCmd([]any{"set_property", "vf", filterCmd}),
