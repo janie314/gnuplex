@@ -42,12 +42,20 @@ function useLongPress({
     isLongPressRef.current = false;
   }, []);
 
+  const handleTouchMove = useCallback(() => {
+    if (timeoutRef.current && !isLongPressRef.current) {
+      clearTimeout(timeoutRef.current);
+      isLongPressRef.current = false;
+    }
+  }, []);
+
   return {
     onMouseDown: handleMouseDown,
     onMouseUp: handleMouseUp,
     onMouseLeave: handleMouseLeave,
     onTouchStart: handleMouseDown,
     onTouchEnd: handleMouseUp,
+    onTouchMove: handleTouchMove,
   };
 }
 
