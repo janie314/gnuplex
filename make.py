@@ -77,9 +77,7 @@ def dev_compiled():
     os.makedirs("tmp", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run --config Caddyfile-compiled", shell=True),
-        subprocess.Popen(
-            "./backend/bin/gnuplex -verbose -static_files ./backend/static -config_dir ./backend/mpv_config", shell=True
-        ),
+        subprocess.Popen("./backend/bin/gnuplex -verbose -static_files ./backend/static -config_dir ./backend/mpv_config", shell=True),
     ]
 
     def cleanup(signum, frame):
@@ -104,21 +102,12 @@ def frontend_build():
 def go_build():
     """Build the Go backend"""
     target = os.environ.get("TARGET", "bin/gnuplex")
-    run(
-        f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} '
-        + f"-X main.Platform={platform()} "
-        + f"-X main.GoVersion={go_version()} "
-        + '" .'
-    )
+    run(f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} ' + f"-X main.Platform={platform()} " + f"-X main.GoVersion={go_version()} " + '" .')
 
 
 def go_build_ci():
     """Build the Go backend (used by CI)"""
-    run(
-        "go build -C backend -o /tmp/gnuplex"
-        + f' -ldflags "-X main.SourceHash={source_hash()}'
-        + f' -X main.Platform={platform()}" .'
-    )
+    run("go build -C backend -o /tmp/gnuplex" + f' -ldflags "-X main.SourceHash={source_hash()}' + f' -X main.Platform={platform()}" .')
 
 
 def build():
@@ -136,6 +125,25 @@ def bump_version():
     """Bump the version of this repo"""
     ver = str(int(time.time()))
     run('sed -E -i -e "s/Version = \\"[0-9]+\\"/Version = \\"' + ver + '\\"/" backend/consts/version.go')
+
+
+def set_go_version():
+    """Set the Go version across all configuration files"""
+    if len(sys.argv) < 3:
+        print("Usage: python make.py set_go_version <version>")
+        print("Example: python make.py set_go_version 1.26.0")
+        sys.exit(1)
+
+    version = sys.argv[2]
+
+    # Update .github/workflows/release-linux-glibc-x86_64.yml
+    run(f'sed -E -i -e "s/go-version: \\"\\^[0-9]+\\.[0-9]+\\.[0-9]+\\"/go-version: \\"^{version}\\"/" .github/workflows/release-linux-glibc-x86_64.yml')
+
+    # Update .github/workflows/test-branch.yml
+    run(f'sed -E -i -e "s/go-version: \\"\\^[0-9]+\\.[0-9]+\\.[0-9]+\\"/go-version: \\"^{version}\\"/" .github/workflows/test-branch.yml')
+
+    # Update backend/go.mod
+    run(f'sed -E -i -e "s/^go [0-9]+\\.[0-9]+\\.[0-9]+$/go {version}/" backend/go.mod')
 
 
 def fmt():
@@ -158,6 +166,7 @@ TASKS = {
     "go_source_hash": go_source_hash,
     "fmt": fmt,
     "bump_version": bump_version,
+    "set_go_version": set_go_version,
 }
 
 
