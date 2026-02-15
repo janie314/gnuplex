@@ -1,0 +1,8 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "/^uv run make\\.py.*$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
+}
