@@ -1,3 +1,4 @@
+import type React from "react";
 import { useCallback, useRef } from "react";
 
 interface UseLongPressOptions {
@@ -19,28 +20,34 @@ function useLongPress({
   const movedRef = useRef(false);
   const MOVE_THRESHOLD = 10; // pixels
 
-  const handleMouseDown = useCallback(() => {
-    isLongPressRef.current = false;
+  const handleMouseDown = useCallback(
+    (e?: React.MouseEvent) => {
+      isLongPressRef.current = false;
 
-    timeoutRef.current = setTimeout(() => {
-      isLongPressRef.current = true;
-      onLongPress();
-    }, duration);
-  }, [duration, onLongPress]);
+      timeoutRef.current = setTimeout(() => {
+        isLongPressRef.current = true;
+        onLongPress();
+      }, duration);
+    },
+    [duration, onLongPress],
+  );
 
-  const handleMouseUp = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+  const handleMouseUp = useCallback(
+    (e?: React.MouseEvent) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    if (!isLongPressRef.current) {
-      onShortClick();
-    }
+      if (!isLongPressRef.current) {
+        onShortClick();
+      }
 
-    isLongPressRef.current = false;
-  }, [onShortClick]);
+      isLongPressRef.current = false;
+    },
+    [onShortClick],
+  );
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = useCallback((e?: React.MouseEvent) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -48,10 +55,10 @@ function useLongPress({
   }, []);
 
   const handleTouchStart = useCallback(
-    (e: TouchEvent) => {
+    (e: React.TouchEvent) => {
       if (!e.touches || e.touches.length === 0) return;
       // track the first touch only
-      const t = e.touches[0];
+      const t = e.touches[0] as Touch;
       touchId.current = t.identifier;
       startX.current = t.clientX;
       startY.current = t.clientY;
@@ -69,10 +76,10 @@ function useLongPress({
     [duration, onLongPress],
   );
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!touchId.current) return;
     for (let i = 0; i < e.touches.length; i++) {
-      const t = e.touches[i];
+      const t = e.touches[i] as Touch;
       if (t.identifier === touchId.current) {
         const dx = Math.abs((startX.current ?? 0) - t.clientX);
         const dy = Math.abs((startY.current ?? 0) - t.clientY);
@@ -88,24 +95,27 @@ function useLongPress({
     }
   }, []);
 
-  const handleTouchEnd = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+  const handleTouchEnd = useCallback(
+    (e?: React.TouchEvent) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    // if movement cancelled the long press, don't trigger short click
-    if (!isLongPressRef.current && !movedRef.current) {
-      onShortClick();
-    }
+      // if movement cancelled the long press, don't trigger short click
+      if (!isLongPressRef.current && !movedRef.current) {
+        onShortClick();
+      }
 
-    isLongPressRef.current = false;
-    touchId.current = null;
-    startX.current = null;
-    startY.current = null;
-    movedRef.current = false;
-  }, [onShortClick]);
+      isLongPressRef.current = false;
+      touchId.current = null;
+      startX.current = null;
+      startY.current = null;
+      movedRef.current = false;
+    },
+    [onShortClick],
+  );
 
-  const handleTouchCancel = useCallback(() => {
+  const handleTouchCancel = useCallback((e?: React.TouchEvent) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -124,7 +134,7 @@ function useLongPress({
     onTouchMove: handleTouchMove,
     onTouchEnd: handleTouchEnd,
     onTouchCancel: handleTouchCancel,
-  };
+  } as React.HTMLAttributes<HTMLInputElement>;
 }
 
 export { useLongPress };
