@@ -13,6 +13,7 @@ function useLongPress({
 }: UseLongPressOptions) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPressRef = useRef(false);
+  const isTouchRef = useRef(false);
 
   const handleMouseDown = useCallback(() => {
     isLongPressRef.current = false;
@@ -33,6 +34,7 @@ function useLongPress({
     }
 
     isLongPressRef.current = false;
+    isTouchRef.current = false;
   }, [onShortClick]);
 
   const handleMouseLeave = useCallback(() => {
@@ -42,12 +44,51 @@ function useLongPress({
     isLongPressRef.current = false;
   }, []);
 
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      isTouchRef.current = true;
+      isLongPressRef.current = false;
+
+      timeoutRef.current = setTimeout(() => {
+        isLongPressRef.current = true;
+        onLongPress();
+      }, duration);
+    },
+    [duration, onLongPress],
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      if (!isLongPressRef.current && isTouchRef.current) {
+        e.preventDefault();
+        onShortClick();
+      }
+
+      isLongPressRef.current = false;
+      isTouchRef.current = false;
+    },
+    [onShortClick],
+  );
+
+  const handleTouchCancel = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    isLongPressRef.current = false;
+    isTouchRef.current = false;
+  }, []);
+
   return {
     onMouseDown: handleMouseDown,
     onMouseUp: handleMouseUp,
     onMouseLeave: handleMouseLeave,
-    onTouchStart: handleMouseDown,
-    onTouchEnd: handleMouseUp,
+    onTouchStart: handleTouchStart,
+    onTouchEnd: handleTouchEnd,
+    onTouchCancel: handleTouchCancel,
   };
 }
 
