@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup docker
-        uses: docker/setup-docker-action@v4
+        uses: docker/setup-docker-action@v5
       - name: create alpine build
         run: |
           docker run -v $(realpath .github/workflows):/mnt/build:z alpine:3 sh /mnt/build/build_and_publish_alpine.sh "${{ secrets.GNUPLEX_DEPLOY }}" "$(cat backend/go.mod | grep '^go' | tr -d ' ')"
