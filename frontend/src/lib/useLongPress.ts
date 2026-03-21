@@ -96,8 +96,8 @@ function useLongPress({
       if (actionResetTimeout) {
         clearTimeout(actionResetTimeout);
         actionResetTimeout = null;
+        actionTaken = false;
       }
-      actionTaken = false;
 
       const t = e.touches[0] as Touch;
       touchId.current = t.identifier;
