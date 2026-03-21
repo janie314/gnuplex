@@ -48,7 +48,7 @@ function useLongPress({
   );
 
   const handleMouseDown = useCallback(
-    (e?: React.MouseEvent) => {
+    (_e?: React.MouseEvent) => {
       isLongPressRef.current = false;
 
       timeoutRef.current = setTimeout(() => {
@@ -60,7 +60,7 @@ function useLongPress({
   );
 
   const handleMouseUp = useCallback(
-    (e?: React.MouseEvent) => {
+    (_e?: React.MouseEvent) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -74,7 +74,7 @@ function useLongPress({
     [scheduleAction],
   );
 
-  const handleMouseLeave = useCallback((e?: React.MouseEvent) => {
+  const handleMouseLeave = useCallback((_e?: React.MouseEvent) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -136,7 +136,7 @@ function useLongPress({
   }, []);
 
   const handleTouchEnd = useCallback(
-    (e?: React.TouchEvent) => {
+    (_e?: React.TouchEvent) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -155,7 +155,7 @@ function useLongPress({
     [scheduleAction],
   );
 
-  const handleTouchCancel = useCallback((e?: React.TouchEvent) => {
+  const handleTouchCancel = useCallback((_e?: React.TouchEvent) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }

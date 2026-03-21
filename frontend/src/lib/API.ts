@@ -189,4 +189,4 @@ class API {
   }
 }
 
-export { type MediaDir, type MediaItem, type SubTrack, API };
+export type { API, MediaDir, MediaItem, SubTrack };
