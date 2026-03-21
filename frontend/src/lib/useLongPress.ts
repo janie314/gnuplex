@@ -7,6 +7,9 @@ interface UseLongPressOptions {
   duration?: number;
 }
 
+let lastTouchedElement: HTMLElement | null = null;
+let touchActive = false;
+
 function useLongPress({
   onShortClick,
   onLongPress,
@@ -18,7 +21,7 @@ function useLongPress({
   const startY = useRef<number | null>(null);
   const touchId = useRef<number | null>(null);
   const movedRef = useRef(false);
-  const MOVE_THRESHOLD = 10; // pixels
+  const MOVE_THRESHOLD = 10;
 
   const handleMouseDown = useCallback(
     (e?: React.MouseEvent) => {
@@ -57,7 +60,15 @@ function useLongPress({
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (!e.touches || e.touches.length === 0) return;
-      // track the first touch only
+
+      const target = e.currentTarget as HTMLElement;
+      const isNetNewTouch = lastTouchedElement !== target || !touchActive;
+
+      if (!isNetNewTouch) return;
+
+      lastTouchedElement = target;
+      touchActive = true;
+
       const t = e.touches[0] as Touch;
       touchId.current = t.identifier;
       startX.current = t.clientX;
@@ -65,8 +76,7 @@ function useLongPress({
       movedRef.current = false;
       isLongPressRef.current = false;
 
-      // make touch slightly less sensitive: allow a longer duration
-      const touchDuration = Math.max(duration, 600);
+      const touchDuration = Math.max(duration, 700);
 
       timeoutRef.current = setTimeout(() => {
         isLongPressRef.current = true;
@@ -101,7 +111,6 @@ function useLongPress({
         clearTimeout(timeoutRef.current);
       }
 
-      // if movement cancelled the long press, don't trigger short click
       if (!isLongPressRef.current && !movedRef.current) {
         onShortClick();
       }
@@ -111,6 +120,7 @@ function useLongPress({
       startX.current = null;
       startY.current = null;
       movedRef.current = false;
+      touchActive = false;
     },
     [onShortClick],
   );
@@ -124,6 +134,7 @@ function useLongPress({
     startX.current = null;
     startY.current = null;
     movedRef.current = false;
+    touchActive = false;
   }, []);
 
   return {
