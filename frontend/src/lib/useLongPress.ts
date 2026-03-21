@@ -9,9 +9,8 @@ interface UseLongPressOptions {
 
 let lastTouchedElement: HTMLElement | null = null;
 let touchActive = false;
-let touchTriggered = false;
-let touchEndedRecently = false;
-let touchResetTimeout: ReturnType<typeof setTimeout> | null = null;
+let actionTaken = false;
+let actionResetTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function useLongPress({
   onShortClick,
@@ -26,16 +25,38 @@ function useLongPress({
   const movedRef = useRef(false);
   const MOVE_THRESHOLD = 10;
 
+  const scheduleAction = useCallback(
+    (action: "short" | "long") => {
+      if (actionTaken) return;
+
+      actionTaken = true;
+      if (actionResetTimeout) {
+        clearTimeout(actionResetTimeout);
+      }
+      actionResetTimeout = setTimeout(() => {
+        actionTaken = false;
+        actionResetTimeout = null;
+      }, 2000);
+
+      if (action === "short") {
+        onShortClick();
+      } else {
+        onLongPress();
+      }
+    },
+    [onShortClick, onLongPress],
+  );
+
   const handleMouseDown = useCallback(
     (e?: React.MouseEvent) => {
       isLongPressRef.current = false;
 
       timeoutRef.current = setTimeout(() => {
         isLongPressRef.current = true;
-        onLongPress();
+        scheduleAction("long");
       }, duration);
     },
-    [duration, onLongPress],
+    [duration, scheduleAction],
   );
 
   const handleMouseUp = useCallback(
@@ -44,15 +65,13 @@ function useLongPress({
         clearTimeout(timeoutRef.current);
       }
 
-      if (!isLongPressRef.current && !touchTriggered && !touchEndedRecently) {
-        onShortClick();
+      if (!isLongPressRef.current) {
+        scheduleAction("short");
       }
 
       isLongPressRef.current = false;
-      touchTriggered = false;
-      touchEndedRecently = false;
     },
-    [onShortClick],
+    [scheduleAction],
   );
 
   const handleMouseLeave = useCallback((e?: React.MouseEvent) => {
@@ -60,8 +79,6 @@ function useLongPress({
       clearTimeout(timeoutRef.current);
     }
     isLongPressRef.current = false;
-    touchTriggered = false;
-    touchEndedRecently = false;
   }, []);
 
   const handleTouchStart = useCallback(
@@ -75,13 +92,12 @@ function useLongPress({
 
       lastTouchedElement = target;
       touchActive = true;
-      touchTriggered = true;
-      touchEndedRecently = false;
 
-      if (touchResetTimeout) {
-        clearTimeout(touchResetTimeout);
-        touchResetTimeout = null;
+      if (actionResetTimeout) {
+        clearTimeout(actionResetTimeout);
+        actionResetTimeout = null;
       }
+      actionTaken = false;
 
       const t = e.touches[0] as Touch;
       touchId.current = t.identifier;
@@ -94,10 +110,10 @@ function useLongPress({
 
       timeoutRef.current = setTimeout(() => {
         isLongPressRef.current = true;
-        onLongPress();
+        scheduleAction("long");
       }, touchDuration);
     },
-    [duration, onLongPress],
+    [duration, scheduleAction],
   );
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
@@ -126,7 +142,7 @@ function useLongPress({
       }
 
       if (!isLongPressRef.current && !movedRef.current) {
-        onShortClick();
+        scheduleAction("short");
       }
 
       isLongPressRef.current = false;
@@ -135,27 +151,13 @@ function useLongPress({
       startY.current = null;
       movedRef.current = false;
       touchActive = false;
-      touchEndedRecently = true;
-
-      if (touchResetTimeout) {
-        clearTimeout(touchResetTimeout);
-      }
-      touchResetTimeout = setTimeout(() => {
-        touchTriggered = false;
-        touchEndedRecently = false;
-        touchResetTimeout = null;
-      }, 500);
     },
-    [onShortClick],
+    [scheduleAction],
   );
 
   const handleTouchCancel = useCallback((e?: React.TouchEvent) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
-    }
-    if (touchResetTimeout) {
-      clearTimeout(touchResetTimeout);
-      touchResetTimeout = null;
     }
     isLongPressRef.current = false;
     touchId.current = null;
@@ -163,8 +165,7 @@ function useLongPress({
     startY.current = null;
     movedRef.current = false;
     touchActive = false;
-    touchTriggered = false;
-    touchEndedRecently = false;
+    actionTaken = false;
   }, []);
 
   return {
