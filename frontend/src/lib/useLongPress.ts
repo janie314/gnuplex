@@ -9,7 +9,9 @@ interface UseLongPressOptions {
 
 let lastTouchedElement: HTMLElement | null = null;
 let touchActive = false;
-let touchOccurred = false;
+let touchTriggered = false;
+let touchEndedRecently = false;
+let touchResetTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function useLongPress({
   onShortClick,
@@ -42,12 +44,13 @@ function useLongPress({
         clearTimeout(timeoutRef.current);
       }
 
-      if (!isLongPressRef.current && !touchOccurred) {
+      if (!isLongPressRef.current && !touchTriggered && !touchEndedRecently) {
         onShortClick();
       }
 
       isLongPressRef.current = false;
-      touchOccurred = false;
+      touchTriggered = false;
+      touchEndedRecently = false;
     },
     [onShortClick],
   );
@@ -57,7 +60,8 @@ function useLongPress({
       clearTimeout(timeoutRef.current);
     }
     isLongPressRef.current = false;
-    touchOccurred = false;
+    touchTriggered = false;
+    touchEndedRecently = false;
   }, []);
 
   const handleTouchStart = useCallback(
@@ -71,7 +75,13 @@ function useLongPress({
 
       lastTouchedElement = target;
       touchActive = true;
-      touchOccurred = true;
+      touchTriggered = true;
+      touchEndedRecently = false;
+
+      if (touchResetTimeout) {
+        clearTimeout(touchResetTimeout);
+        touchResetTimeout = null;
+      }
 
       const t = e.touches[0] as Touch;
       touchId.current = t.identifier;
@@ -125,7 +135,16 @@ function useLongPress({
       startY.current = null;
       movedRef.current = false;
       touchActive = false;
-      touchOccurred = false;
+      touchEndedRecently = true;
+
+      if (touchResetTimeout) {
+        clearTimeout(touchResetTimeout);
+      }
+      touchResetTimeout = setTimeout(() => {
+        touchTriggered = false;
+        touchEndedRecently = false;
+        touchResetTimeout = null;
+      }, 500);
     },
     [onShortClick],
   );
@@ -134,12 +153,18 @@ function useLongPress({
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
+    if (touchResetTimeout) {
+      clearTimeout(touchResetTimeout);
+      touchResetTimeout = null;
+    }
     isLongPressRef.current = false;
     touchId.current = null;
     startX.current = null;
     startY.current = null;
     movedRef.current = false;
     touchActive = false;
+    touchTriggered = false;
+    touchEndedRecently = false;
   }, []);
 
   return {
