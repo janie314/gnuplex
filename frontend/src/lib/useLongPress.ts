@@ -9,6 +9,7 @@ interface UseLongPressOptions {
 
 let lastTouchedElement: HTMLElement | null = null;
 let touchActive = false;
+let touchOccurred = false;
 
 function useLongPress({
   onShortClick,
@@ -41,11 +42,12 @@ function useLongPress({
         clearTimeout(timeoutRef.current);
       }
 
-      if (!isLongPressRef.current) {
+      if (!isLongPressRef.current && !touchOccurred) {
         onShortClick();
       }
 
       isLongPressRef.current = false;
+      touchOccurred = false;
     },
     [onShortClick],
   );
@@ -55,6 +57,7 @@ function useLongPress({
       clearTimeout(timeoutRef.current);
     }
     isLongPressRef.current = false;
+    touchOccurred = false;
   }, []);
 
   const handleTouchStart = useCallback(
@@ -68,6 +71,7 @@ function useLongPress({
 
       lastTouchedElement = target;
       touchActive = true;
+      touchOccurred = true;
 
       const t = e.touches[0] as Touch;
       touchId.current = t.identifier;
@@ -121,6 +125,7 @@ function useLongPress({
       startY.current = null;
       movedRef.current = false;
       touchActive = false;
+      touchOccurred = false;
     },
     [onShortClick],
   );
