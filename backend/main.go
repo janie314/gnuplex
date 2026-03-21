@@ -61,7 +61,7 @@ func main() {
 	// Main daemon setup
 	var wg sync.WaitGroup
 	wg.Add(1)
-	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform, GoVersion, exe)
+	server, err := server.Init(&wg, (!*prod) || (*verbose), *dbPath, *staticFiles, *port, SourceHash, Platform, GoVersion, exe, *mpvConfigDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -91,14 +91,14 @@ func main() {
 		log.Fatalln("2c007cd2-c363-44a5-81dd-6701a5487c9f Failed to initialize cron scheduler", err)
 	}
 	updateJob := job.NewFunctionJob(func(_ context.Context) (int, error) {
-		log.Println("running update job")
+		log.Println("Running update job")
 		paths, err := server.GetNowPlaying()
 		if err != nil {
 			log.Println("857034c0-a7db-4aa8-8cdf-00d0b6d811c2 Failed to retrive NowPlaying")
 			return 0, err
 		}
 		if len(paths) != 0 {
-			log.Println("Not updating; something is playing")
+			log.Println("a3b99261-331c-4484-a9fb-358b66f364f2 Not updating; something is playing")
 		}
 		upgraded, err := gnuplex.UpgradeGNUPlex(exe, false)
 		if err != nil {

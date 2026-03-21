@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Popup.css";
-import { API } from "../lib/API";
+import { API } from "../../lib/API";
 
 function CastPopup(props: {
   visible: boolean;

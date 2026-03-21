@@ -1,12 +1,14 @@
 import "./Popup.css";
-import { API, type MediaItem } from "../lib/API";
+import { API, type MediaItem } from "../../lib/API";
 
 function QueuePopup(props: {
   visible: boolean;
   mediaItem: MediaItem | null;
+  queueIndex?: number | null;
   setQueueingTargetMediaItem: React.Dispatch<
     React.SetStateAction<MediaItem | null>
   >;
+  setPos: React.Dispatch<React.SetStateAction<number>>;
   closeHook: () => void;
 }) {
   if (props.visible) {
@@ -21,9 +23,29 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
               }
-              props.setQueueingTargetMediaItem(null);
+              props.closeHook();
             }}
           />
+
+          {props.queueIndex !== null && props.queueIndex !== undefined ? (
+            <input
+              type="button"
+              value="Remove from Queue"
+              className="btn-standard m-1 min-w-[11ch]"
+              onClick={() => {
+                if (
+                  props.mediaItem &&
+                  props.queueIndex !== null &&
+                  props.queueIndex !== undefined
+                ) {
+                  API.deleteQueueEntry(props.queueIndex);
+                  props.setPos(0);
+                }
+                props.closeHook();
+              }}
+            />
+          ) : null}
+
           <input
             type="button"
             value="Queue Next"
@@ -32,7 +54,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, true, false);
               }
-              props.setQueueingTargetMediaItem(null);
+              props.closeHook();
             }}
           />
           <input
@@ -43,7 +65,7 @@ function QueuePopup(props: {
               if (props.mediaItem) {
                 API.playMedia(props.mediaItem, false, true);
               }
-              props.setQueueingTargetMediaItem(null);
+              props.closeHook();
             }}
           />
           <input
@@ -52,7 +74,6 @@ function QueuePopup(props: {
             className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               props.closeHook();
-              props.setQueueingTargetMediaItem(null);
             }}
           />
         </div>

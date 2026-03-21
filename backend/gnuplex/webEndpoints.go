@@ -77,6 +77,22 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			c.Status(http.StatusOK)
 		}
 	})
+	gnuplex.Router.POST("/api/playpause", func(c *gin.Context) {
+		if err := gnuplex.MPV.PlayPause(); err != nil {
+			log.Println("Error 3ce8b6d4-d6ff-4906-a7ff-84b1d404ab52: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
+	gnuplex.Router.POST("/api/skip", func(c *gin.Context) {
+		if err := gnuplex.MPV.Skip(); err != nil {
+			log.Println("Error e54c3719-7cbb-4a7a-8d98-6ad58c7411f9: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+		} else {
+			c.Status(http.StatusOK)
+		}
+	})
 	gnuplex.Router.GET("/api/nowplaying", func(c *gin.Context) {
 		media, err := gnuplex.GetNowPlaying()
 		if err != nil {
@@ -307,6 +323,25 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		}
 		if err := gnuplex.MPV.SetFilter(body.Filter); err != nil {
 			log.Println("Error 20e52d4e-a82c-4d42-b4b8-16dcde63daf4: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+		c.Status(http.StatusOK)
+	})
+	gnuplex.Router.DELETE("/api/queue_entry", func(c *gin.Context) {
+		queueIndex := -1
+		if err := c.ShouldBindBodyWithJSON(&queueIndex); err != nil {
+			log.Println("Error b155c4cb-fdc1-4a0f-b812-9fb8cb42ba89: ,", err)
+			c.String(http.StatusBadRequest, "bad body format")
+			return
+		}
+		if queueIndex < 0 {
+			log.Println("/api/queue_entry: negative index passed", queueIndex)
+			c.String(http.StatusBadRequest, "negative index passed")
+			return
+		}
+		if err := gnuplex.MPV.DeleteQueueEntry(queueIndex); err != nil {
+			log.Println("Error c29d1263-5c40-4909-bbbb-d5772c34f2ce: ,", err)
 			c.String(http.StatusInternalServerError, "some problem doing that")
 			return
 		}

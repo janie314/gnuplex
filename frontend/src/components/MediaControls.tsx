@@ -1,11 +1,11 @@
 import { useState } from "react";
-import pause from "../assets/pause.svg";
-import play from "../assets/play.svg";
+import playpause from "../assets/playpause.svg";
+import skip from "../assets/skip.svg";
 import { API, type SubTrack } from "../lib/API";
 import { secondsToTimeComponents } from "../lib/Helpers";
-import { PosInputPopup } from "./PosInputPopup";
+import { PosInputPopup } from "./Popups/PosInputPopup";
+import { VolInputPopup } from "./Popups/VolInputPopup";
 import { SubSelector } from "./SubSelector";
-import { VolInputPopup } from "./VolInputPopup";
 
 function MediaControls(props: {
   mediadirInputPopup: boolean;
@@ -20,6 +20,7 @@ function MediaControls(props: {
   setVol: React.Dispatch<React.SetStateAction<number>>;
   subs: SubTrack[] | null;
   dummyAudio: React.RefObject<HTMLAudioElement | null>;
+  skipHook: () => void;
 }) {
   const [posInputPopup, setPosInputPopup] = useState(false);
   const [volInputPopup, setVolInputPopup] = useState(false);
@@ -30,11 +31,17 @@ function MediaControls(props: {
           type="button"
           className="p-2 w-8 btn-standard"
           onClick={() => {
-            API.play();
-            props.dummyAudio.current?.play();
+            API.playpause();
+            if (props.dummyAudio.current) {
+              if (props.dummyAudio.current.paused) {
+                props.dummyAudio.current.play();
+              } else {
+                props.dummyAudio.current.pause();
+              }
+            }
           }}
         >
-          <img src={play} alt="Play icon" />
+          <img src={playpause} alt="Play/Pause icon" />
         </button>
       </div>
       <div className="mr-2">
@@ -42,11 +49,11 @@ function MediaControls(props: {
           type="button"
           className="p-2 w-8 btn-standard"
           onClick={() => {
-            API.pause();
-            props.dummyAudio.current?.pause();
+            API.skip();
+            props.skipHook();
           }}
         >
-          <img src={pause} alt="Pause icon" />
+          <img src={skip} alt="Skip icon" />
         </button>
       </div>
       <div className="flex flex-col max-w-sm grow p-1">

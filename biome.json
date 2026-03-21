@@ -36,5 +36,8 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
+  "files": {
+    "ignoreUnknown": true
+  },
   "overrides": [{}]
 }

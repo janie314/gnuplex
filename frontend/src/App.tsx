@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { API, type MediaItem, type SubTrack } from "./lib/API";
 import "./App.css";
-import { CastPopup } from "./components/CastPopup";
 import { MediaControls } from "./components/MediaControls";
-import { MediadirsConfigPopup } from "./components/MediadirsConfigPopup";
 import { Medialist } from "./components/Medialist";
-import { QueuePopup } from "./components/QueuePopup";
-import { SettingsPopup } from "./components/SettingsPopup";
+import { CastPopup } from "./components/Popups/CastPopup";
+import { MediadirsConfigPopup } from "./components/Popups/MediadirsConfigPopup";
+import { QueuePopup } from "./components/Popups/QueuePopup";
+import { SettingsPopup } from "./components/Popups/SettingsPopup";
 import { useDebounce } from "./lib/useDebounce";
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
   const [mediaItemCount, setMediaItemCount] = useState(0);
   const [queueingTargetMediaItem, setQueueingTargetMediaItem] =
     useState<MediaItem | null>(null);
+  const [queueIndex, setQueueIndex] = useState<number | null>(null);
   const [paginationOffset, setPaginationOffset] = useState(
     Number(new URLSearchParams(window.location.search).get("offset") || 0) /
       1000,
@@ -195,6 +196,7 @@ function App() {
             timeRemaining={timeRemaining}
             subs={subs}
             dummyAudio={dummyAudio}
+            skipHook={() => setPos(0)}
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
@@ -212,6 +214,7 @@ function App() {
             paginationOffset={null}
             setPaginationOffset={null}
             setQueueingTargetMediaItem={setQueueingTargetMediaItem}
+            setQueueIndex={setQueueIndex}
           />
           <Medialist
             mediaItems={last25}
@@ -244,9 +247,13 @@ function App() {
       <QueuePopup
         visible={queueingTargetMediaItem !== null}
         mediaItem={queueingTargetMediaItem}
+        queueIndex={queueIndex}
         setQueueingTargetMediaItem={setQueueingTargetMediaItem}
+        setPos={setPos}
         closeHook={() => {
           refreshMediaItems();
+          setQueueingTargetMediaItem(null);
+          setQueueIndex(null);
         }}
       />{" "}
       <SettingsPopup

@@ -1,5 +1,5 @@
 import "./Popup.css";
-import { API } from "../lib/API";
+import { API } from "../../lib/API";
 
 function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
   if (props.visible) {
@@ -44,6 +44,22 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
             className="btn-standard m-1 min-w-[11ch]"
             onClick={() => {
               API.setFilter("sepia");
+            }}
+          />{" "}
+          <input
+            type="button"
+            value="Psychedelic Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("psychedelic");
+            }}
+          />
+          <input
+            type="button"
+            value="Tron Filter"
+            className="btn-standard m-1 min-w-[11ch]"
+            onClick={() => {
+              API.setFilter("tron");
             }}
           />
           <input

@@ -35,6 +35,7 @@ type MPVResponseInt struct {
 type PlaylistEntry struct {
 	Filename string `json:"filename"`
 	Id       int    `json:"id"`
+	Current  bool   `json:"current"`
 }
 
 type MPVGetResult[T bool | string | int | float64 | []models.Track | []PlaylistEntry] struct {
@@ -47,6 +48,10 @@ type MPVSetResult struct {
 	RequestId int    `json:"request_id"`
 	Error     string `json:"error"`
 }
+
+/*
+ * MPV command private methods
+ */
 
 func processMPVGetResult[T bool | string | int | float64 | []models.Track | []PlaylistEntry](resBytes []byte, err error) (T, error) {
 	var defaultVal T
@@ -100,7 +105,7 @@ func (mpv *MPV) unixMsg(msg []byte) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func (mpv *MPV) GetCmd(cmd []string) ([]byte, error) {
+func (mpv *MPV) getCmd(cmd []string) ([]byte, error) {
 	query := MPVQueryString{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
@@ -109,7 +114,7 @@ func (mpv *MPV) GetCmd(cmd []string) ([]byte, error) {
 	return mpv.unixMsg(jsonData)
 }
 
-func (mpv *MPV) SetCmd(cmd []interface{}) ([]byte, error) {
+func (mpv *MPV) setCmd(cmd []interface{}) ([]byte, error) {
 	query := MPVQuery{Command: cmd}
 	jsonData, err := json.Marshal(query)
 	if err != nil {
@@ -118,44 +123,82 @@ func (mpv *MPV) SetCmd(cmd []interface{}) ([]byte, error) {
 	return mpv.unixMsg(jsonData)
 }
 
+func (mpv *MPV) DeleteQueueEntry(id int) error {
+	if err := mpv.saveLastWatched(); err != nil {
+		return err
+	}
+	return processMPVSetResult(mpv.setCmd([]any{"playlist-remove", id}))
+}
+
+func (mpv *MPV) saveLastWatched() error {
+	return processMPVSetResult(mpv.setCmd([]any{"write-watch-later-config"}))
+}
+
 /*
- * MPV command public fxns
+ * MPV command public methods
  */
 func (mpv *MPV) Play() error {
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "pause", false}),
+		mpv.setCmd([]any{"set_property", "pause", false}),
 	)
 }
 
 func (mpv *MPV) Pause() error {
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "pause", true}),
+		mpv.setCmd([]any{"set_property", "pause", true}),
 	)
 }
 
+func (mpv *MPV) PlayPause() error {
+	return processMPVSetResult(
+		mpv.setCmd([]any{"cycle", "pause"}),
+	)
+}
+
+func (mpv *MPV) Skip() error {
+	if err := mpv.saveLastWatched(); err != nil {
+		return err
+	}
+	playlist, err := mpv.GetNowPlaying()
+	if err != nil {
+		return err
+	}
+	if len(playlist) > 1 {
+		err = processMPVSetResult(mpv.setCmd([]any{"playlist-next"}))
+		if err != nil {
+			return err
+		}
+	}
+	playlist, err = mpv.GetNowPlaying()
+	if err != nil {
+		return err
+	}
+	return mpv.DeleteQueueEntry(0)
+}
+
 func (mpv *MPV) GetPaused() (bool, error) {
-	return processMPVGetResult[bool](mpv.GetCmd([]string{"get_property", "pause"}))
+	return processMPVGetResult[bool](mpv.getCmd([]string{"get_property", "pause"}))
 }
 
 func (mpv *MPV) GetNowPlaying() ([]PlaylistEntry, error) {
-	return processMPVGetResult[[]PlaylistEntry](mpv.GetCmd([]string{"get_property", "playlist"}))
+	return processMPVGetResult[[]PlaylistEntry](mpv.getCmd([]string{"get_property", "playlist"}))
 }
 
 func (mpv *MPV) SetNowPlaying(filepath string, playNext, playLast bool) error {
 	if playNext {
 		return processMPVSetResult(
-			mpv.SetCmd([]any{"loadfile", filepath, "insert-next-play"}),
+			mpv.setCmd([]any{"loadfile", filepath, "insert-next-play"}),
 		)
 	} else if playLast {
 		return processMPVSetResult(
-			mpv.SetCmd([]any{"loadfile", filepath, "append-play"}),
+			mpv.setCmd([]any{"loadfile", filepath, "append-play"}),
 		)
 	}
 	return errors.New("GetNowPlaying called incorrectly; need to specify a mode")
 }
 
 func (mpv *MPV) GetVol() (int, error) {
-	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "volume"}))
+	n, err := processMPVGetResult[float64](mpv.getCmd([]string{"get_property", "volume"}))
 	if err != nil {
 		return 0, err
 	}
@@ -164,12 +207,12 @@ func (mpv *MPV) GetVol() (int, error) {
 
 func (mpv *MPV) SetVol(vol int) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "volume", vol}),
+		mpv.setCmd([]any{"set_property", "volume", vol}),
 	)
 }
 
 func (mpv *MPV) GetPos() (int, error) {
-	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "time-pos"}))
+	n, err := processMPVGetResult[float64](mpv.getCmd([]string{"get_property", "time-pos"}))
 	if err != nil {
 		return 0, err
 	}
@@ -177,7 +220,7 @@ func (mpv *MPV) GetPos() (int, error) {
 }
 
 func (mpv *MPV) GetTimeRemaining() (int, error) {
-	n, err := processMPVGetResult[float64](mpv.GetCmd([]string{"get_property", "time-remaining"}))
+	n, err := processMPVGetResult[float64](mpv.getCmd([]string{"get_property", "time-remaining"}))
 	if err != nil {
 		return 0, err
 	}
@@ -187,28 +230,28 @@ func (mpv *MPV) GetTimeRemaining() (int, error) {
 
 func (mpv *MPV) SetPos(pos int) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "time-pos", pos}),
+		mpv.setCmd([]any{"set_property", "time-pos", pos}),
 	)
 }
 
 func (mpv *MPV) GetTracks() ([]models.Track, error) {
-	return processMPVGetResult[[]models.Track](mpv.GetCmd([]string{"get_property", "track-list"}))
+	return processMPVGetResult[[]models.Track](mpv.getCmd([]string{"get_property", "track-list"}))
 }
 
 func (mpv *MPV) SetSubVisibility(visible bool) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "sub-visibility", visible}),
+		mpv.setCmd([]any{"set_property", "sub-visibility", visible}),
 	)
 }
 
 func (mpv *MPV) SetSubTrack(trackID int64) error {
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "sid", trackID}),
+		mpv.setCmd([]any{"set_property", "sid", trackID}),
 	)
 }
 
 func (mpv *MPV) Ping() (int, error) {
-	return processMPVGetResult[int](mpv.GetCmd([]string{"get_property", "pid"}))
+	return processMPVGetResult[int](mpv.getCmd([]string{"get_property", "pid"}))
 }
 
 func (mpv *MPV) SetFilter(filter string) error {
@@ -224,8 +267,12 @@ func (mpv *MPV) SetFilter(filter string) error {
 		filterCmd = "lavfi=[scale=iw/20:-1,scale=iw*20:-1:flags=neighbor]"
 	case "sepia":
 		filterCmd = "lavfi=[colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131,eq=contrast=1.1:brightness=-0.02]"
+	case "psychedelic":
+		filterCmd = "lavfi=[lagfun=decay=0.95]"
+	case "tron":
+		filterCmd = "lavfi=[edgedetect=low=0.1:high=0.4]"
 	}
 	return processMPVSetResult(
-		mpv.SetCmd([]any{"set_property", "vf", filterCmd}),
+		mpv.setCmd([]any{"set_property", "vf", filterCmd}),
 	)
 }
