@@ -101,6 +101,7 @@ def go_source_hash():
 def go_version():
     return ".".join(subprocess.check_output("go version", shell=True).decode().strip().split(" ")[2:]).replace("/", "-")
 
+
 def lint():
     """Alias for fmt"""
     fmt()
@@ -160,19 +161,7 @@ def _source_hash():
     return sha.hexdigest()
 
 
-TASKS = {
-    "build_go_ci": build_go_ci,
-    "build_go": build_go,
-    "build": build,
-    "bump_version": bump_version,
-    "dev_compiled": dev_compiled,
-    "dev": dev,
-    "fmt": fmt,
-    "frontend_build": frontend_build,
-    "go_source_hash": go_source_hash,
-    "lint": lint,
-    "set_go_version": set_go_version
-}
+TASKS = {"build_go_ci": build_go_ci, "build_go": build_go, "build": build, "bump_version": bump_version, "dev_compiled": dev_compiled, "dev": dev, "fmt": fmt, "frontend_build": frontend_build, "go_source_hash": go_source_hash, "lint": lint, "set_go_version": set_go_version}
 
 
 def main():
