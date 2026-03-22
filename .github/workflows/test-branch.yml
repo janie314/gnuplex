@@ -26,7 +26,7 @@ jobs:
           cache-dependency-path: backend/go.sum
       - name: compile the go backend
         run: |
-          uv run make.py go_build_ci
+          uv run make.py build_go_ci
       - name: install shellcheck
         run: |
           sudo apt install -y shellcheck
@@ -47,7 +47,7 @@ jobs:
           uv run ruff check
       - name: compile the frontend
         run: |
-          uv run make.py frontend_build
+          uv run make.py build_frontend
       - name: check for TODO string instances
         run: |
           git ls-files | grep -v test-branch\.yml | xargs grep -Ii todo | wc -l | xargs uv run python3 -c "import sys; sys.exit(0 if int(sys.argv[1]) == 0 else 1)"
