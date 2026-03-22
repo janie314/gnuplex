@@ -134,8 +134,8 @@ def run(cmd, **kwargs):
 def set_go_version():
     """Set the Go version across all configuration files"""
     if len(sys.argv) < 3:
-        print("Usage: python make.py set_go_version <version>")
-        print("Example: python make.py set_go_version 1.26.0")
+        print("Usage: make.py set_go_version <version>")
+        print("Example: make.py set_go_version 1.26.0")
         sys.exit(1)
 
     version = sys.argv[2]
