@@ -186,14 +186,6 @@ class API {
     });
   }
 
-  public static async subSeek(skip: number) {
-    return await fetch("/api/sub_seek", {
-      ...post,
-      headers,
-      body: JSON.stringify({ skip }),
-    });
-  }
-
   public static async saveSubDelay() {
     return await fetch("/api/sub_save", post);
   }
