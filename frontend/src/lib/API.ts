@@ -172,6 +172,18 @@ class API {
     });
   }
 
+  public static async getSubDelay(): Promise<number> {
+    return await fetch("/api/sub_delay").then(json);
+  }
+
+  public static async setSubDelay(delay: number) {
+    return await fetch("/api/sub_delay", {
+      ...post,
+      headers,
+      body: JSON.stringify({ delay }),
+    });
+  }
+
   public static async setFilter(filter: string) {
     return await fetch("/api/filter", {
       ...post,

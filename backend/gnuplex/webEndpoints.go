@@ -41,8 +41,9 @@ type MediaDirsBody []string
 type FileExtsBody []string
 
 type SubBody struct {
-	Visible bool  `json:"visible"`
-	ID      int64 `json:"id,omitempty"`
+	Visible bool    `json:"visible"`
+	ID      int64   `json:"id,omitempty"`
+	Delay   float64 `json:"delay,omitempty"`
 }
 
 type FilterBody struct {
@@ -300,6 +301,29 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		} else {
 			c.Status(http.StatusOK)
 		}
+	})
+	gnuplex.Router.GET("/api/sub_delay", func(c *gin.Context) {
+		delay, err := gnuplex.MPV.GetSubDelay()
+		if err != nil {
+			log.Println("Error 8f3e1a2b-5c6d-4e7f-9a0b-1c2d3e4f5a6b: ,", err)
+			c.JSON(http.StatusInternalServerError, 0)
+		} else {
+			c.JSON(http.StatusOK, delay)
+		}
+	})
+	gnuplex.Router.POST("/api/sub_delay", func(c *gin.Context) {
+		body := SubBody{}
+		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
+			log.Println("Error 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d: ,", err)
+			c.String(http.StatusBadRequest, "bad body format")
+			return
+		}
+		if err := gnuplex.MPV.SetSubDelay(body.Delay); err != nil {
+			log.Println("Error 2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+		c.Status(http.StatusOK)
 	})
 	gnuplex.Router.POST("/api/upgrade", func(c *gin.Context) {
 		if upgraded, err := UpgradeGNUPlex(exe, false); err != nil {

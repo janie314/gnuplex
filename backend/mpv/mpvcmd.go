@@ -250,6 +250,16 @@ func (mpv *MPV) SetSubTrack(trackID int64) error {
 	)
 }
 
+func (mpv *MPV) GetSubDelay() (float64, error) {
+	return processMPVGetResult[float64](mpv.getCmd([]string{"get_property", "sub-delay"}))
+}
+
+func (mpv *MPV) SetSubDelay(delay float64) error {
+	return processMPVSetResult(
+		mpv.setCmd([]any{"set_property", "sub-delay", delay}),
+	)
+}
+
 func (mpv *MPV) Ping() (int, error) {
 	return processMPVGetResult[int](mpv.getCmd([]string{"get_property", "pid"}))
 }
