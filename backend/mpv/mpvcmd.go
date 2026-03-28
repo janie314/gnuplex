@@ -260,6 +260,12 @@ func (mpv *MPV) SetSubDelay(delay float64) error {
 	)
 }
 
+func (mpv *MPV) SubSeek(skip int) error {
+	return processMPVSetResult(
+		mpv.setCmd([]any{"sub-seek", skip}),
+	)
+}
+
 func (mpv *MPV) Ping() (int, error) {
 	return processMPVGetResult[int](mpv.getCmd([]string{"get_property", "pid"}))
 }

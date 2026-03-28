@@ -325,6 +325,22 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		}
 		c.Status(http.StatusOK)
 	})
+	gnuplex.Router.POST("/api/sub_seek", func(c *gin.Context) {
+		body := struct {
+			Skip int `json:"skip"`
+		}{}
+		if err := c.ShouldBindBodyWithJSON(&body); err != nil {
+			log.Println("Error 3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f: ,", err)
+			c.String(http.StatusBadRequest, "bad body format")
+			return
+		}
+		if err := gnuplex.MPV.SubSeek(body.Skip); err != nil {
+			log.Println("Error 4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a0b: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+		c.Status(http.StatusOK)
+	})
 	gnuplex.Router.POST("/api/upgrade", func(c *gin.Context) {
 		if upgraded, err := UpgradeGNUPlex(exe, false); err != nil {
 			log.Println("Error 993a427d-e32d-48bc-8387-fe93840671f0: ,", err)

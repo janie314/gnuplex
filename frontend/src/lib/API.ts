@@ -184,6 +184,14 @@ class API {
     });
   }
 
+  public static async subSeek(skip: number) {
+    return await fetch("/api/sub_seek", {
+      ...post,
+      headers,
+      body: JSON.stringify({ skip }),
+    });
+  }
+
   public static async setFilter(filter: string) {
     return await fetch("/api/filter", {
       ...post,
