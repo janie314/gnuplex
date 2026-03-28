@@ -14,7 +14,7 @@ const filters = [
 ];
 
 function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
-  const [subDelay, setSubDelay] = useState(0);
+  const [_subDelay, setSubDelay] = useState(0);
   const [subDelayText, setSubDelayText] = useState("0");
   const [isExternalSub, setIsExternalSub] = useState(false);
 
@@ -76,7 +76,7 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
               }}
               onBlur={(e) => {
                 const parsed = parseFloat(e.target.value);
-                const value = isNaN(parsed) ? 0 : parsed;
+                const value = Number.isNaN(parsed) ? 0 : parsed;
                 setSubDelay(value);
                 setSubDelayText(value.toString());
                 API.setSubDelay(value);
