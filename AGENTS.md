@@ -16,6 +16,8 @@ Always use `bun` rather than `node` or `npm` in `./frontend`.
 
 Always run `uv run make.py`, not `python make.py`
 
+Make you're not on the git main branch, and commit progress as you work!
+
 ## Code checks:
 
 After writing code, confirm code builds successfully by running: `uv run make.py build`.
