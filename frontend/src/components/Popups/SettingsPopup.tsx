@@ -15,14 +15,17 @@ const filters = [
 
 function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
   const [subDelay, setSubDelay] = useState(0);
+  const [subDelayText, setSubDelayText] = useState("0");
   const [isExternalSub, setIsExternalSub] = useState(false);
 
   const refreshSubDelay = async () => {
     try {
       const delay = await API.getSubDelay();
       setSubDelay(delay);
+      setSubDelayText(delay.toString());
     } catch {
       setSubDelay(0);
+      setSubDelayText("0");
     }
   };
 
@@ -42,10 +45,10 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
 
   if (props.visible) {
     return (
-      <div className="popup bg-white dark:bg-stone-800 m-5 min-w-80 p-8">
-        <div className="flex flex-col gap-4">
+      <div className="popup bg-white dark:bg-stone-800 m-5 min-w-80 p-12">
+        <div className="flex flex-col gap-6">
           <select
-            className="btn-standard w-full"
+            className="btn-standard w-auto"
             onChange={(e) => API.setFilter(e.target.value)}
             defaultValue="neutral"
           >
@@ -61,12 +64,23 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
           <label className="flex items-center gap-2 text-black dark:text-white text-sm">
             Sub Delay (s):
             <input
-              type="number"
-              step="0.1"
-              min="-999"
-              value={subDelay}
-              onChange={(e) => setSubDelay(parseFloat(e.target.value) || 0)}
-              onBlur={() => API.setSubDelay(subDelay)}
+              type="text"
+              inputMode="numeric"
+              pattern="-?[0-9]*\.?[0-9]*"
+              value={subDelayText}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (/^-?[0-9]*\.?[0-9]*$/.test(val)) {
+                  setSubDelayText(val === "" || val === "-" ? val : val);
+                }
+              }}
+              onBlur={(e) => {
+                const parsed = parseFloat(e.target.value);
+                const value = isNaN(parsed) ? 0 : parsed;
+                setSubDelay(value);
+                setSubDelayText(value.toString());
+                API.setSubDelay(value);
+              }}
               className="btn-standard w-24"
             />
           </label>
