@@ -23,6 +23,8 @@ interface SubTrack {
   id: number;
   title: string;
   selected: boolean;
+  external: boolean;
+  "external-filename"?: string;
 }
 
 interface Version {
@@ -170,6 +172,22 @@ class API {
       headers,
       body: JSON.stringify(body),
     });
+  }
+
+  public static async getSubDelay(): Promise<number> {
+    return await fetch("/api/sub_delay").then(json);
+  }
+
+  public static async setSubDelay(delay: number) {
+    return await fetch("/api/sub_delay", {
+      ...post,
+      headers,
+      body: JSON.stringify({ delay }),
+    });
+  }
+
+  public static async saveSubDelay() {
+    return await fetch("/api/sub_save", post);
   }
 
   public static async setFilter(filter: string) {

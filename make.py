@@ -8,43 +8,33 @@ import time
 from pathlib import Path
 
 
-def source_hash():
-    backend = Path(__file__).parent / "backend"
-    files = sorted(backend.rglob("*.go"))
-    sha = hashlib.sha256()
-    for f in files:
-        sha.update(str(f).encode())
-        with open(f, "rb") as fh:
-            sha.update(fh.read())
-    return sha.hexdigest()
+def build():
+    """Build the frontend and the backend"""
+    build_frontend()
+    build_go()
 
 
-def platform():
-    os = subprocess.check_output("uname -s", shell=True).decode().strip()
-    arch = subprocess.check_output("uname -m", shell=True).decode().strip()
-    libc = "musl" if "musl" in subprocess.check_output("ldd /bin/ls", shell=True).decode().strip() else "glibc"
-    return f"{os}-{libc}-{arch}".lower()
+def build_frontend():
+    """Build the static frontend files"""
+    run("bun i --cwd frontend")
+    run("bun run --cwd frontend build")
 
 
-def go_version():
-    return ".".join(subprocess.check_output("go version", shell=True).decode().strip().split(" ")[2:]).replace("/", "-")
+def build_go():
+    """Build the Go backend"""
+    target = os.environ.get("TARGET", "bin/gnuplex")
+    run(f'go build -C backend -o {target} -ldflags "-X main.SourceHash={_source_hash()} ' + f"-X main.Platform={platform()} " + f"-X main.GoVersion={go_version()} " + '" .')
 
 
-def run(cmd, **kwargs):
-    print(f"+ {cmd}")
-    res = subprocess.run(cmd, shell=True, check=True, **kwargs)
-    if res.returncode != 0:
-        print("cmd failed. exiting...")
-        os.exit(res.returncode)
+def build_go_ci():
+    """Build the Go backend (used by CI)"""
+    run("go build -C backend -o /tmp/gnuplex" + f' -ldflags "-X main.SourceHash={_source_hash()}' + f' -X main.Platform={platform()}" .')
 
 
-def remove_sockets():
-    """Clean up stale mpv socket files from /tmp"""
-    for socket in glob.glob("/tmp/mpvsocket-*"):
-        try:
-            os.remove(socket)
-        except OSError as e:
-            print(f"Failed to remove {socket}: {e}")
+def bump_version():
+    """Bump the version of this repo"""
+    ver = str(int(time.time()))
+    run('sed -E -i -e "s/Version = \\"[0-9]+\\"/Version = \\"' + ver + '\\"/" backend/consts/version.go')
 
 
 def dev():
@@ -93,45 +83,59 @@ def dev_compiled():
         cleanup(None, None)
 
 
-def frontend_build():
-    """Build the static frontend files"""
-    run("bun i --cwd frontend")
-    run("bun run --cwd frontend build")
-
-
-def go_build():
-    """Build the Go backend"""
-    target = os.environ.get("TARGET", "bin/gnuplex")
-    run(f'go build -C backend -o {target} -ldflags "-X main.SourceHash={source_hash()} ' + f"-X main.Platform={platform()} " + f"-X main.GoVersion={go_version()} " + '" .')
-
-
-def go_build_ci():
-    """Build the Go backend (used by CI)"""
-    run("go build -C backend -o /tmp/gnuplex" + f' -ldflags "-X main.SourceHash={source_hash()}' + f' -X main.Platform={platform()}" .')
-
-
-def build():
-    """Build the frontend and the backend"""
-    frontend_build()
-    go_build()
+def fmt():
+    """Format/lint this repo"""
+    run("go fmt -C backend")
+    run("bun run biome format --write")
+    run("bun run biome lint --write")
+    run("bun run biome check --write")
+    run("uv run ruff format")
+    run("uv run ruff check --fix")
 
 
 def go_source_hash():
     """Prints a unique hash for the repo's current source code"""
-    print(source_hash())
+    print(_source_hash())
 
 
-def bump_version():
-    """Bump the version of this repo"""
-    ver = str(int(time.time()))
-    run('sed -E -i -e "s/Version = \\"[0-9]+\\"/Version = \\"' + ver + '\\"/" backend/consts/version.go')
+def go_version():
+    return ".".join(subprocess.check_output("go version", shell=True).decode().strip().split(" ")[2:]).replace("/", "-")
+
+
+def lint():
+    """Alias for fmt"""
+    fmt()
+
+
+def platform():
+    os = subprocess.check_output("uname -s", shell=True).decode().strip()
+    arch = subprocess.check_output("uname -m", shell=True).decode().strip()
+    libc = "musl" if "musl" in subprocess.check_output("ldd /bin/ls", shell=True).decode().strip() else "glibc"
+    return f"{os}-{libc}-{arch}".lower()
+
+
+def remove_sockets():
+    """Clean up stale mpv socket files from /tmp"""
+    for socket in glob.glob("/tmp/mpvsocket-*"):
+        try:
+            os.remove(socket)
+        except OSError as e:
+            print(f"Failed to remove {socket}: {e}")
+
+
+def run(cmd, **kwargs):
+    print(f"+ {cmd}")
+    res = subprocess.run(cmd, shell=True, check=True, **kwargs)
+    if res.returncode != 0:
+        print("cmd failed. exiting...")
+        os.exit(res.returncode)
 
 
 def set_go_version():
     """Set the Go version across all configuration files"""
     if len(sys.argv) < 3:
-        print("Usage: python make.py set_go_version <version>")
-        print("Example: python make.py set_go_version 1.26.0")
+        print("Usage: make.py set_go_version <version>")
+        print("Example: make.py set_go_version 1.26.0")
         sys.exit(1)
 
     version = sys.argv[2]
@@ -146,28 +150,18 @@ def set_go_version():
     run(f'sed -E -i -e "s/^go [0-9]+\\.[0-9]+\\.[0-9]+$/go {version}/" backend/go.mod')
 
 
-def fmt():
-    """Format/lint this repo"""
-    run("go fmt -C backend")
-    run("bun run biome format --write")
-    run("bun run biome lint --write")
-    run("bun run biome check --write")
-    run("uv run ruff format")
-    run("uv run ruff check --fix")
+def _source_hash():
+    backend = Path(__file__).parent / "backend"
+    files = sorted(backend.rglob("*.go"))
+    sha = hashlib.sha256()
+    for f in files:
+        sha.update(str(f).encode())
+        with open(f, "rb") as fh:
+            sha.update(fh.read())
+    return sha.hexdigest()
 
 
-TASKS = {
-    "dev": dev,
-    "dev_compiled": dev_compiled,
-    "frontend_build": frontend_build,
-    "go_build": go_build,
-    "go_build_ci": go_build_ci,
-    "build": build,
-    "go_source_hash": go_source_hash,
-    "fmt": fmt,
-    "bump_version": bump_version,
-    "set_go_version": set_go_version,
-}
+TASKS = {"build_go_ci": build_go_ci, "build_go": build_go, "build": build, "bump_version": bump_version, "dev_compiled": dev_compiled, "dev": dev, "fmt": fmt, "build_frontend": build_frontend, "go_source_hash": go_source_hash, "lint": lint, "set_go_version": set_go_version}
 
 
 def main():
