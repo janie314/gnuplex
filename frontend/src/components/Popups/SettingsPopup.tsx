@@ -1,79 +1,40 @@
 import "./Popup.css";
 import { API } from "../../lib/API";
 
+const filters = [
+  { label: "Black and White", value: "bw" },
+  { label: "Grainy", value: "grainy" },
+  { label: "8-Bit", value: "8bit" },
+  { label: "Mirror", value: "mirror" },
+  { label: "Sepia", value: "sepia" },
+  { label: "Psychedelic", value: "psychedelic" },
+  { label: "Tron", value: "tron" },
+  { label: "#NoFilter", value: "neutral" },
+];
+
 function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
   if (props.visible) {
     return (
       <div className="popup bg-white dark:bg-stone-800 m-5">
-        <div className="flex flex-col">
-          <input
-            type="button"
-            value="Black and White Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("bw");
-            }}
-          />{" "}
-          <input
-            type="button"
-            value="Grainy Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("grainy");
-            }}
-          />
-          <input
-            type="button"
-            value="8-Bit Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("8bit");
-            }}
-          />{" "}
-          <input
-            type="button"
-            value="Mirror Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("mirror");
-            }}
-          />
-          <input
-            type="button"
-            value="Sepia Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("sepia");
-            }}
-          />{" "}
-          <input
-            type="button"
-            value="Psychedelic Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("psychedelic");
-            }}
-          />
-          <input
-            type="button"
-            value="Tron Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("tron");
-            }}
-          />
-          <input
-            type="button"
-            value="Reset Filter"
-            className="btn-standard m-1 min-w-[11ch]"
-            onClick={() => {
-              API.setFilter("neutral");
-            }}
-          />
+        <div className="flex flex-col gap-2">
+          <select
+            className="btn-standard w-full"
+            onChange={(e) => API.setFilter(e.target.value)}
+            defaultValue="neutral"
+          >
+            <option value="" disabled>
+              Select Filter
+            </option>
+            {filters.map((f) => (
+              <option key={f.value} value={f.value}>
+                {f.label}
+              </option>
+            ))}
+          </select>
           <input
             type="button"
             value="Cancel"
-            className="btn-standard m-1 min-w-[11ch]"
+            className="btn-standard"
             onClick={() => {
               props.closeHook();
             }}
