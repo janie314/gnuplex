@@ -44,18 +44,6 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
     return (
       <div className="popup bg-white dark:bg-stone-800 m-5 min-w-80 p-8">
         <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-2 text-black dark:text-white text-sm">
-            Sub Delay (s):
-            <input
-              type="number"
-              step="0.1"
-              min="-999"
-              value={subDelay}
-              onChange={(e) => setSubDelay(parseFloat(e.target.value) || 0)}
-              onBlur={() => API.setSubDelay(subDelay)}
-              className="btn-standard w-24"
-            />
-          </label>
           <select
             className="btn-standard w-full"
             onChange={(e) => API.setFilter(e.target.value)}
@@ -70,6 +58,18 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
               </option>
             ))}
           </select>
+          <label className="flex items-center gap-2 text-black dark:text-white text-sm">
+            Sub Delay (s):
+            <input
+              type="number"
+              step="0.1"
+              min="-999"
+              value={subDelay}
+              onChange={(e) => setSubDelay(parseFloat(e.target.value) || 0)}
+              onBlur={() => API.setSubDelay(subDelay)}
+              className="btn-standard w-24"
+            />
+          </label>
           <div className="flex gap-2 justify-end">
             <button
               type="button"
