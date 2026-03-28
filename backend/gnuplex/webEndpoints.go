@@ -341,6 +341,14 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		}
 		c.Status(http.StatusOK)
 	})
+	gnuplex.Router.POST("/api/sub_save", func(c *gin.Context) {
+		if err := gnuplex.SaveSubDelay(); err != nil {
+			log.Println("Error 5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b1c: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+		c.Status(http.StatusOK)
+	})
 	gnuplex.Router.POST("/api/upgrade", func(c *gin.Context) {
 		if upgraded, err := UpgradeGNUPlex(exe, false); err != nil {
 			log.Println("Error 993a427d-e32d-48bc-8387-fe93840671f0: ,", err)

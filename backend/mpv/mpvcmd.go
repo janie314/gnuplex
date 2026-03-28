@@ -266,6 +266,25 @@ func (mpv *MPV) SubSeek(skip int) error {
 	)
 }
 
+func (mpv *MPV) GetCurrentSubFilename() (string, error) {
+	tracks, err := mpv.GetTracks()
+	if err != nil {
+		return "", err
+	}
+	for _, track := range tracks {
+		if track.Type == "sub" && track.Selected && track.External {
+			return track.ExternalFilename, nil
+		}
+	}
+	return "", nil
+}
+
+func (mpv *MPV) SubReload() error {
+	return processMPVSetResult(
+		mpv.setCmd([]any{"sub-reload"}),
+	)
+}
+
 func (mpv *MPV) Ping() (int, error) {
 	return processMPVGetResult[int](mpv.getCmd([]string{"get_property", "pid"}))
 }

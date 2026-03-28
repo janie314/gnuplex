@@ -15,11 +15,22 @@ const filters = [
 
 function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
   const [subDelay, setSubDelay] = useState(0);
+  const [isExternalSub, setIsExternalSub] = useState(false);
 
   useEffect(() => {
     API.getSubDelay()
       .then(setSubDelay)
       .catch(() => setSubDelay(0));
+    API.getSubTracks()
+      .then((tracks) => {
+        if (tracks) {
+          const selected = tracks.find((t) => t.selected);
+          setIsExternalSub(selected ? selected.external : false);
+        } else {
+          setIsExternalSub(false);
+        }
+      })
+      .catch(() => setIsExternalSub(false));
   }, [props.visible]);
 
   if (props.visible) {
@@ -37,12 +48,23 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
               className="btn-standard w-24"
             />
           </label>
+          {isExternalSub && (
+            <button
+              type="button"
+              onClick={() => API.saveSubDelay()}
+              className="btn-standard self-start px-4"
+              title="Permanently save delay to subtitle file"
+            >
+              Save
+            </button>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-black dark:text-white text-sm whitespace-nowrap">
               Seek Subtitle:
             </span>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => API.subSeek(-1)}
                 className="btn-standard px-3"
                 title="Previous subtitle"
@@ -51,11 +73,13 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
                   viewBox="0 0 24 24"
                   className="w-5 h-5"
                   fill="currentColor"
+                  aria-label="Previous subtitle"
                 >
                   <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z" />
                 </svg>
               </button>
               <button
+                type="button"
                 onClick={() => API.subSeek(0)}
                 className="btn-standard px-3"
                 title="Jump to current subtitle start"
@@ -64,11 +88,13 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
                   viewBox="0 0 24 24"
                   className="w-5 h-5"
                   fill="currentColor"
+                  aria-label="Jump to current subtitle start"
                 >
                   <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
                 </svg>
               </button>
               <button
+                type="button"
                 onClick={() => API.subSeek(1)}
                 className="btn-standard px-3"
                 title="Next subtitle"
@@ -77,6 +103,7 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
                   viewBox="0 0 24 24"
                   className="w-5 h-5"
                   fill="currentColor"
+                  aria-label="Next subtitle"
                 >
                   <path d="M6 18l8.5-6L6 6v12zm2-12v12l6.5-6L8 6zm8 0v12h2V6h-2z" />
                 </svg>
@@ -98,6 +125,7 @@ function SettingsPopup(props: { visible: boolean; closeHook: () => void }) {
             ))}
           </select>
           <button
+            type="button"
             className="btn-standard self-start px-4"
             onClick={() => {
               props.closeHook();

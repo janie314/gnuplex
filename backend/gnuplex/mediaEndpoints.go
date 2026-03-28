@@ -7,7 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/asticode/go-astisub"
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 )
@@ -181,4 +183,40 @@ func (gnuplex *GNUPlex) SetSubVisibility(visible bool) error {
 // Set subtitle track.
 func (gnuplex *GNUPlex) SetSubTrack(trackID int64) error {
 	return gnuplex.MPV.SetSubTrack(trackID)
+}
+
+// Save subtitle delay permanently to the subtitle file.
+func (gnuplex *GNUPlex) SaveSubDelay() error {
+	delay, err := gnuplex.MPV.GetSubDelay()
+	if err != nil {
+		return err
+	}
+	if delay == 0 {
+		return nil
+	}
+
+	filename, err := gnuplex.MPV.GetCurrentSubFilename()
+	if err != nil {
+		return err
+	}
+	if filename == "" {
+		return nil
+	}
+
+	subs, err := astisub.OpenFile(filename)
+	if err != nil {
+		return err
+	}
+
+	subs.Add(time.Duration(-delay * float64(time.Second)))
+
+	if err := subs.Write(filename); err != nil {
+		return err
+	}
+
+	if err := gnuplex.MPV.SubReload(); err != nil {
+		return err
+	}
+
+	return gnuplex.MPV.SetSubDelay(0)
 }
