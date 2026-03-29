@@ -1,4 +1,5 @@
 import { useState } from "react";
+import camera from "../assets/camera.svg";
 import playpause from "../assets/playpause.svg";
 import skip from "../assets/skip.svg";
 import { API, type SubTrack } from "../lib/API";
@@ -8,9 +9,8 @@ import { VolInputPopup } from "./Popups/VolInputPopup";
 import { SubSelector } from "./SubSelector";
 
 function MediaControls(props: {
-  mediadirInputPopup: boolean;
-  setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
   setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  setScreenshotPopup: React.Dispatch<React.SetStateAction<boolean>>;
   setSettingsPopup: React.Dispatch<React.SetStateAction<boolean>>;
   startPos: number;
   pos: number;
@@ -116,18 +116,17 @@ function MediaControls(props: {
         <SubSelector subs={props.subs} />
         <input
           type="button"
-          className="mr-1 btn-standard"
-          value="Manage Library"
-          onClick={() => {
-            props.setMediadirInputPopup(true);
-          }}
-        />
-        <input
-          type="button"
           className="btn-standard"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
         />
+        <button
+          type="button"
+          className="p-2 w-8 btn-standard ml-1"
+          onClick={() => props.setScreenshotPopup(true)}
+        >
+          <img src={camera} alt="Screenshot icon" />
+        </button>
         <input
           type="button"
           className="btn-standard ml-1"

@@ -27,6 +27,9 @@ jobs:
       - name: compile the go backend
         run: |
           uv run make.py build_go_ci
+      - name: run go tests
+        run: |
+          uv run make.py test
       - name: install shellcheck
         run: |
           sudo apt install -y shellcheck

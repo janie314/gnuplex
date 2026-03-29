@@ -42,10 +42,11 @@ def dev():
     remove_sockets()
     run("bun i --cwd frontend")
     os.makedirs("tmp", exist_ok=True)
+    os.makedirs("tmp/screenshots", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run", shell=True),
         subprocess.Popen("bun run --cwd frontend dev", shell=True),
-        subprocess.Popen("go run -C backend . -verbose", shell=True),
+        subprocess.Popen("go run -C backend . -verbose -static_files ../tmp", shell=True),
     ]
 
     def cleanup(signum, frame):
@@ -63,6 +64,7 @@ def dev():
 
 def dev_compiled():
     """Run a local development server against a compiled frontend/backend"""
+    build()
     remove_sockets()
     os.makedirs("tmp", exist_ok=True)
     procs = [
@@ -85,7 +87,7 @@ def dev_compiled():
 
 def fmt():
     """Format/lint this repo"""
-    run("go fmt -C backend")
+    run("find backend -name '*.go' -print0 | xargs -0 gofmt -w -s")
     run("bun run biome format --write")
     run("bun run biome lint --write")
     run("bun run biome check --write")
@@ -105,6 +107,11 @@ def go_version():
 def lint():
     """Alias for fmt"""
     fmt()
+
+
+def test():
+    """Run Go tests"""
+    run("go test -C backend ./...")
 
 
 def platform():
@@ -161,7 +168,7 @@ def _source_hash():
     return sha.hexdigest()
 
 
-TASKS = {"build_go_ci": build_go_ci, "build_go": build_go, "build": build, "bump_version": bump_version, "dev_compiled": dev_compiled, "dev": dev, "fmt": fmt, "build_frontend": build_frontend, "go_source_hash": go_source_hash, "lint": lint, "set_go_version": set_go_version}
+TASKS = {"build_go_ci": build_go_ci, "build_go": build_go, "build": build, "bump_version": bump_version, "dev_compiled": dev_compiled, "dev": dev, "fmt": fmt, "build_frontend": build_frontend, "go_source_hash": go_source_hash, "lint": lint, "set_go_version": set_go_version, "test": test}
 
 
 def main():

@@ -27,6 +27,12 @@ interface SubTrack {
   "external-filename"?: string;
 }
 
+interface Screenshot {
+  name: string;
+  url: string;
+  modified_at: string;
+}
+
 interface Version {
   version: string;
   source_hash: string;
@@ -205,7 +211,17 @@ class API {
       body: JSON.stringify(queue_index),
     });
   }
+
+  public static async getRecentScreenshots(limit = 10): Promise<Screenshot[]> {
+    return await fetch(
+      `/api/screenshots?limit=${encodeURIComponent(limit)}`,
+    ).then(json);
+  }
+
+  public static async takeScreenshot(): Promise<Screenshot> {
+    return await fetch("/api/screenshots", post).then(json);
+  }
 }
 
-export type { MediaDir, MediaItem, SubTrack };
+export type { MediaDir, MediaItem, Screenshot, SubTrack };
 export { API };

@@ -59,6 +59,7 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 		c.Redirect(http.StatusMovedPermanently, "/home")
 	})
 	gnuplex.Router.Static("/home", staticFiles)
+	gnuplex.Router.StaticFS("/screenshots", gin.Dir(gnuplex.ScreenshotsDir, true))
 	gnuplex.Router.GET("/api/version", func(c *gin.Context) {
 		c.JSON(http.StatusOK, consts.VersionInfo{Version: consts.Version, SourceHash: sourceHash, Platform: platform, GoVersion: goVersion})
 	})
@@ -394,5 +395,36 @@ func (gnuplex *GNUPlex) InitWebEndpoints(prod bool, staticFiles, sourceHash, pla
 			return
 		}
 		c.Status(http.StatusOK)
+	})
+	gnuplex.Router.GET("/api/screenshots", func(c *gin.Context) {
+		limit := 10
+		if limitStr := c.Query("limit"); limitStr != "" {
+			parsedLimit, err := strconv.Atoi(limitStr)
+			if err != nil {
+				log.Println("Error 67e09969-754d-49b2-a848-89279f10f136: ,", err)
+				c.String(http.StatusBadRequest, "bad limit")
+				return
+			}
+			limit = parsedLimit
+		}
+
+		res, err := gnuplex.ListRecentScreenshots(limit)
+		if err != nil {
+			log.Println("Error 3976eaef-c6f0-4d1a-bca2-1575013d83d3: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+
+		c.JSON(http.StatusOK, res)
+	})
+	gnuplex.Router.POST("/api/screenshots", func(c *gin.Context) {
+		res, err := gnuplex.TakeScreenshot()
+		if err != nil {
+			log.Println("Error 59decc58-e4af-49dc-a5e2-ff8f4f5b0aad: ,", err)
+			c.String(http.StatusInternalServerError, "some problem doing that")
+			return
+		}
+
+		c.JSON(http.StatusOK, res)
 	})
 }
