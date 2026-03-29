@@ -116,12 +116,6 @@ function MediaControls(props: {
         <SubSelector subs={props.subs} />
         <input
           type="button"
-          className="mr-1 btn-standard"
-          value="Manage Library"
-          onClick={() => props.setSettingsPopup(true)}
-        />
-        <input
-          type="button"
           className="btn-standard"
           value="Cast URL"
           onClick={() => props.setCastPopup(true)}
