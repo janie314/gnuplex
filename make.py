@@ -107,6 +107,11 @@ def lint():
     fmt()
 
 
+def test():
+    """Run Go tests"""
+    run("go test -C backend ./...")
+
+
 def platform():
     os = subprocess.check_output("uname -s", shell=True).decode().strip()
     arch = subprocess.check_output("uname -m", shell=True).decode().strip()
@@ -161,7 +166,7 @@ def _source_hash():
     return sha.hexdigest()
 
 
-TASKS = {"build_go_ci": build_go_ci, "build_go": build_go, "build": build, "bump_version": bump_version, "dev_compiled": dev_compiled, "dev": dev, "fmt": fmt, "build_frontend": build_frontend, "go_source_hash": go_source_hash, "lint": lint, "set_go_version": set_go_version}
+TASKS = {"build_go_ci": build_go_ci, "build_go": build_go, "build": build, "bump_version": bump_version, "dev_compiled": dev_compiled, "dev": dev, "fmt": fmt, "build_frontend": build_frontend, "go_source_hash": go_source_hash, "lint": lint, "set_go_version": set_go_version, "test": test}
 
 
 def main():
