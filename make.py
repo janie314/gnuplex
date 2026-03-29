@@ -42,10 +42,11 @@ def dev():
     remove_sockets()
     run("bun i --cwd frontend")
     os.makedirs("tmp", exist_ok=True)
+    os.makedirs("tmp/screenshots", exist_ok=True)
     procs = [
         subprocess.Popen("caddy run", shell=True),
         subprocess.Popen("bun run --cwd frontend dev", shell=True),
-        subprocess.Popen("go run -C backend . -verbose", shell=True),
+        subprocess.Popen("go run -C backend . -verbose -static_files ../tmp", shell=True),
     ]
 
     def cleanup(signum, frame):

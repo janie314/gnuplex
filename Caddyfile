@@ -3,6 +3,11 @@ http://localhost:50000 {
 		reverse_proxy localhost:40000
 	}
 
+	handle_path /screenshots* {
+		root * ./tmp/screenshots
+		file_server browse
+	}
+
 	handle {
 		reverse_proxy localhost:5173
 	}
