@@ -18,18 +18,23 @@ import (
 )
 
 type GNUPlex struct {
-	DB        *db.DB
-	Port      int
-	Router    *gin.Engine
-	PlayQueue [](*models.MediaItem)
-	MPV       *mpv.MPV
-	Wg        *sync.WaitGroup
+	DB             *db.DB
+	Port           int
+	Router         *gin.Engine
+	PlayQueue      [](*models.MediaItem)
+	MPV            *mpv.MPV
+	Wg             *sync.WaitGroup
+	ScreenshotsDir string
 }
 
 // Initialize a GNUPlex instance.
 func Init(wg *sync.WaitGroup, verbose bool, dbPath, staticFiles string, port int, sourceHash, platform, goVersion, exe, mpvConfigDir string) (*GNUPlex, error) {
 	// HTTP backend
 	gnuplex := new(GNUPlex)
+	gnuplex.ScreenshotsDir = filepath.Join(staticFiles, "screenshots")
+	if err := os.MkdirAll(gnuplex.ScreenshotsDir, 0755); err != nil {
+		return nil, err
+	}
 	gnuplex.Router = gin.Default()
 	gnuplex.Router.SetTrustedProxies(nil)
 	gnuplex.InitWebEndpoints(verbose, staticFiles, sourceHash, platform, goVersion, exe)

@@ -1,7 +1,7 @@
 .popup {
   position: fixed;
   padding: 2%;
-  top: 0;
+  top: 2.5vh;
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, 0%);
@@ -9,6 +9,8 @@
   flex-direction: column;
   border: 1.5px solid black;
   z-index: 1;
+  max-height: 95vh;
+  overflow-y: auto;
 }
 
 .popup > * {
