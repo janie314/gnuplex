@@ -252,7 +252,7 @@ func (mpv *MPV) SetPos(pos int) error {
 
 func (mpv *MPV) ScreenshotToFile(filename string) error {
 	return processMPVSetResult(
-		mpv.setCmd([]any{"screenshot-to-file", filename}),
+		mpv.setCmd([]any{"screenshot-to-file", filename, "subtitles"}),
 	)
 }
 
