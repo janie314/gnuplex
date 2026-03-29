@@ -24,6 +24,12 @@ function MediaControls(props: {
 }) {
   const [posInputPopup, setPosInputPopup] = useState(false);
   const [volInputPopup, setVolInputPopup] = useState(false);
+  const rewind10Seconds = () => {
+    const newPos = Math.max(0, props.pos - 10);
+    props.setPos(newPos);
+    API.setPos(newPos);
+  };
+
   return (
     <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
       <div className="mr-1">
@@ -42,6 +48,16 @@ function MediaControls(props: {
           }}
         >
           <img src={playpause} alt="Play/Pause icon" />
+        </button>
+      </div>
+      <div className="mr-1">
+        <button
+          type="button"
+          className="px-2 h-8 btn-standard"
+          onClick={rewind10Seconds}
+          aria-label="Rewind 10 seconds"
+        >
+          -10
         </button>
       </div>
       <div className="mr-2">
