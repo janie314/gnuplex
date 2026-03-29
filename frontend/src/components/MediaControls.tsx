@@ -9,8 +9,6 @@ import { VolInputPopup } from "./Popups/VolInputPopup";
 import { SubSelector } from "./SubSelector";
 
 function MediaControls(props: {
-  mediadirInputPopup: boolean;
-  setMediadirInputPopup: React.Dispatch<React.SetStateAction<boolean>>;
   setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
   setScreenshotPopup: React.Dispatch<React.SetStateAction<boolean>>;
   setSettingsPopup: React.Dispatch<React.SetStateAction<boolean>>;
@@ -120,9 +118,7 @@ function MediaControls(props: {
           type="button"
           className="mr-1 btn-standard"
           value="Manage Library"
-          onClick={() => {
-            props.setMediadirInputPopup(true);
-          }}
+          onClick={() => props.setSettingsPopup(true)}
         />
         <input
           type="button"
