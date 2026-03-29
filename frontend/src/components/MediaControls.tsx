@@ -53,12 +53,12 @@ function MediaControls(props: {
       <div className="mr-1">
         <button
           type="button"
-          className="px-2 h-8 min-w-[3rem] btn-standard font-mono text-sm"
+          className="px-2 h-8 min-w-[3rem] btn-standard text-lg leading-none"
           onClick={rewind10Seconds}
           aria-label="Rewind 10 seconds"
           title="Rewind 10 seconds"
         >
-          _|&lt;
+          ↺
         </button>
       </div>
       <div className="mr-2">
