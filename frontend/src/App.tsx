@@ -6,6 +6,7 @@ import { Medialist } from "./components/Medialist";
 import { CastPopup } from "./components/Popups/CastPopup";
 import { MediadirsConfigPopup } from "./components/Popups/MediadirsConfigPopup";
 import { QueuePopup } from "./components/Popups/QueuePopup";
+import { ScreenshotPopup } from "./components/Popups/ScreenshotPopup";
 import { SettingsPopup } from "./components/Popups/SettingsPopup";
 import { useDebounce } from "./lib/useDebounce";
 
@@ -32,6 +33,7 @@ function App() {
   const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
     useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
+  const [screenshotPopupVisible, setScreenshotPopupVisible] = useState(false);
   const [settingsPopupVisible, setSettingsPopupVisible] = useState(false);
 
   // URL params
@@ -52,6 +54,7 @@ function App() {
       if (e.key === "Escape") {
         setMediaDirInputPopupVisible(false);
         setCastPopupVisible(false);
+        setScreenshotPopupVisible(false);
         setQueueingTargetMediaItem(null);
         setSettingsPopupVisible(false);
       }
@@ -176,7 +179,12 @@ function App() {
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100 dark:bg-stone-950 text:white"
         style={{
           opacity:
-            mediaDirInputPopupVisible || castPopupVisible ? "50%" : "100%",
+            mediaDirInputPopupVisible ||
+            castPopupVisible ||
+            screenshotPopupVisible ||
+            settingsPopupVisible
+              ? "50%"
+              : "100%",
         }}
       >
         <div className="sm:basis-1 md:basis-1/4 sm:max-w-full lg:max-w-sm grow flex-col px-1/100 pb-2 mb-1">
@@ -187,6 +195,7 @@ function App() {
             mediadirInputPopup={mediaDirInputPopupVisible}
             setMediadirInputPopup={setMediaDirInputPopupVisible}
             setCastPopup={setCastPopupVisible}
+            setScreenshotPopup={setScreenshotPopupVisible}
             setSettingsPopup={setSettingsPopupVisible}
             vol={vol}
             setVol={setVol}
@@ -256,6 +265,12 @@ function App() {
           setQueueIndex(null);
         }}
       />{" "}
+      <ScreenshotPopup
+        visible={screenshotPopupVisible}
+        closeHook={() => {
+          setScreenshotPopupVisible(false);
+        }}
+      />
       <SettingsPopup
         visible={settingsPopupVisible}
         closeHook={() => {

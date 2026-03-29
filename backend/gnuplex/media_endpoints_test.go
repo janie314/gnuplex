@@ -3,6 +3,7 @@ package gnuplex
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -260,4 +261,53 @@ func TestSaveSubDelay_CasablancaShiftMinus5(t *testing.T) {
 	}
 
 	t.Logf("First subtitle shifted from %v to %v", originalStart, firstStart)
+}
+
+func TestBuildScreenshotFilename(t *testing.T) {
+	now := time.Date(2026, 3, 29, 14, 5, 6, 0, time.UTC)
+	got := buildScreenshotFilename("/media/movies/Alien (1979).mkv", now)
+	want := "2026-03-29-14:05:06._media_movies_Alien (1979).mkv.png"
+
+	if got != want {
+		t.Fatalf("expected %q, got %q", want, got)
+	}
+}
+
+func TestListRecentScreenshots(t *testing.T) {
+	tmpDir := t.TempDir()
+	g := &GNUPlex{ScreenshotsDir: tmpDir}
+
+	olderName := "older.png"
+	newerName := "newer.png"
+	notScreenshot := "ignore.txt"
+
+	for _, name := range []string{olderName, newerName, notScreenshot} {
+		if err := os.WriteFile(filepath.Join(tmpDir, name), []byte("x"), 0644); err != nil {
+			t.Fatalf("failed to write %s: %v", name, err)
+		}
+	}
+
+	oldTime := time.Date(2026, 3, 29, 12, 0, 0, 0, time.UTC)
+	newTime := time.Date(2026, 3, 29, 13, 0, 0, 0, time.UTC)
+	if err := os.Chtimes(filepath.Join(tmpDir, olderName), oldTime, oldTime); err != nil {
+		t.Fatalf("failed to set mtime on older screenshot: %v", err)
+	}
+	if err := os.Chtimes(filepath.Join(tmpDir, newerName), newTime, newTime); err != nil {
+		t.Fatalf("failed to set mtime on newer screenshot: %v", err)
+	}
+
+	res, err := g.ListRecentScreenshots(10)
+	if err != nil {
+		t.Fatalf("ListRecentScreenshots failed: %v", err)
+	}
+
+	if len(res) != 2 {
+		t.Fatalf("expected 2 screenshots, got %d", len(res))
+	}
+	if res[0].Name != newerName || res[1].Name != olderName {
+		t.Fatalf("unexpected screenshot order: %+v", res)
+	}
+	if !strings.HasPrefix(res[0].URL, "/screenshots/") {
+		t.Fatalf("expected screenshot URL to use /screenshots/, got %q", res[0].URL)
+	}
 }

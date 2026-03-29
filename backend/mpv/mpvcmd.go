@@ -184,6 +184,22 @@ func (mpv *MPV) GetNowPlaying() ([]PlaylistEntry, error) {
 	return processMPVGetResult[[]PlaylistEntry](mpv.getCmd([]string{"get_property", "playlist"}))
 }
 
+func (mpv *MPV) GetCurrentFilename() (string, error) {
+	playlist, err := mpv.GetNowPlaying()
+	if err != nil {
+		return "", err
+	}
+	for _, entry := range playlist {
+		if entry.Current {
+			return entry.Filename, nil
+		}
+	}
+	if len(playlist) == 0 {
+		return "", errors.New("property unavailable")
+	}
+	return playlist[0].Filename, nil
+}
+
 func (mpv *MPV) SetNowPlaying(filepath string, playNext, playLast bool) error {
 	if playNext {
 		return processMPVSetResult(
@@ -231,6 +247,12 @@ func (mpv *MPV) GetTimeRemaining() (int, error) {
 func (mpv *MPV) SetPos(pos int) error {
 	return processMPVSetResult(
 		mpv.setCmd([]any{"set_property", "time-pos", pos}),
+	)
+}
+
+func (mpv *MPV) ScreenshotToFile(filename string) error {
+	return processMPVSetResult(
+		mpv.setCmd([]any{"screenshot-to-file", filename}),
 	)
 }
 
