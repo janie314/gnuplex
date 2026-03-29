@@ -31,13 +31,15 @@ function ScreenshotPopup(props: { visible: boolean; closeHook: () => void }) {
   return (
     <div className="popup bg-white dark:bg-stone-800 m-5 min-w-80 max-w-3xl p-6">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-row items-center justify-between gap-4">
+        <div>
           <div>
             <div className="header">Screenshots</div>
             <div className="text-sm text-black dark:text-white">
               Recent captures and the full screenshots directory.
             </div>
           </div>
+        </div>
+        <div className="flex flex-row flex-wrap gap-2">
           <a
             href="/screenshots/"
             target="_blank"
@@ -46,8 +48,6 @@ function ScreenshotPopup(props: { visible: boolean; closeHook: () => void }) {
           >
             Open All Screenshots
           </a>
-        </div>
-        <div className="flex flex-row gap-2">
           <button
             type="button"
             className="btn-standard px-4 py-2"
