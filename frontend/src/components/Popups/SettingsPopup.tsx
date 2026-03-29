@@ -106,7 +106,7 @@ function SettingsPopup(props: {
         <div className="flex flex-col gap-6">
           <h1 className="header">Settings</h1>
           <select
-            className="btn-standard w-auto"
+            className="btn-standard w-auto self-start"
             onChange={(e) => API.setFilter(e.target.value)}
             defaultValue="neutral"
           >
@@ -203,7 +203,7 @@ function SettingsPopup(props: {
           </div>
         </div>
 
-        <div className="flex gap-2 justify-end">
+        <div className="flex gap-2 justify-start">
           <button
             type="button"
             className="btn-standard px-4"

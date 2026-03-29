@@ -63,6 +63,7 @@ def dev():
 
 def dev_compiled():
     """Run a local development server against a compiled frontend/backend"""
+    build()
     remove_sockets()
     os.makedirs("tmp", exist_ok=True)
     procs = [
