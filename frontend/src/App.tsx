@@ -4,7 +4,6 @@ import "./App.css";
 import { MediaControls } from "./components/MediaControls";
 import { Medialist } from "./components/Medialist";
 import { CastPopup } from "./components/Popups/CastPopup";
-import { MediadirsConfigPopup } from "./components/Popups/MediadirsConfigPopup";
 import { QueuePopup } from "./components/Popups/QueuePopup";
 import { ScreenshotPopup } from "./components/Popups/ScreenshotPopup";
 import { SettingsPopup } from "./components/Popups/SettingsPopup";
@@ -30,8 +29,6 @@ function App() {
   const [last25, setLast25] = useState<MediaItem[]>([]);
 
   // UI popups' visibility
-  const [mediaDirInputPopupVisible, setMediaDirInputPopupVisible] =
-    useState(false);
   const [castPopupVisible, setCastPopupVisible] = useState(false);
   const [screenshotPopupVisible, setScreenshotPopupVisible] = useState(false);
   const [settingsPopupVisible, setSettingsPopupVisible] = useState(false);
@@ -52,7 +49,6 @@ function App() {
     // Escape key to quit out of windows
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        setMediaDirInputPopupVisible(false);
         setCastPopupVisible(false);
         setScreenshotPopupVisible(false);
         setQueueingTargetMediaItem(null);
@@ -179,10 +175,7 @@ function App() {
         className="flex flex-row flex-wrap max-w-full text-base font-sans pb-2/100 dark:bg-stone-950 text:white"
         style={{
           opacity:
-            mediaDirInputPopupVisible ||
-            castPopupVisible ||
-            screenshotPopupVisible ||
-            settingsPopupVisible
+            castPopupVisible || screenshotPopupVisible || settingsPopupVisible
               ? "50%"
               : "100%",
         }}
@@ -192,8 +185,6 @@ function App() {
             <span className="logo">GNUPlex</span>
           </div>
           <MediaControls
-            mediadirInputPopup={mediaDirInputPopupVisible}
-            setMediadirInputPopup={setMediaDirInputPopupVisible}
             setCastPopup={setCastPopupVisible}
             setScreenshotPopup={setScreenshotPopupVisible}
             setSettingsPopup={setSettingsPopupVisible}
@@ -243,11 +234,6 @@ function App() {
           />
         </div>
       </div>
-      <MediadirsConfigPopup
-        visible={mediaDirInputPopupVisible}
-        setMediadirInputPopup={setMediaDirInputPopupVisible}
-        closeHook={refreshMediaItems}
-      />
       <CastPopup
         visible={castPopupVisible}
         setCastPopup={setCastPopupVisible}
@@ -273,6 +259,7 @@ function App() {
       />
       <SettingsPopup
         visible={settingsPopupVisible}
+        refreshMediaItems={refreshMediaItems}
         closeHook={() => {
           setSettingsPopupVisible(false);
         }}
