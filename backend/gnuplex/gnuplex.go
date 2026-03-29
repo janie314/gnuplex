@@ -18,12 +18,12 @@ import (
 )
 
 type GNUPlex struct {
-	DB        *db.DB
-	Port      int
-	Router    *gin.Engine
-	PlayQueue [](*models.MediaItem)
-	MPV       *mpv.MPV
-	Wg        *sync.WaitGroup
+	DB             *db.DB
+	Port           int
+	Router         *gin.Engine
+	PlayQueue      [](*models.MediaItem)
+	MPV            *mpv.MPV
+	Wg             *sync.WaitGroup
 	ScreenshotsDir string
 }
 
