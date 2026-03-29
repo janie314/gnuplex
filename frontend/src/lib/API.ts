@@ -41,6 +41,12 @@ interface Version {
 const headers = { "Content-Type": "application/json" };
 const post = { method: "POST" };
 const json = (res: Response) => res.json();
+const emptyOk = async (res: Response) => {
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res;
+};
 
 class API {
   public static async play() {
@@ -76,7 +82,7 @@ class API {
       ...post,
       headers,
       body: JSON.stringify({ pos }),
-    }).then(json);
+    }).then(emptyOk);
   }
 
   public static async getPaused(): Promise<boolean> {
@@ -92,7 +98,7 @@ class API {
       ...post,
       headers,
       body: JSON.stringify({ vol }),
-    }).then(json);
+    }).then(emptyOk);
   }
 
   public static async getNowPlaying(): Promise<MediaItem[] | null> {
