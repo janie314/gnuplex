@@ -85,15 +85,15 @@ function MediaControls(props: {
           <img src={skip} alt="Skip icon" />
         </button>
       </div>
-      <div className="flex flex-col max-w-sm grow p-1">
-        <div className="flex flex-row items-center">
+      <div className="flex min-w-0 flex-1 flex-col p-1 md:max-w-none">
+        <div className="flex flex-row items-center min-w-0">
           <span className="mx-1 dark:text-white">Pos</span>
           <input
             type="range"
             min={0}
             max={props.startPos + props.timeRemaining}
             value={props.pos}
-            className="range range-xs dark:[--range-shdw:#0e7490]"
+            className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
             onChange={(e) => props.setPos(e.target.valueAsNumber)}
             onMouseUp={() => API.setPos(props.pos)}
             onTouchCancel={() => API.setPos(props.pos)}
@@ -107,14 +107,14 @@ function MediaControls(props: {
           </button>
         </div>
 
-        <div className="flex flex-row items-center mt-3">
+        <div className="flex flex-row items-center mt-3 min-w-0">
           <span className="mx-1 dark:text-white">Vol</span>
           <input
             type="range"
             min={0}
             max={120}
             value={props.vol}
-            className="range range-xs dark:[--range-shdw:#0e7490]"
+            className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
             onChange={(e) => props.setVol(e.target.valueAsNumber)}
             onMouseUp={() => API.setVol(props.vol)}
             onTouchCancel={() => API.setVol(props.vol)}
