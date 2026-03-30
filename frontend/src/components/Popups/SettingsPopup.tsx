@@ -119,31 +119,31 @@ function SettingsPopup(props: {
               </option>
             ))}
           </select>
-          <label className="flex items-center gap-2 text-black dark:text-white text-sm">
-            Sub Delay (s):
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="-?[0-9]*\.?[0-9]*"
-              value={subDelayText}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (/^-?[0-9]*\.?[0-9]*$/.test(val)) {
-                  setSubDelayText(val);
-                }
-              }}
-              onBlur={(e) => {
-                const parsed = parseFloat(e.target.value);
-                const value = Number.isNaN(parsed) ? 0 : parsed;
-                setSubDelay(value);
-                setSubDelayText(value.toString());
-                API.setSubDelay(value);
-              }}
-              className="btn-standard w-24"
-            />
-          </label>
-          {isExternalSub && (
-            <div>
+          <div className="flex flex-wrap items-center gap-2 text-black dark:text-white text-sm">
+            <label className="flex items-center gap-2">
+              <span>Sub Delay (s):</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="-?[0-9]*\.?[0-9]*"
+                value={subDelayText}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (/^-?[0-9]*\.?[0-9]*$/.test(val)) {
+                    setSubDelayText(val);
+                  }
+                }}
+                onBlur={(e) => {
+                  const parsed = parseFloat(e.target.value);
+                  const value = Number.isNaN(parsed) ? 0 : parsed;
+                  setSubDelay(value);
+                  setSubDelayText(value.toString());
+                  API.setSubDelay(value);
+                }}
+                className="btn-standard w-24"
+              />
+            </label>
+            {isExternalSub && (
               <button
                 type="button"
                 onClick={async () => {
@@ -153,10 +153,10 @@ function SettingsPopup(props: {
                 className="btn-standard px-4"
                 title="Permanently save subtitle changes to file"
               >
-                Save Subtitle Changes
+                Save to File
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-4">
