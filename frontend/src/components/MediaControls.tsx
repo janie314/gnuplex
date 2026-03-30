@@ -43,8 +43,8 @@ function MediaControls(props: {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-1">
-      <div className="flex items-start gap-1">
+    <div className="flex flex-col items-center gap-3 p-1">
+      <div className="flex w-full items-center justify-center gap-1">
         <div className="flex shrink-0 items-center">
           <div className="mr-1">
             <button
@@ -88,7 +88,7 @@ function MediaControls(props: {
             </button>
           </div>
         </div>
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col justify-center">
           <div className="flex min-w-0 items-center">
             <span className="mx-1 dark:text-white">Pos</span>
             <input
@@ -132,7 +132,7 @@ function MediaControls(props: {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-1 md:justify-start">
+      <div className="flex flex-wrap items-center justify-center gap-1">
         <SubSelector subs={props.subs} />
         <input
           type="button"
