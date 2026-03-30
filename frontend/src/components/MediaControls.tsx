@@ -43,90 +43,118 @@ function MediaControls(props: {
   };
 
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
-      <div className="mr-1">
-        <button
-          type="button"
-          className="p-2 w-8 btn-standard"
-          onClick={() => {
-            API.playpause();
-            if (props.dummyAudio.current) {
-              if (props.dummyAudio.current.paused) {
-                props.dummyAudio.current.play();
-              } else {
-                props.dummyAudio.current.pause();
-              }
-            }
-          }}
-        >
-          <img src={playpause} alt="Play/Pause icon" />
-        </button>
-      </div>
-      <div className="mr-1">
-        <button
-          type="button"
-          className="p-0 w-8 h-8 btn-standard text-lg leading-none flex items-center justify-center"
-          onClick={rewind10Seconds}
-          aria-label="Rewind 10 seconds"
-          title="Rewind 10 seconds"
-        >
-          ↺
-        </button>
-      </div>
-      <div className="mr-2">
-        <button
-          type="button"
-          className="p-2 w-8 btn-standard"
-          onClick={() => {
-            API.skip();
-            props.skipHook();
-          }}
-        >
-          <img src={skip} alt="Skip icon" />
-        </button>
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col p-1 md:max-w-none">
-        <div className="flex flex-row items-center min-w-0">
-          <span className="mx-1 dark:text-white">Pos</span>
-          <input
-            type="range"
-            min={0}
-            max={props.startPos + props.timeRemaining}
-            value={props.pos}
-            className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
-            onChange={(e) => props.setPos(e.target.valueAsNumber)}
-            onMouseUp={() => API.setPos(props.pos)}
-            onTouchCancel={() => API.setPos(props.pos)}
-          />
-          <button
-            type="button"
-            className="btn-subtle"
-            onClick={() => setPosInputPopup(true)}
-          >
-            {timeFormat(props.pos)}
-          </button>
+    <div className="flex flex-col gap-3 p-1">
+      <div className="flex items-start gap-1">
+        <div className="flex shrink-0 items-center">
+          <div className="mr-1">
+            <button
+              type="button"
+              className="p-2 w-8 btn-standard"
+              onClick={() => {
+                API.playpause();
+                if (props.dummyAudio.current) {
+                  if (props.dummyAudio.current.paused) {
+                    props.dummyAudio.current.play();
+                  } else {
+                    props.dummyAudio.current.pause();
+                  }
+                }
+              }}
+            >
+              <img src={playpause} alt="Play/Pause icon" />
+            </button>
+          </div>
+          <div className="mr-1">
+            <button
+              type="button"
+              className="p-0 w-8 h-8 btn-standard text-lg leading-none flex items-center justify-center"
+              onClick={rewind10Seconds}
+              aria-label="Rewind 10 seconds"
+              title="Rewind 10 seconds"
+            >
+              ↺
+            </button>
+          </div>
+          <div className="mr-2">
+            <button
+              type="button"
+              className="p-2 w-8 btn-standard"
+              onClick={() => {
+                API.skip();
+                props.skipHook();
+              }}
+            >
+              <img src={skip} alt="Skip icon" />
+            </button>
+          </div>
         </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex min-w-0 items-center">
+            <span className="mx-1 dark:text-white">Pos</span>
+            <input
+              type="range"
+              min={0}
+              max={props.startPos + props.timeRemaining}
+              value={props.pos}
+              className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
+              onChange={(e) => props.setPos(e.target.valueAsNumber)}
+              onMouseUp={() => API.setPos(props.pos)}
+              onTouchCancel={() => API.setPos(props.pos)}
+            />
+            <button
+              type="button"
+              className="btn-subtle shrink-0"
+              onClick={() => setPosInputPopup(true)}
+            >
+              {timeFormat(props.pos)}
+            </button>
+          </div>
 
-        <div className="flex flex-row items-center mt-3 min-w-0">
-          <span className="mx-1 dark:text-white">Vol</span>
-          <input
-            type="range"
-            min={0}
-            max={120}
-            value={props.vol}
-            className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
-            onChange={(e) => props.setVol(e.target.valueAsNumber)}
-            onMouseUp={() => API.setVol(props.vol)}
-            onTouchCancel={() => API.setVol(props.vol)}
-          />
-          <button
-            type="button"
-            className="btn-subtle"
-            onClick={() => setVolInputPopup(true)}
-          >
-            {props.vol}
-          </button>
+          <div className="mt-3 flex min-w-0 items-center">
+            <span className="mx-1 dark:text-white">Vol</span>
+            <input
+              type="range"
+              min={0}
+              max={120}
+              value={props.vol}
+              className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
+              onChange={(e) => props.setVol(e.target.valueAsNumber)}
+              onMouseUp={() => API.setVol(props.vol)}
+              onTouchCancel={() => API.setVol(props.vol)}
+            />
+            <button
+              type="button"
+              className="btn-subtle shrink-0"
+              onClick={() => setVolInputPopup(true)}
+            >
+              {props.vol}
+            </button>
+          </div>
         </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-1 md:justify-start">
+        <SubSelector subs={props.subs} />
+        <input
+          type="button"
+          className="btn-standard"
+          value="Cast URL"
+          onClick={() => props.setCastPopup(true)}
+        />
+        <button
+          type="button"
+          className="p-2 w-8 btn-standard flex items-center justify-center"
+          onClick={() => props.setScreenshotPopup(true)}
+          aria-label="Take screenshot"
+          title="Take screenshot"
+        >
+          <CameraIcon />
+        </button>
+        <input
+          type="button"
+          className="btn-standard"
+          value="⚙"
+          onClick={() => props.setSettingsPopup(true)}
+        />
       </div>
       <PosInputPopup
         visible={posInputPopup}
@@ -141,30 +169,6 @@ function MediaControls(props: {
         currentVol={props.vol}
         setVol={props.setVol}
       />
-      <div className="flex flex-row justify-center mt-3 p-1">
-        <SubSelector subs={props.subs} />
-        <input
-          type="button"
-          className="btn-standard"
-          value="Cast URL"
-          onClick={() => props.setCastPopup(true)}
-        />
-        <button
-          type="button"
-          className="p-2 w-8 btn-standard ml-1 flex items-center justify-center"
-          onClick={() => props.setScreenshotPopup(true)}
-          aria-label="Take screenshot"
-          title="Take screenshot"
-        >
-          <CameraIcon />
-        </button>
-        <input
-          type="button"
-          className="btn-standard ml-1"
-          value="⚙"
-          onClick={() => props.setSettingsPopup(true)}
-        />
-      </div>
     </div>
   );
 }
