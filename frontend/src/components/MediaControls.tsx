@@ -88,7 +88,7 @@ function MediaControls(props: {
             </button>
           </div>
         </div>
-        <div className="flex w-full min-w-0 flex-1 flex-col justify-center">
+        <div className="flex w-full min-w-0 flex-1 flex-col justify-center md:max-w-md lg:max-w-none">
           <div className="flex min-w-0 items-center">
             <span className="mx-1 dark:text-white">Pos</span>
             <input
