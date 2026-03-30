@@ -1,5 +1,4 @@
 import { useState } from "react";
-import camera from "../assets/camera.svg";
 import playpause from "../assets/playpause.svg";
 import skip from "../assets/skip.svg";
 import { API, type SubTrack } from "../lib/API";
@@ -7,6 +6,19 @@ import { secondsToTimeComponents } from "../lib/Helpers";
 import { PosInputPopup } from "./Popups/PosInputPopup";
 import { VolInputPopup } from "./Popups/VolInputPopup";
 import { SubSelector } from "./SubSelector";
+
+function CameraIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className="h-4 w-4"
+    >
+      <path d="M9 4.5 7.8 6H5.25A2.25 2.25 0 0 0 3 8.25v9.5A2.25 2.25 0 0 0 5.25 20h13.5A2.25 2.25 0 0 0 21 17.75v-9.5A2.25 2.25 0 0 0 18.75 6H16.2L15 4.5H9Zm3 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+    </svg>
+  );
+}
 
 function MediaControls(props: {
   setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
@@ -139,10 +151,12 @@ function MediaControls(props: {
         />
         <button
           type="button"
-          className="p-2 w-8 btn-standard ml-1"
+          className="p-2 w-8 btn-standard ml-1 flex items-center justify-center"
           onClick={() => props.setScreenshotPopup(true)}
+          aria-label="Take screenshot"
+          title="Take screenshot"
         >
-          <img src={camera} alt="Screenshot icon" />
+          <CameraIcon />
         </button>
         <input
           type="button"
