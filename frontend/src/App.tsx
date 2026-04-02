@@ -200,13 +200,15 @@ function App() {
           />
         </div>
         <div className="sm:basis-1 md:basis-3/4 min-w-sm max-w-2xl shrink flex-col p-1">
-          <input
-            type="text"
-            className="mb-2 block w-full max-w-xl mx-auto p-3 border-2 border-stone-400 focus:bg-cyan-50 dark:bg-cyan-900 focus:dark:bg-cyan-700 dark:text-white"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <div className="mb-2 flex justify-center">
+            <input
+              type="text"
+              className="block w-full max-w-screen-md p-3 border-2 border-stone-400 focus:bg-cyan-50 dark:bg-cyan-900 focus:dark:bg-cyan-700 dark:text-white"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <Medialist
             mediaItems={nowPlaying}
             subtitle="Now Playing"
