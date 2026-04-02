@@ -101,7 +101,7 @@ function SettingsPopup(props: {
   };
 
   return (
-    <div className="popup bg-white dark:bg-stone-800 dark:text-white m-5 min-w-80 max-w-5xl w-[min(95vw,72rem)] p-8 max-sm:min-w-0 max-sm:h-screen max-sm:p-6">
+    <div className="popup settings-popup bg-white dark:bg-stone-800 dark:text-white m-5 min-w-80 max-w-5xl w-[min(95vw,72rem)] p-8 max-sm:min-w-0 max-sm:h-screen max-sm:p-6">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-6">
           <h1 className="header">Settings</h1>
