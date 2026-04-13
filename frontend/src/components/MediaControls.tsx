@@ -1,5 +1,4 @@
 import { useState } from "react";
-import camera from "../assets/camera.svg";
 import playpause from "../assets/playpause.svg";
 import skip from "../assets/skip.svg";
 import { API, type SubTrack } from "../lib/API";
@@ -7,6 +6,19 @@ import { secondsToTimeComponents } from "../lib/Helpers";
 import { PosInputPopup } from "./Popups/PosInputPopup";
 import { VolInputPopup } from "./Popups/VolInputPopup";
 import { SubSelector } from "./SubSelector";
+
+function CameraIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className="h-4 w-4"
+    >
+      <path d="M9 4.5 7.8 6H5.25A2.25 2.25 0 0 0 3 8.25v9.5A2.25 2.25 0 0 0 5.25 20h13.5A2.25 2.25 0 0 0 21 17.75v-9.5A2.25 2.25 0 0 0 18.75 6H16.2L15 4.5H9Zm3 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+    </svg>
+  );
+}
 
 function MediaControls(props: {
   setCastPopup: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,90 +43,118 @@ function MediaControls(props: {
   };
 
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center content-baseline p-1">
-      <div className="mr-1">
-        <button
-          type="button"
-          className="p-2 w-8 btn-standard"
-          onClick={() => {
-            API.playpause();
-            if (props.dummyAudio.current) {
-              if (props.dummyAudio.current.paused) {
-                props.dummyAudio.current.play();
-              } else {
-                props.dummyAudio.current.pause();
-              }
-            }
-          }}
-        >
-          <img src={playpause} alt="Play/Pause icon" />
-        </button>
-      </div>
-      <div className="mr-1">
-        <button
-          type="button"
-          className="p-0 w-8 h-8 btn-standard text-lg leading-none flex items-center justify-center"
-          onClick={rewind10Seconds}
-          aria-label="Rewind 10 seconds"
-          title="Rewind 10 seconds"
-        >
-          ↺
-        </button>
-      </div>
-      <div className="mr-2">
-        <button
-          type="button"
-          className="p-2 w-8 btn-standard"
-          onClick={() => {
-            API.skip();
-            props.skipHook();
-          }}
-        >
-          <img src={skip} alt="Skip icon" />
-        </button>
-      </div>
-      <div className="flex flex-col max-w-sm grow p-1">
-        <div className="flex flex-row items-center">
-          <span className="mx-1 dark:text-white">Pos</span>
-          <input
-            type="range"
-            min={0}
-            max={props.startPos + props.timeRemaining}
-            value={props.pos}
-            className="range range-xs dark:[--range-shdw:#0e7490]"
-            onChange={(e) => props.setPos(e.target.valueAsNumber)}
-            onMouseUp={() => API.setPos(props.pos)}
-            onTouchCancel={() => API.setPos(props.pos)}
-          />
-          <button
-            type="button"
-            className="btn-subtle"
-            onClick={() => setPosInputPopup(true)}
-          >
-            {timeFormat(props.pos)}
-          </button>
+    <div className="flex flex-col items-center gap-3 p-1">
+      <div className="flex w-full flex-col items-center justify-center gap-3 md:flex-row md:gap-1">
+        <div className="flex shrink-0 items-center">
+          <div className="mr-1">
+            <button
+              type="button"
+              className="p-2 w-8 btn-standard"
+              onClick={() => {
+                API.playpause();
+                if (props.dummyAudio.current) {
+                  if (props.dummyAudio.current.paused) {
+                    props.dummyAudio.current.play();
+                  } else {
+                    props.dummyAudio.current.pause();
+                  }
+                }
+              }}
+            >
+              <img src={playpause} alt="Play/Pause icon" />
+            </button>
+          </div>
+          <div className="mr-1">
+            <button
+              type="button"
+              className="p-0 w-8 h-8 btn-standard text-lg leading-none flex items-center justify-center"
+              onClick={rewind10Seconds}
+              aria-label="Rewind 10 seconds"
+              title="Rewind 10 seconds"
+            >
+              ↺
+            </button>
+          </div>
+          <div className="mr-2">
+            <button
+              type="button"
+              className="p-2 w-8 btn-standard"
+              onClick={() => {
+                API.skip();
+                props.skipHook();
+              }}
+            >
+              <img src={skip} alt="Skip icon" />
+            </button>
+          </div>
         </div>
+        <div className="flex w-full min-w-0 flex-1 flex-col justify-center md:max-w-md lg:max-w-none">
+          <div className="flex min-w-0 items-center">
+            <span className="mx-1 dark:text-white">Pos</span>
+            <input
+              type="range"
+              min={0}
+              max={props.startPos + props.timeRemaining}
+              value={props.pos}
+              className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
+              onChange={(e) => props.setPos(e.target.valueAsNumber)}
+              onMouseUp={() => API.setPos(props.pos)}
+              onTouchCancel={() => API.setPos(props.pos)}
+            />
+            <button
+              type="button"
+              className="btn-subtle shrink-0"
+              onClick={() => setPosInputPopup(true)}
+            >
+              {timeFormat(props.pos)}
+            </button>
+          </div>
 
-        <div className="flex flex-row items-center mt-3">
-          <span className="mx-1 dark:text-white">Vol</span>
-          <input
-            type="range"
-            min={0}
-            max={120}
-            value={props.vol}
-            className="range range-xs dark:[--range-shdw:#0e7490]"
-            onChange={(e) => props.setVol(e.target.valueAsNumber)}
-            onMouseUp={() => API.setVol(props.vol)}
-            onTouchCancel={() => API.setVol(props.vol)}
-          />
-          <button
-            type="button"
-            className="btn-subtle"
-            onClick={() => setVolInputPopup(true)}
-          >
-            {props.vol}
-          </button>
+          <div className="mt-3 flex min-w-0 items-center">
+            <span className="mx-1 dark:text-white">Vol</span>
+            <input
+              type="range"
+              min={0}
+              max={120}
+              value={props.vol}
+              className="range range-xs min-w-0 flex-1 dark:[--range-shdw:#0e7490]"
+              onChange={(e) => props.setVol(e.target.valueAsNumber)}
+              onMouseUp={() => API.setVol(props.vol)}
+              onTouchCancel={() => API.setVol(props.vol)}
+            />
+            <button
+              type="button"
+              className="btn-subtle shrink-0"
+              onClick={() => setVolInputPopup(true)}
+            >
+              {props.vol}
+            </button>
+          </div>
         </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-1">
+        <SubSelector subs={props.subs} />
+        <input
+          type="button"
+          className="btn-standard"
+          value="Cast URL"
+          onClick={() => props.setCastPopup(true)}
+        />
+        <button
+          type="button"
+          className="p-2 w-8 btn-standard flex items-center justify-center"
+          onClick={() => props.setScreenshotPopup(true)}
+          aria-label="Take screenshot"
+          title="Take screenshot"
+        >
+          <CameraIcon />
+        </button>
+        <input
+          type="button"
+          className="btn-standard"
+          value="⚙"
+          onClick={() => props.setSettingsPopup(true)}
+        />
       </div>
       <PosInputPopup
         visible={posInputPopup}
@@ -129,28 +169,6 @@ function MediaControls(props: {
         currentVol={props.vol}
         setVol={props.setVol}
       />
-      <div className="flex flex-row justify-center mt-3 p-1">
-        <SubSelector subs={props.subs} />
-        <input
-          type="button"
-          className="btn-standard"
-          value="Cast URL"
-          onClick={() => props.setCastPopup(true)}
-        />
-        <button
-          type="button"
-          className="p-2 w-8 btn-standard ml-1"
-          onClick={() => props.setScreenshotPopup(true)}
-        >
-          <img src={camera} alt="Screenshot icon" />
-        </button>
-        <input
-          type="button"
-          className="btn-standard ml-1"
-          value="⚙"
-          onClick={() => props.setSettingsPopup(true)}
-        />
-      </div>
     </div>
   );
 }

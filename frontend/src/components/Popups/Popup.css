@@ -30,3 +30,17 @@
     transform: none;
   }
 }
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .settings-popup {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 1.5rem;
+    transform: none;
+  }
+}
