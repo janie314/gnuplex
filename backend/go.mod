@@ -3,7 +3,7 @@ module gnuplex
 go 1.26.0
 
 require (
-	github.com/asticode/go-astisub v0.39.0
+	github.com/asticode/go-astisub v0.40.0
 	github.com/gin-gonic/gin v1.12.0
 	github.com/google/uuid v1.6.0
 	github.com/reugn/go-quartz v0.15.2
